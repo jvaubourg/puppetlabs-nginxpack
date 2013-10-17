@@ -1,0 +1,17 @@
+# MANAGED BY PUPPET
+# Module:: nginxpack
+# File:: nginxpack/files/nginx/vhost_default
+
+server {
+	listen [::]:80 default_server ipv6only=on;
+	listen 0.0.0.0:80 default_server;
+
+	include /etc/nginx/include/default_listen.conf;
+
+	server_tokens off;
+
+	access_log /dev/null;
+	error_log /dev/null;
+
+	return 403;
+}

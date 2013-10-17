@@ -1,0 +1,15 @@
+# MANAGED BY PUPPET
+# Module:: nginxpack::logrotate
+# File:: nginxpack/files/logrotate/logrotate
+
+/var/log/nginx/*/*.log {
+  daily
+  missingok
+  rotate 10
+  compress
+  delaycompress
+  notifempty
+  postrotate
+    /usr/bin/killall -HUP nginx
+  endscript
+}

@@ -1,0 +1,67 @@
+# MANAGED BY PUPPET
+# Module:: nginxpack::vhost::basic
+# File:: nginxpack/templates/nginx/vhost.erb
+
+server {
+  <% if (!ipv6 || ipv6.empty?) && (!ipv4 || ipv4.empty?) then %>
+    listen [::]:<%= portval %>;
+    listen 0.0.0.0:<%= portval %>;
+  <% else -%>
+    <% if ipv6 && !ipv6.empty? then -%>
+      listen [<%= ipv6 %>]:<%= portval %>;
+    <% end -%>
+    <% if ipv4 && !ipv4.empty? then -%>
+      listen <%= ipv4 %>:<%= portval %>;
+    <% end -%>
+  <% end -%>
+
+  server_name <%= domains.join(' ') %>;
+  server_tokens off;
+
+  access_log /var/log/nginx/<%= name %>/access.log;
+  error_log /var/log/nginx/<%= name %>/error.log;
+
+  <% if injectionsafe then -%>
+      include /etc/nginx/include/attacks.conf;
+  <% end -%>
+
+  root /var/www/<%= name %>;
+  client_max_body_size <%= upload_max_size %>;
+
+  <% if https -%>
+  ssl on;
+  ssl_session_timeout 5m;
+  ssl_protocols SSLv3 TLSv1;
+  ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
+  ssl_prefer_server_ciphers on;
+  ssl_certificate /etc/nginx/ssl/<%= name %>.pem;
+  ssl_certificate_key /etc/nginx/ssl/<%= name %>.key;
+  <% end -%>
+
+  <% if use_php then -%>
+  location ~ \.php$ {
+    include /etc/nginx/fastcgi_params;
+    fastcgi_pass unix:/var/run/php-fastcgi/php-fastcgi.socket;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME /var/www/<%= name %>/$fastcgi_script_name;
+
+    <% if htpasswd then -%>
+    auth_basic              "Restricted";
+    auth_basic_user_file    /etc/nginx/htpasswd/<%= name %>;
+    <% end -%>
+  }
+  <% end -%>
+
+  location ~ / {
+    index index index.html<%= use_php ? ' index.php' : '' %>;
+
+    <% if htpasswd then -%>
+    auth_basic              "Restricted";
+    auth_basic_user_file    /etc/nginx/htpasswd/<%= name %>;
+    <% end -%>
+  }
+
+   <% if (add_config_source && !add_config_source.empty?) || (add_config_content && !add_config_content.empty?) -%>
+   include /etc/nginx/include/<%= name %>.conf;
+   <% end -%>
+}
