@@ -3,38 +3,38 @@
 # File:: nginxpack/templates/nginx/vhost_proxy.erb
 
 server {
-  <% if (!ipv6 || ipv6.empty?) && (!ipv4 || ipv4.empty?) then %>
-    listen [::]:<%= portval %>;
-    listen 0.0.0.0:<%= portval %>;
+  <% if (!@ipv6 || @ipv6.empty?) && (!@ipv4 || @ipv4.empty?) then %>
+    listen [::]:<%= @portval %>;
+    listen 0.0.0.0:<%= @portval %>;
   <% else -%>
-    <% if ipv6 && !ipv6.empty? then -%>
-      listen [<%= ipv6 %>]:<%= portval %>;
+    <% if @ipv6 && !@ipv6.empty? then -%>
+      listen [<%= @ipv6 %>]:<%= @portval %>;
     <% end -%>
-    <% if ipv4 && !ipv4.empty? then -%>
-      listen <%= ipv4 %>:<%= portval %>;
+    <% if @ipv4 && !@ipv4.empty? then -%>
+      listen <%= @ipv4 %>:<%= @portval %>;
     <% end -%>
   <% end -%>
 
-  server_name <%= domains.join(' ') %>;
+  server_name <%= @domains.join(' ') %>;
   server_tokens off;
 
-  access_log /var/log/nginx/<%= name %>_proxy/access.log;
-  error_log /var/log/nginx/<%= name %>_proxy/errors.log;
+  access_log /var/log/nginx/<%= @name %>_proxy/access.log;
+  error_log /var/log/nginx/<%= @name %>_proxy/errors.log;
 
-  client_max_body_size <%= upload_max_size %>;
+  client_max_body_size <%= @upload_max_size %>;
 
-  <% if https -%>
+  <% if @https -%>
   ssl on;
   ssl_session_timeout 5m;
   ssl_protocols SSLv3 TLSv1;
   ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
   ssl_prefer_server_ciphers on;
-  ssl_certificate /etc/nginx/ssl/<%= name %>.pem;
-  ssl_certificate_key /etc/nginx/ssl/<%= name %>.key;
+  ssl_certificate /etc/nginx/ssl/<%= @name %>.pem;
+  ssl_certificate_key /etc/nginx/ssl/<%= @name %>.key;
   <% end -%>
 
   location / {
-    proxy_pass http<%= to_https ? 's' : '' %>://<%= to_domain %>:<%= to_portval %>/;
+    proxy_pass http<%= @to_https ? 's' : '' %>://<%= @to_domain %>:<%= @to_portval %>/;
     proxy_redirect          off;
     proxy_set_header        Host            $host;
     proxy_set_header        X-Real-IP       $remote_addr;
@@ -46,7 +46,7 @@ server {
     client_body_buffer_size 128k;
   }
 
-   <% if (add_config_source && !add_config_source.empty?) || (add_config_content && !add_config_content.empty?) -%>
-   include /etc/nginx/include/<%= name %>.conf;
+   <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
+   include /etc/nginx/include/<%= @name %>.conf;
    <% end -%>
 }
