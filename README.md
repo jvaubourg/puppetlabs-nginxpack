@@ -15,7 +15,7 @@
     * [Reverse-proxy with IPv4](#reverse-proxy-with-ipv4)
     * [Usage of www](#usage-of-www)
     * [Port redirection](#port-redirection)
-5. [Add IPv6/IPv4 access](#add-ipv6-ipv4-access)
+    * [Add IPv6/IPv4 access](#add-ipv6-ipv4-access)
 5. [Limitations (only Debian)](#limitations)
 6. [Development](#development)
 
@@ -432,7 +432,7 @@ Visible location switch (the client will see his URL transforming: *http://examp
       to_port => 8080,
     }
 
-###Add IPv6/IPv4 access
+####Add IPv6/IPv4 access
 
 You have a website not available in IPv6 and you cannot have IPv6 on its machine. A way to solving this problem is to create a proxy that listens with IPv6 and have also an IPv4 address to contact the remote website:
 
