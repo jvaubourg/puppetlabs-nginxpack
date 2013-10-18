@@ -3,30 +3,30 @@
 # File:: nginxpack/templates/nginx/vhost_redirection.erb
 
 server {
-  <% if (!ipv6 || ipv6.empty?) && (!ipv4 || ipv4.empty?) then %>
-    listen [::]:<%= portval %>;
-    listen 0.0.0.0:<%= portval %>;
+  <% if (!@ipv6 || @ipv6.empty?) && (!@ipv4 || @ipv4.empty?) then %>
+    listen [::]:<%= @portval %>;
+    listen 0.0.0.0:<%= @portval %>;
   <% else -%>
-    <% if ipv6 && !ipv6.empty? then -%>
-      listen [<%= ipv6 %>]:<%= portval %>;
+    <% if @ipv6 && !@ipv6.empty? then -%>
+      listen [<%= @ipv6 %>]:<%= @portval %>;
     <% end -%>
-    <% if ipv4 && !ipv4.empty? then -%>
-      listen <%= ipv4 %>:<%= portval %>;
+    <% if @ipv4 && !@ipv4.empty? then -%>
+      listen <%= @ipv4 %>:<%= @portval %>;
     <% end -%>
   <% end -%>
 
-  server_name <%= domains.join(' ') %>;
+  server_name <%= @domains.join(' ') %>;
   server_tokens off;
 
   access_log /dev/null;
   error_log /dev/null;
 
   location / {
-    rewrite ^/(.*)$ http<%= to_https ? 's' : '' %>://<%= to_domain %>:<%= to_portval %>/$1 permanent;
+    rewrite ^/(.*)$ http<%= @to_https ? 's' : '' %>://<%= @to_domain %>:<%= @to_portval %>/$1 permanent;
     return 301;
   }
 
-   <% if (add_config_source && !add_config_source.empty?) || (add_config_content && !add_config_content.empty?) -%>
-   include /etc/nginx/include/<%= name %>.conf;
+   <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
+   include /etc/nginx/include/<%= @name %>.conf;
    <% end -%>
 }
