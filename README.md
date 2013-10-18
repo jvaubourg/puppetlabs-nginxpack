@@ -311,9 +311,9 @@ Webserver hosting the reverse-proxy:
 Webserver hosting *blog.example.com*:
 
     nginxpack::vhost::basic { 'blog':
-      domains         => [ 'blog.example.com' ],
-      ipv4            => false,
-      use_php         => true,
+      domains => [ 'blog.example.com' ],
+      ipv4    => false,
+      use_php => true,
     }
 
 Webserver hosting *wiki.example.com*:
@@ -403,7 +403,7 @@ Webserver hosting *members.example.com*:
 
 ###Usage of www
 
-Using *www.example.com* is so 2005 and you want automatically redirect all request from *www.example.com/[...]* to *example.com/[...]*.
+Using *www.example.com* is so 2005 and you want automatically redirect all request from _www.example.com/.*_ to *example.com/$1*.
 
     nginxpack::vhost::redirection { 'blog':
       domains   => [ 'www.example.com' ],
@@ -425,7 +425,7 @@ Your webapp listen on port 8080 but you want use it on port 80 without change it
 
 ####Not Seamlessly
 
-Visible location switch (the client will see his URL transforming: *http://example.com/[...]* => *http://example.com:8080/[...]*) means redirection:
+Visible location switch (the client will see his URL transforming: _example.com/.*_ => *example.com:8080/$1*) means redirection:
 
     nginxpack::vhost::redirection { 'webapp':
       domains => [ 'example.com' ],
