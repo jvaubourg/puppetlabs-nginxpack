@@ -121,7 +121,7 @@ define nginxpack::vhost::proxy (
   $ssl_key_source     = false,
   $ssl_cert_content   = false,
   $ssl_key_content    = false,
-  $to_domain          = $domains[0],
+  $to_domain          = -1,
   $to_https           = false,
   $to_port            = -1,
   $enable             = true,
@@ -167,6 +167,12 @@ define nginxpack::vhost::proxy (
     $portval = $port
   }
 
+  if $to_domain == -1 {
+    $to_domainval = $domains[0]
+  } else {
+    $to_domainval = $to_domain
+  }
+
   file { "/var/log/nginx/${name}_proxy/":
     ensure  => directory,
     mode    => '0644',
@@ -174,7 +180,7 @@ define nginxpack::vhost::proxy (
   }
 
   if $https {
-    nginxpack::ssl::certificate { $name:
+    nginxpack::ssl::certificate { "${name}_proxy":
       ssl_cert_source  => $ssl_cert_source,
       ssl_key_source   => $ssl_key_source,
       ssl_cert_content => $ssl_cert_content,
@@ -221,7 +227,7 @@ define nginxpack::vhost::proxy (
   }
 
   if $add_config_source {
-    file { "/etc/nginx/include/${name}.conf":
+    file { "/etc/nginx/include/${name}_proxy.conf":
       ensure => file,
       mode   => '0644',
       source => $add_config_source,
@@ -229,7 +235,7 @@ define nginxpack::vhost::proxy (
   }
 
   if $add_config_content {
-    file { "/etc/nginx/include/${name}.conf":
+    file { "/etc/nginx/include/${name}_proxy.conf":
       ensure  => file,
       mode    => '0644',
       content => $add_config_content,

@@ -82,7 +82,7 @@ define nginxpack::vhost::redirection (
   $ipv6               = false,
   $ipv4               = false,
   $port               = 80,
-  $to_domain          = $domains[0],
+  $to_domain          = -1,
   $to_port            = -1,
   $to_https           = false,
   $enable             = true,
@@ -100,6 +100,12 @@ define nginxpack::vhost::redirection (
     $to_portval = $to_https ? { true => 443, false => 80 }
   } else {
     $to_portval = $to_port
+  }
+
+  if $to_domain == -1 {
+    $to_domainval = $domains[0]
+  } else {
+    $to_domainval = $to_domain
   }
 
   file { "/etc/nginx/sites-available/${name}_redirection":
@@ -129,7 +135,7 @@ define nginxpack::vhost::redirection (
   }
 
   if $add_config_source {
-    file { "/etc/nginx/include/${name}.conf":
+    file { "/etc/nginx/include/${name}_redirection.conf":
       ensure => file,
       mode   => '0644',
       source => $add_config_source,
@@ -137,7 +143,7 @@ define nginxpack::vhost::redirection (
   }
 
   if $add_config_content {
-    file { "/etc/nginx/include/${name}.conf":
+    file { "/etc/nginx/include/${name}_redirection.conf":
       ensure  => file,
       mode    => '0644',
       content => $add_config_content,

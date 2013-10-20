@@ -29,12 +29,12 @@ server {
   ssl_protocols SSLv3 TLSv1;
   ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
   ssl_prefer_server_ciphers on;
-  ssl_certificate /etc/nginx/ssl/<%= @name %>.pem;
-  ssl_certificate_key /etc/nginx/ssl/<%= @name %>.key;
+  ssl_certificate /etc/nginx/ssl/<%= @name %>_proxy.pem;
+  ssl_certificate_key /etc/nginx/ssl/<%= @name %>_proxy.key;
   <% end -%>
 
   location / {
-    proxy_pass http<%= @to_https ? 's' : '' %>://<%= @to_domain %>:<%= @to_portval %>/;
+    proxy_pass http<%= @to_https ? 's' : '' %>://<%= @to_domainval %>:<%= @to_portval %>/;
     proxy_redirect          off;
     proxy_set_header        Host            $host;
     proxy_set_header        X-Real-IP       $remote_addr;
@@ -47,6 +47,6 @@ server {
   }
 
    <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
-   include /etc/nginx/include/<%= @name %>.conf;
+   include /etc/nginx/include/<%= @name %>_proxy.conf;
    <% end -%>
 }
