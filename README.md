@@ -293,11 +293,11 @@ Webserver hosting the reverse-proxy:
     }
 
     nginxpack::vhost::proxy { 'wiki':
-      domains  => [ 'wiki.example.com' ],
-      port     => 443,
-      ipv6     => false,
+      domains   => [ 'wiki.example.com' ],
+      port      => 443,
+      ipv6      => false,
       to_domain => 'wiki.lan',
-      to_https => true,
+      to_https  => true,
     }
 
     nginxpack::vhost::proxy { 'members':

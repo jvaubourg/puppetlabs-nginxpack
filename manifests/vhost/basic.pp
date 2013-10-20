@@ -225,6 +225,10 @@ define nginxpack::vhost::basic (
       mode    => '0440',
       content => $htpasswd,
     }
+  } else {
+    file { "/etc/nginx/htpasswd/${name}":
+      ensure => absent,
+    }
   }
 
   $ensure_enable = $enable ? {
