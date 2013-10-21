@@ -160,13 +160,13 @@ Other options:
     nginxpack::vhost::basic { 'foobar':
       domains         => [ 'foobar.example.com' ],
       enable          => false,
-      files_dir       => '/srv/files/nginx/foobar/',
+      files_dir       => '/var/websites/foobar/',
       injectionsafe   => true,
       upload_max_size => '5G',
       htpasswd        => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
     }
 
-`files_dir`'s default value is */var/www/<name>/* (e.g. */var/www/foobar/*).
+`files_dir`'s default value is */var/www/[name]/* (e.g. */var/www/foobar/*).
 
 `injectionsafe` applies [these protections](http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections-file-injections-spam-user-agents-etc) against XSS injections. These restrictions might be incompatible with your applications.
 
