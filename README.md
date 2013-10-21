@@ -13,9 +13,9 @@
     * [Default vhosts](#default-vhosts)
 5. [Common use cases](#common-use-cases)
     * [Reverse-proxy with IPv4](#reverse-proxy-with-ipv4)
-    * [Usage of www](#usage-of-www)
+    * [Usage of www.](#usage-of-www)
     * [Port redirection](#port-redirection)
-    * [Add IPv6/IPv4 access](#add-ipv6-ipv4-access)
+    * [IPv6/IPv4 proxy](#ipv6-ipv4-proxy)
 5. [Limitations (only Debian)](#limitations)
 6. [Development](#development)
 
@@ -160,10 +160,13 @@ Other options:
     nginxpack::vhost::basic { 'foobar':
       domains         => [ 'foobar.example.com' ],
       enable          => false,
+      files_dir       => '/srv/files/nginx/foobar/',
       injectionsafe   => true,
       upload_max_size => '5G',
       htpasswd        => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
     }
+
+`files_dir`'s default value is */var/www/<name>/* (e.g. */var/www/foobar/*).
 
 `injectionsafe` applies [these protections](http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections-file-injections-spam-user-agents-etc) against XSS injections. These restrictions might be incompatible with your applications.
 
@@ -401,7 +404,7 @@ Webserver hosting *members.example.com*:
       use_php => true,
     }
 
-###Usage of www
+###Usage of www.
 
 Using *www.example.com* is so 2005 and you want automatically redirect all request from _www.example.com/.*_ to *example.com/$1*.
 
@@ -432,7 +435,7 @@ Visible location switch (the client will see his URL transforming: _example.com/
       to_port => 8080,
     }
 
-####Add IPv6/IPv4 access
+####IPv6/IPv4 proxy
 
 You have a website not available in IPv6 and you cannot have IPv6 on its machine. A way to solving this problem is to create a proxy that listens with IPv6 and have also an IPv4 address to contact the remote website:
 

@@ -96,6 +96,10 @@
 #   /usr/bin/htpasswd -nb username password).
 #   Default: false
 #
+# [*files_dir*]
+#   Directory to create for the website files.
+#   Default: /var/www/<name>/
+#
 # === Examples
 #
 #   nginxpack::vhost::basic { 'blog':
@@ -145,7 +149,8 @@ define nginxpack::vhost::basic (
   $use_php            = false,
   $add_config_source  = false,
   $add_config_content = false,
-  $htpasswd           = false
+  $htpasswd           = false,
+  $files_dir          = "/var/www/${name}/"
 ) {
 
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
@@ -189,6 +194,7 @@ define nginxpack::vhost::basic (
     content => template('nginxpack/nginx/vhost.erb'),
     require => [
       Package['nginx'],
+      Exec['mkdir_files_dir'],
       File["/var/log/nginx/${name}/"],
     ],
     notify  => [
@@ -197,11 +203,9 @@ define nginxpack::vhost::basic (
     ],
   }
 
-  file { "/var/www/${name}/":
-    ensure => directory,
-    mode   => '0755',
-    owner  => 'www-data',
-    group  => 'www-data',
+  exec { 'mkdir_files_dir':
+    command => "/bin/mkdir -p ${files_dir}",
+    unless  => "/usr/bin/test -d ${files_dir}",
   }
 
   file { "/var/log/nginx/${name}/":

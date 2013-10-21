@@ -1,6 +1,6 @@
 name 'jvaubourg-nginxpack'
 version '0.0.1'
-dependency 'puppetlabs/stdlib', '>= 4.x'
+dependency 'puppetlabs/stdlib', '>= 3.x'
 license 'AGPL'
 source 'https://github.com/jvaubourg/puppetlabs-nginxpack'
 summary 'Nginx & php5-fastcgi (opt.), vhosts, proxy, redirect., IPv6, SSL, etc.'

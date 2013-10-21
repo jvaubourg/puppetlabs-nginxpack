@@ -114,4 +114,47 @@ describe 'nginxpack::vhost::basic' do
         .with_content(/^\s*client_max_body_size\s+1G;$/)
     end
   end
+
+  # FILES_DIR TESTS
+
+  context 'with files_dir' do
+    let(:params) {{
+      :files_dir => '/foo/bar/',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*root \/foo\/bar\/;$/)
+    end
+  end
+
+  context 'with no files_dir' do
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*root \/var\/www\/foobar\/;$/)
+    end
+  end
+
+  context 'with use_php and files_dir' do
+    let(:params) {{
+      :use_php   => true,
+      :files_dir => '/foo/bar/',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*fastcgi_param\s+SCRIPT_FILENAME\s+\/foo\/bar\/\/\$fastcgi_script_name;$/)
+    end
+  end
+
+  context 'with use_php and no files_dir' do
+    let(:params) {{
+      :use_php   => true,
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*fastcgi_param\s+SCRIPT_FILENAME\s+\/var\/www\/foobar\/\/\$fastcgi_script_name;$/)
+    end
+  end
 end

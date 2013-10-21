@@ -25,7 +25,7 @@ server {
       include /etc/nginx/include/attacks.conf;
   <% end -%>
 
-  root /var/www/<%= @name %>;
+  root <%= @files_dir %>;
   client_max_body_size <%= @upload_max_size %>;
 
   <% if @https -%>
@@ -43,7 +43,7 @@ server {
     include /etc/nginx/fastcgi_params;
     fastcgi_pass unix:/var/run/php-fastcgi/php-fastcgi.socket;
     fastcgi_index index.php;
-    fastcgi_param SCRIPT_FILENAME /var/www/<%= @name %>/$fastcgi_script_name;
+    fastcgi_param SCRIPT_FILENAME <%= @files_dir %>/$fastcgi_script_name;
 
     <% if @htpasswd then -%>
     auth_basic              "Restricted";

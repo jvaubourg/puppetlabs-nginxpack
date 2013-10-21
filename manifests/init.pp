@@ -176,9 +176,4 @@ class nginxpack (
     require => Package['nginx'],
     notify  => Service['nginx'],
   }
-
-  file { '/var/www/':
-    ensure => directory,
-    mode   => '0755',
-  }
 }
