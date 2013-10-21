@@ -50,4 +50,42 @@ def vhost_https_tests(suffix = '')
       )
     end
   end
+
+  # HTTPS ERRORS TESTS
+
+  context 'with https and no certificates' do
+    let(:params) {{
+      :https => true,
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /To have a https connection/)
+    end
+  end
+
+  context 'with no https and just key' do
+    let(:params) {{
+      :ssl_key_content => 'foo',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /https not enabled has no sense/)
+    end
+  end
+
+  context 'with no https and just cert' do
+    let(:params) {{
+      :ssl_cert_source => 'foo',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /https not enabled has no sense/)
+    end
+  end
 end

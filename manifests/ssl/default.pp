@@ -62,16 +62,11 @@ class nginxpack::ssl::default (
   $ssl_key_content  = false
 ) {
 
-  if ($ssl_cert_source and $ssl_cert_content) or
-    ($ssl_key_source and $ssl_key_content) {
-
-    fail('Please, choose the source/content method to define a certificat but not the both.')
-  }
-
-  if (!$ssl_cert_source and !$ssl_cert_content)
-    or (!$ssl_key_source and !$ssl_key_content) {
-
-    fail('Please define a cert_pem AND a cert_key.')
+  nginxpack::ssl::certificate { 'default':
+    ssl_cert_source  => $ssl_cert_source,
+    ssl_key_source   => $ssl_key_source,
+    ssl_cert_content => $ssl_cert_content,
+    ssl_key_content  => $ssl_key_content,
   }
 
   file { '/etc/nginx/sites-available/default_https':
@@ -83,6 +78,7 @@ class nginxpack::ssl::default (
       Package['nginx'],
       File['/etc/nginx/ssl/default.pem'],
       File['/etc/nginx/ssl/default.key'],
+      Nginxpack::Ssl::Certificate['default'],
     ],
   }
 
@@ -90,12 +86,5 @@ class nginxpack::ssl::default (
     ensure  => link,
     target  => '/etc/nginx/sites-available/default_https',
     require => File['/etc/nginx/sites-available/default_https'],
-  }
-
-  nginxpack::ssl::certificate { 'default':
-    ssl_cert_source  => $ssl_cert_source,
-    ssl_key_source   => $ssl_key_source,
-    ssl_cert_content => $ssl_cert_content,
-    ssl_key_content  => $ssl_key_content,
   }
 }

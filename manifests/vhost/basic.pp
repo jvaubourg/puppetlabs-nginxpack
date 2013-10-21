@@ -151,19 +151,13 @@ define nginxpack::vhost::basic (
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
     or $ssl_key_content) and !$https {
 
-    fail('Define a certificate source/content with https no enabled has no sense.')
+    fail('Define a certificate source/content with https not enabled has no sense.')
   }
 
   if $https and ((!$ssl_cert_source and !$ssl_cert_content)
     or (!$ssl_key_source and !$ssl_key_content)) {
 
     fail('To have a https connection, please define a cert_pem AND a cert_key.')
-  }
-
-  if ($ssl_cert_source and $ssl_cert_content) or
-    ($ssl_key_source and $ssl_key_content) {
-
-    fail('Please, choose the source/content method to define a certificat but not the both.')
   }
 
   if $add_config_source and $add_config_content {

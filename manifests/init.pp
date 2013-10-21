@@ -91,10 +91,19 @@ class nginxpack (
   $php_upload_max_files     = 10
 ) {
 
-  if ($ssl_default_cert_source and $ssl_default_cert_content) or
-    ($ssl_default_key_source and $ssl_default_key_content) {
+  class { 'nginxpack::logrotate':
+    enable => $logrotate,
+  }
 
-    fail('Please, choose the source/content method to define a certificat but not the both.')
+  if $ssl_default_cert_source or $ssl_default_cert_content or
+      $ssl_default_key_source or $ssl_default_key_content
+  {
+    class { 'nginxpack::ssl::default':
+      ssl_cert_source  => $ssl_default_cert_source,
+      ssl_key_source   => $ssl_default_key_source,
+      ssl_cert_content => $ssl_default_cert_content,
+      ssl_key_content  => $ssl_default_key_content,
+    }
   }
 
   class { 'nginxpack::php::cgi':
@@ -103,21 +112,6 @@ class nginxpack (
     timezone            => $php_timezone,
     upload_max_filesize => $php_upload_max_filesize,
     upload_max_files    => $php_upload_max_files,
-  }
-
-  if $logrotate {
-      include 'nginxpack::logrotate'
-  }
-
-  if ($ssl_default_cert_source or $ssl_default_cert_content) and
-      ($ssl_default_key_source or $ssl_default_key_content)
-  {
-    class { 'nginxpack::ssl::default':
-      ssl_cert_source  => $ssl_default_cert_source,
-      ssl_key_source   => $ssl_default_key_source,
-      ssl_cert_content => $ssl_default_cert_content,
-      ssl_key_content  => $ssl_default_key_content,
-    }
   }
 
   package { 'nginx':

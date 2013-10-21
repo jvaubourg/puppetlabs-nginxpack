@@ -112,14 +112,7 @@ class nginxpack::php::cgi (
       mode    => '0755',
       source  => 'puppet:///modules/nginxpack/php/php-fastcgi',
       require => File['/usr/bin/php-fastcgi.sh'],
-      notify  => [
-        Service['php-fastcgi'],
-        Exec['/usr/sbin/update-rc.d php-fastcgi defaults'],
-      ],
-    }
-
-    exec { '/usr/sbin/update-rc.d php-fastcgi defaults':
-      refreshonly => true,
+      notify  => Service['php-fastcgi'],
     }
 
     if $mysql {
@@ -143,11 +136,12 @@ class nginxpack::php::cgi (
 
     file { [ '/usr/bin/php-fastcgi.sh', '/etc/init.d/php-fastcgi' ]:
       ensure => absent,
-      notify => Exec['/usr/sbin/update-rc.d php-fastcgi remove'],
     }
 
-    exec { '/usr/sbin/update-rc.d php-fastcgi remove':
-      refreshonly => true,
+    service { 'php-fastcgi':
+      ensure => 'stopped',
+      enable => false,
+      before => File['/etc/init.d/php-fastcgi'],
     }
   }
 }

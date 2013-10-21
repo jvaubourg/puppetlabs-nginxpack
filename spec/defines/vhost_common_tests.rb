@@ -233,6 +233,11 @@ def vhost_common_tests(suffix = '')
       should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
         .with_content(/^\s*include\s+\/etc\/nginx\/include\/foobar#{suffix}\.conf;/)
     end
+
+    it do
+      should contain_file("/etc/nginx/include/foobar#{suffix}\.conf") \
+        .with_content('foo')
+    end
   end
 
   context 'with add config (from source)' do
@@ -244,12 +249,31 @@ def vhost_common_tests(suffix = '')
       should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
         .with_content(/^\s*include\s+\/etc\/nginx\/include\/foobar#{suffix}\.conf;/)
     end
+
+    it do
+      should contain_file("/etc/nginx/include/foobar#{suffix}\.conf")
+    end
   end
 
   context 'with no add config' do
     it do
       should_not contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
         .with_content(/^\s*include\s+\/etc\/nginx\/include\/foobar#{suffix}\.conf;/)
+    end
+  end
+
+  # ADD CONFIG ERRORS TESTS
+
+  context 'with add config source and content' do
+    let(:params) {{
+      :add_config_content => 'foo',
+      :add_config_source  => 'bar',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /additional config but not the both/)
     end
   end
 end

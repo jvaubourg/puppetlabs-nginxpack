@@ -42,8 +42,8 @@ describe 'nginxpack::vhost::basic' do
 
     it do
       should contain_file('/etc/nginx/htpasswd/foobar') \
-        .with_ensure(/^file$/)
-        .with_content(/^foo:bar$/)
+        .with_ensure('file')
+        .with_content('foo:bar')
     end
 
     it do
@@ -59,7 +59,7 @@ describe 'nginxpack::vhost::basic' do
 
     it do
       should contain_file('/etc/nginx/htpasswd/foobar') \
-        .with_ensure(/^absent$/)
+        .with_ensure('absent')
     end
 
     it do
