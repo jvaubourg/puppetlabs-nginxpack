@@ -171,7 +171,7 @@ define nginxpack::vhost::basic (
   }
 
   if $use_php and !defined(File['/etc/init.d/php-fastcgi']) {
-    warning("Nginxpack class seems not to have been called with enable_php.")
+    warning('Nginxpack class seems not to have been called with enable_php.')
   }
 
   if $port == -1 {

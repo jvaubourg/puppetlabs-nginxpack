@@ -88,7 +88,7 @@ class nginxpack::php::cgi (
       match   => 'post_max_size',
       line    => inline_template('post_max_size = <%= \
         (upload_max_files.to_i * upload_max_filesize[0..-2].to_i).to_s\
-	 + upload_max_filesize[-1] %>'),
+        + upload_max_filesize[-1] %>'),
       require => Package['php5-cgi'],
       notify  => Service['php-fastcgi'],
     }
