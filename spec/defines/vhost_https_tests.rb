@@ -29,7 +29,7 @@ def vhost_https_tests(suffix = '')
         'ssl_cert_content' => 'foo',
         'ssl_key_content'  => 'bar',
         'ssl_cert_source'  => false,
-        'ssl_key_source'   => false,
+        'ssl_key_source'   => false
       )
     end
   end
@@ -46,7 +46,7 @@ def vhost_https_tests(suffix = '')
         'ssl_cert_content' => false,
         'ssl_key_content'  => false,
         'ssl_cert_source'  => 'foo',
-        'ssl_key_source'   => 'bar',
+        'ssl_key_source'   => 'bar'
       )
     end
   end

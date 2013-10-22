@@ -15,7 +15,7 @@ describe 'nginxpack::ssl::default' do
         'ssl_cert_source'  => 'foo',
         'ssl_key_source'   => 'bar',
         'ssl_cert_content' => false,
-        'ssl_key_content'   => false,
+        'ssl_key_content'  => false
       )
     end
   end
@@ -31,7 +31,7 @@ describe 'nginxpack::ssl::default' do
         'ssl_cert_source'  => false,
         'ssl_key_source'   => false,
         'ssl_cert_content' => 'foo',
-        'ssl_key_content'   => 'bar',
+        'ssl_key_content'  => 'bar'
       )
     end
   end
