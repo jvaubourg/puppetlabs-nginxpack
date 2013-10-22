@@ -74,9 +74,9 @@ Added services:
 
 Added files:
 
-* Vhosts: */etc/nginx/sites-{available,enabled}/* and */etc/nginx/include/*
+* Vhosts: _/etc/nginx/sites-{available,enabled}/*_ and _/etc/nginx/include/*_
 * Logs: */var/log/nginx/&lt;vhostname&gt;/{access,error}.log*
-* Certificates: */etc/nginx/ssl/*
+* Certificates: _/etc/nginx/ssl/*_
 * Script for automatic blackholes: */etc/nginx/find_default_listen.sh*
 
 Use `php_timezone`, `php_upload_max_filesize` and/or `php_upload_max_files` affects */etc/php5/cgi/php.ini* (but not overrides it).
