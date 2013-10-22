@@ -24,6 +24,8 @@
         * [Without IPv6 addresses](#without-ipv6-addresses)
     * [Usage of *www.*](#usage-of-www)
     * [Port Redirection](#port-redirection)
+        * [Seamlessly](#seamlessly)
+        * [Not Seamlessly](#not-seamlessly)
     * [IPv6/IPv4 Proxy](#ipv6ipv4-proxy)
 5. [Limitations (only Debian-likes)](#limitations)
 6. [Development](#development)
