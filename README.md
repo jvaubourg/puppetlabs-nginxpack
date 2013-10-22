@@ -9,6 +9,10 @@
 3. [What nginxpack affects](#what-nginxpack-affects)
 4. [Usage](#usage)
     * [Beginning with nginxpack](#beginning-with-nginxpack)
+        * [Webserver](#webserver)
+        * [Basic vhost](#basic-vhost)
+        * [Proxy vhost](#proxy-vhost)
+        * [Redirection vhost](#redirection-vhost)
     * [Documentation](#documentation)
     * [Default vhosts](#default-vhosts)
 5. [Common use cases](#common-use-cases)
@@ -16,7 +20,7 @@
     * [Usage of www.](#usage-of-www)
     * [Port redirection](#port-redirection)
     * [IPv6/IPv4 proxy](#ipv6-ipv4-proxy)
-5. [Limitations (only Debian-like)](#limitations)
+5. [Limitations (only Debian-likes)](#limitations)
 6. [Development](#development)
 
 ##Overview
@@ -459,7 +463,7 @@ This trick could also be used in the opposite case.
 
 ##Limitations
 
-This module is **only available for Debian-like**.
+This module is **only available for Debian-likes**.
 
 Tests are made with:
 
