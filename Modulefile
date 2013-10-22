@@ -4,7 +4,7 @@ dependency 'puppetlabs/stdlib', '>= 3.x'
 license 'AGPL'
 project_page 'http://forge.puppetlabs.com/jvaubourg/nginxpack'
 source 'https://github.com/jvaubourg/puppetlabs-nginxpack'
-summary 'Nginx & php5-fastcgi (opt.), vhosts, proxy, redirect, IPv6, SSL, etc.'
+summary 'Nginx & PHP5 (opt.), vhosts, proxies, redirections, IPv6, SSL, etc.'
 author 'Julien Vaubourg <http://julien.vaubourg.com>'
 description " 
     * Install and configure Nginx
