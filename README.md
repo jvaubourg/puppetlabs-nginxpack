@@ -74,7 +74,7 @@ Added services:
 
 Added files:
 
-* Vhosts: */etc/nginx/site-{available,enabled}/* and */etc/nginx/include/*
+* Vhosts: */etc/nginx/sites-{available,enabled}/* and */etc/nginx/include/*
 * Logs: */var/log/nginx/&lt;vhostname&gt;/{access,error}.log*
 * Certificates: */etc/nginx/ssl/*
 * Script for automatic blackholes: */etc/nginx/find_default_listen.sh*
