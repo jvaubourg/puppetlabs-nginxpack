@@ -483,7 +483,7 @@ This module is **only available for Debian-likes**.
 Tests are made with:
 
 * Debian Wheezy 7.1
-* Puppet 3.2.4
+* Puppet 3.2.4 ([Build Tests](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack))
 * Nginx 1.2.1
 * PHP 5.4.4
 
