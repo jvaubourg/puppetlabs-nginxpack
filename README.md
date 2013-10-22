@@ -19,7 +19,7 @@
         * [Well-known problem with SSL](#well-known-problem-with-ssl)
 5. [Common Use Cases](#common-use-cases)
     * [Reverse-proxy with IPv4](#reverse-proxy-with-ipv4)
-        * [Wrong Decade](#wrong-decade)
+        * [Multiple servers and a single IPv4](#multiple-servers-and-a-single-ipv4)
         * [With usable IPv6 addresses](#with-usable-ipv6-addresses)
         * [Without IPv6 addresses](#without-ipv6-addresses)
     * [Usage of *www.*](#usage-of-www)
@@ -264,7 +264,7 @@ The [first common use case](#reverse-proxy-with-ipv4) in the next section provid
 
 ###Reverse-proxy with IPv4
 
-####Wrong Decade
+####Multiple servers and a single IPv4
 
 You are in charge of servers in the wrong decade: there is almost no more IPv4 but you still can't use only IPv6. Thus, your provider has provided you as many IPv6 addresses as there are grains of sand on earth, but only one poor IPv4.
 
