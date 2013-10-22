@@ -124,6 +124,12 @@ Listen on all IPv6/IPv4 available with port 80, no PHP and no SSL:
       domains => [ 'foobar.example.com' ],
     }
 
+Using aliases:
+
+    nginxpack::vhost::basic { 'foobar':
+      domains => [ 'foobar.example.com', 'www.foobar.example.com' ]
+    }
+
 With PHP:
 
     nginxpack::vhost::basic { 'foobar':
@@ -213,7 +219,7 @@ Default remote port is 80. In this case it would have been 443 due to `to_https`
 
 SSL (https://) is usable in the same manner as [basic vhosts](#basic-vhost).
 
-Options `ipv6`, `ipv4`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are available in the same way as basic vhosts.
+Options `ipv6`, `ipv4`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
 
 ####Redirection Vhost
 
