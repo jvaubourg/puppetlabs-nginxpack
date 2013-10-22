@@ -75,7 +75,7 @@ Added services:
 Added files:
 
 * Vhosts: */etc/nginx/site-{available,enabled}/* and */etc/nginx/include/*
-* Logs: */var/log/nginx/[vhostname]/{access,error}.log*
+* Logs: */var/log/nginx/&lt;vhostname&gt;/{access,error}.log*
 * Certificates: */etc/nginx/ssl/*
 * Script for automatic blackholes: */files/nginx/find_default_listen.sh*
 
@@ -186,7 +186,7 @@ Other options:
       htpasswd        => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
     }
 
-`files_dir`'s default value is */var/www/[name]/* (e.g. */var/www/foobar/*).
+`files_dir`'s default value is */var/www/&lt;name&gt;/* (e.g. */var/www/foobar/*).
 
 `injectionsafe` applies [these protections](http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections-file-injections-spam-user-agents-etc) against XSS injections. These restrictions might be incompatible with your applications.
 
@@ -478,6 +478,10 @@ DNS configuration:
         A    webserver
 
 This trick could also be used in the opposite case.
+
+##Dependencies
+
+* [puppetlabs/stdlib](http://forge.puppetlabs.com/puppetlabs/stdlib) &gt;= 3.x (`file_line` is used to edit *php.ini* and `ensure_packages` to install *logrotate* and *psmisc*)
 
 ##Limitations
 
