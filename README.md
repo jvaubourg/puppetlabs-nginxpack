@@ -183,7 +183,7 @@ Other options:
 
 `upload_max_size` should be in line with `php_upload_max_filesize` *x* `php_upload_max_files`
 
-`htpasswd`'s value can be generated from a command line tool ( *apache2-utils*):
+`htpasswd`'s value can be generated from a command line tool (*apache2-utils*):
 
     $ htpasswd -nb user1 secretpassword
 
