@@ -1,4 +1,4 @@
-#Nginxpack
+#Nginxpack [![Build Status](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack.png)](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack)
 
 **WARNING: This work is still under development.**
 
