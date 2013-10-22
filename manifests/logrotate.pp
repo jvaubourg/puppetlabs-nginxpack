@@ -26,9 +26,7 @@ class nginxpack::logrotate (
 ) {
 
   if $enable {
-    package { [ 'logrotate', 'psmisc' ]:
-      ensure => present,
-    }
+    ensure_packages([ 'logrotate', 'psmisc' ])
 
     file { '/etc/logrotate.d/nginx':
       ensure  => file,
