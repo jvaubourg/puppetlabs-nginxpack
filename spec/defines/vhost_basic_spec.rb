@@ -42,7 +42,7 @@ describe 'nginxpack::vhost::basic' do
 
     it do
       should contain_file('/etc/nginx/htpasswd/foobar') \
-        .with_ensure('file')
+        .with_ensure('file') \
         .with_content('foo:bar')
     end
 
