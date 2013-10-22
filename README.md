@@ -22,7 +22,7 @@
         * [Wrong Decade](#wrong-decade)
         * [With usable IPv6 addresses](#with-usable-ipv6-addresses)
         * [Without IPv6 addresses](#without-ipv6-addresses)
-    * [Usage of www.](#usage-of-www)
+    * [Usage of *www.*](#usage-of-www)
     * [Port Redirection](#port-redirection)
     * [IPv6/IPv4 Proxy](#ipv6-ipv4-proxy)
 5. [Limitations (only Debian-likes)](#limitations)
@@ -417,7 +417,7 @@ Webserver hosting *members.example.com*:
       use_php => true,
     }
 
-###Usage of www.
+###Usage of *www.*
 
 Using *www.example.com* is so 2005 and you want automatically redirect all requests from _http://www.example.com/.*_ to *http://example.com/$1*.
 
