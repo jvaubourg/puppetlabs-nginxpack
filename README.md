@@ -15,7 +15,7 @@
         * [Redirection Vhost](#redirection-vhost)
     * [Documentation](#documentation)
     * [Default Vhosts](#default-vhosts)
-        * [Automatic Blackholes](#blackholes)
+        * [Automatic Blackholes](#automatic-blackholes)
         * [Well-known problem with SSL](#well-known-problem-with-ssl)
 5. [Common Use Cases](#common-use-cases)
     * [Reverse-proxy with IPv4](#reverse-proxy-with-ipv4)
@@ -24,7 +24,7 @@
         * [Without IPv6 addresses](#without-ipv6-addresses)
     * [Usage of *www.*](#usage-of-www)
     * [Port Redirection](#port-redirection)
-    * [IPv6/IPv4 Proxy](#ipv6-ipv4-proxy)
+    * [IPv6/IPv4 Proxy](#ipv6ipv4-proxy)
 5. [Limitations (only Debian-likes)](#limitations)
 6. [Development](#development)
 
