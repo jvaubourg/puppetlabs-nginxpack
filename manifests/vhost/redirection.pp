@@ -91,7 +91,7 @@ define nginxpack::vhost::redirection (
 ) {
 
   if $add_config_source and $add_config_content {
-    fail('Please, choose the source/content method to define additional config but not the both.')
+    fail('Use source/content method to define add_config but not the both.')
   }
 
   $portval = $port

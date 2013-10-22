@@ -27,9 +27,9 @@
 #   Default: false
 #
 # [*https*]
-#   True if you want to use a ssl secure connection for this website. You need have
-#   a certificat corresponding to the domains for that. Please use https each
-#   time you have a login process inside your pages.
+#   True if you want to use a ssl secure connection for this website. You need
+#   have a certificat corresponding to the domains for that. Please use https
+#   each time you have a login process inside your pages.
 #   Default: false
 #
 # [*ssl_cert_source*]
@@ -70,7 +70,8 @@
 #   If true, apply a set of url protections to avoid sql injections and others
 #   kind of attacks. WARNING: In some cases, these protections may cause
 #   problem with your web applications. Rules are from:
-#   http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections-file-injections-spam-user-agents-etc
+#   http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections
+#      -file-injections-spam-user-agents-etc
 #   Default: false
 #
 # [*use_php*]
@@ -156,7 +157,7 @@ define nginxpack::vhost::basic (
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
     or $ssl_key_content) and !$https {
 
-    fail('Define a certificate source/content with https not enabled has no sense.')
+    fail('Use a certificate without enable https does not make sense.')
   }
 
   if $https and ((!$ssl_cert_source and !$ssl_cert_content)
@@ -166,11 +167,11 @@ define nginxpack::vhost::basic (
   }
 
   if $add_config_source and $add_config_content {
-    fail('Please, choose the source/content method to define additional config but not the both.')
+    fail('Use source/content method to define add_config but not the both.')
   }
 
   if $use_php and !defined(File['/etc/init.d/php-fastcgi']) {
-    warning("Nginxpack main class seems not to have been called with enable_php option: except if you chose another solution for that, you will not able to use php with this vhost!")
+    warning("Nginxpack class seems not to have been called with enable_php.")
   }
 
   if $port == -1 {

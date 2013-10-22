@@ -73,7 +73,7 @@ def vhost_https_tests(suffix = '')
     it do
       expect {
         subject
-      }.to raise_error(Puppet::Error, /https not enabled has no sense/)
+      }.to raise_error(Puppet::Error, /without enable https does not make sense/)
     end
   end
 
@@ -85,7 +85,7 @@ def vhost_https_tests(suffix = '')
     it do
       expect {
         subject
-      }.to raise_error(Puppet::Error, /https not enabled has no sense/)
+      }.to raise_error(Puppet::Error, /without enable https does not make sense/)
     end
   end
 end

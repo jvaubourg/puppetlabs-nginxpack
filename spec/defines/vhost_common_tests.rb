@@ -273,7 +273,7 @@ def vhost_common_tests(suffix = '')
     it do
       expect {
         subject
-      }.to raise_error(Puppet::Error, /additional config but not the both/)
+      }.to raise_error(Puppet::Error, /add_config but not the both/)
     end
   end
 end

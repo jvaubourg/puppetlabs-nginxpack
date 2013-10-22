@@ -29,9 +29,9 @@
 #   Default: false
 #
 # [*https*]
-#   True if you want to use a ssl secure connection for this website. You need have
-#   a certificat corresponding to the domains for that. Please use https each
-#   time you have a login process inside your pages.
+#   True if you want to use a ssl secure connection for this website. You need
+#   have a certificat corresponding to the domains for that. Please use https
+#   each time you have a login process inside your pages.
 #   Default: false
 #
 # [*ssl_cert_source*]
@@ -136,7 +136,7 @@ define nginxpack::vhost::proxy (
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
     or $ssl_key_content) and !$https {
 
-    fail('Define a certificate source/content with https not enabled has no sense.')
+    fail('Use a certificate without enable https does not make sense.')
   }
 
   if $https and ((!$ssl_cert_source and !$ssl_cert_content)
@@ -146,7 +146,7 @@ define nginxpack::vhost::proxy (
   }
 
   if $add_config_source and $add_config_content {
-    fail('Please, choose the source/content method to define additional config but not the both.')
+    fail('Use source/content method to define add_config but not the both.')
   }
 
   if $to_port == -1 {

@@ -61,7 +61,7 @@ define nginxpack::ssl::certificate (
   if ($ssl_cert_source and $ssl_cert_content) or
     ($ssl_key_source and $ssl_key_content) {
 
-    fail('Please, choose the source/content method to define a certificate but not the both.')
+    fail('Use source/content method to define a certificate but not the both.')
   }
 
   if (!$ssl_cert_source and !$ssl_cert_content)
