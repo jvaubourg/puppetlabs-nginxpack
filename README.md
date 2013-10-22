@@ -15,7 +15,7 @@
         * [Redirection Vhost](#redirection-vhost)
     * [Documentation](#documentation)
     * [Default Vhosts](#default-vhosts)
-        * [Blackholes](#blackholes)
+        * [Automatic Blackholes](#blackholes)
         * [Well-known problem with SSL](#well-known-problem-with-ssl)
 5. [Common Use Cases](#common-use-cases)
     * [Reverse-proxy with IPv4](#reverse-proxy-with-ipv4)
@@ -236,7 +236,7 @@ If you want a detailed documentation of types and options, there is a full docum
 
 ###Default Vhosts
 
-####Blackholes
+####Automatic Blackholes
 
 Have a determinist way to access to the vhosts is a good practice in web security. If you say that a vhost can be reached via *my.example.com*, any request using another domain should not success. If you do not have a *default vhost* with a listen line for each port used on the webserver, Nginx will use a doubful algorithm to determine which vhost is usable in the case of an unknown domain.
 
