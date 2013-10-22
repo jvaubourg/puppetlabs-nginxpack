@@ -10,16 +10,21 @@
 4. [Usage](#usage)
     * [Beginning with nginxpack](#beginning-with-nginxpack)
         * [Webserver](#webserver)
-        * [Basic vhost](#basic-vhost)
-        * [Proxy vhost](#proxy-vhost)
-        * [Redirection vhost](#redirection-vhost)
+        * [Basic Vhost](#basic-vhost)
+        * [Proxy Vhost](#proxy-vhost)
+        * [Redirection Vhost](#redirection-vhost)
     * [Documentation](#documentation)
-    * [Default vhosts](#default-vhosts)
-5. [Common use cases](#common-use-cases)
+    * [Default Vhosts](#default-vhosts)
+        * [Blackholes](#blackholes)
+        * [Well-known problem with SSL](#well-known-problem-with-ssl)
+5. [Common Use Cases](#common-use-cases)
     * [Reverse-proxy with IPv4](#reverse-proxy-with-ipv4)
+        * [Wrong Decade](#wrong-decade)
+        * [With usable IPv6 addresses](#with-usable-ipv6-addresses)
+        * [Without IPv6 addresses](#without-ipv6-addresses)
     * [Usage of www.](#usage-of-www)
-    * [Port redirection](#port-redirection)
-    * [IPv6/IPv4 proxy](#ipv6-ipv4-proxy)
+    * [Port Redirection](#port-redirection)
+    * [IPv6/IPv4 Proxy](#ipv6-ipv4-proxy)
 5. [Limitations (only Debian-likes)](#limitations)
 6. [Development](#development)
 
@@ -107,7 +112,7 @@ With this example, you will be able to propose uploads of 5 files of 1G max each
 
 You can also configure default https configuration here. See the [first common use case](#reverse-proxy-with-ipv4).
 
-####Basic vhost
+####Basic Vhost
 
 Standard vhost.
 
@@ -182,7 +187,7 @@ Other options:
 
 If you want to use a specific configuration for a specific vhost, you can use `add_config_source` or `add_config_content` to inject custom Nginx instructions directly in `server { }`.
 
-####Proxy vhost
+####Proxy Vhost
 
 Reverse-proxy vhost allowing you to seamlessly redirect the traffic to a remote webserver.
 
@@ -208,7 +213,7 @@ SSL (https://) is usable in the same manner as [basic vhosts](#basic-vhost).
 
 Options `ipv6`, `ipv4`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are available in the same way as basic vhosts.
 
-####Redirection vhost
+####Redirection Vhost
 
 General redirection (using 301 http code) allowing you to officially redirect any requests to a remote domain. In short: _http://foobar.example.com/(.*) => http://foobar.com/$1_.
 
@@ -229,13 +234,13 @@ The [previous section](#beginning-with-nginxpack) should be clear enough to unde
 
 If you want a detailed documentation of types and options, there is a full documentation in the headers of the [Puppet files](https://github.com/jvaubourg/puppetlabs-nginxpack/tree/master/manifests).
 
-###Default vhosts
+###Default Vhosts
 
-####Blackhole
+####Blackholes
 
 Have a determinist way to access to the vhosts is a good practice in web security. If you say that a vhost can be reached via *my.example.com*, any request using another domain should not success. If you do not have a *default vhost* with a listen line for each port used on the webserver, Nginx will use a doubful algorithm to determine which vhost is usable in the case of an unknown domain.
 
-Good news! Nginxpack creates this default vhost for you and redirects any request out of your scopes to a black hole.
+Good news! Nginxpack creates this default vhost for you and redirects any request out of your scopes to a blackhole.
 
 If you use at least one vhost with SSL, you need to define `ssl_default_*` options. See the [next section about SSL](#well-known-problem-with-ssl).
 
@@ -255,9 +260,11 @@ Good news! Nginxpack creates this default vhost for you if you use `ssl_default_
 
 The [first common use case](#reverse-proxy-with-ipv4) in the next section provides an example.
 
-##Common use cases
+##Common Use Cases
 
 ###Reverse-proxy with IPv4
+
+####Wrong Decade
 
 You are in charge of servers in the wrong decade: there is almost no more IPv4 but you still can't use only IPv6. Thus, your provider has provided you as many IPv6 addresses as there are grains of sand on earth, but only one poor IPv4.
 
@@ -419,7 +426,7 @@ Using *www.example.com* is so 2005 and you want automatically redirect all reque
       to_domain => 'example.com',
     }
 
-###Port redirection
+###Port Redirection
 
 Proxy and redirection vhosts use the first value of `domains` when `to_domain` is absent.
 
@@ -441,7 +448,7 @@ Visible location switching (the client will see his URL transformation: _http://
       to_port => 8080,
     }
 
-####IPv6/IPv4 proxy
+####IPv6/IPv4 Proxy
 
 You own a website not available in IPv6 and you cannot have an IPv6 address on its machine. A way to solving this problem is to create a proxy on a dual-stack machine (listening on IPv6 to accept incoming requests and listening on IPv4 to contact the remote webserver):
 
