@@ -47,7 +47,7 @@ Features available:
 * Basic vhosts
 * Proxy vhosts
 * 301 redirection vhosts
-* SSL suport
+* SSL support
 * Full IPv6 compliant (and still IPv4...)
 * Automatic blackhole for non-existent domains
 * Several options (upload limits with Nginx/PHP, timezone, logrotate, 
