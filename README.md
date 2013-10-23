@@ -470,10 +470,10 @@ Visible location switching (the client will see his URL transformation: _http://
 Spontaneous switching from *http* to *https*:
 
     nginxpack::vhost::basic { 'wiki':
-      domains                 => [ 'wiki.example.com' ],
-      https                   => true,
-      ssl_default_cert_source => 'puppet:///certificates/wiki.pem',
-      ssl_default_key_source  => 'puppet:///certificates/wiki.key',
+      domains         => [ 'wiki.example.com' ],
+      https           => true,
+      ssl_cert_source => 'puppet:///certificates/wiki.pem',
+      ssl_key_source  => 'puppet:///certificates/wiki.key',
     }
     
     nginxpack::vhost::redirection { 'https-wiki':
