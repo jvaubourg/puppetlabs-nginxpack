@@ -62,7 +62,7 @@ Installed packages:
 * With `php_mysql`: *php5-mysql*
 * With `logrotate`: *logrotate*, *psmisc* (if not already present)
 
-*logrotate* is used with a configuration file in */etc/logrotate.d/nginx* allowing it to daily rotate vhost logs. The configuration uses `killall` from *psmisc* in order to force nginx to update his inodes (this is the classic way).
+*logrotate* is used with a configuration file in */etc/logrotate.d/nginx* allowing it to daily rotate vhost logs. The configuration uses *killall* from *psmisc* in order to force nginx to update his inodes (this is the classic way). *killall* is also used in `nginxpack::php::cgi` to ensure that PHP is not still running.
 
 Use `nginxpack::php::mod { 'foo' }` involves installing *php5-foo*.
 
@@ -111,8 +111,6 @@ Others options for PHP:
       php_upload_max_filesize => '1G',
       php_upload_max_files    => 5,
     }
-
-You can install a PHP5 module with `nginxpack::php::mod { 'foo' }` (install *php5-foo*).
 
 With this example, you will be able to propose uploads of 5 files of 1G max each together. In this case, the POST-data size limit (from PHP) will automatically be configured to accept until 5G.
 
