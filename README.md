@@ -114,6 +114,8 @@ Others options for PHP:
       php_upload_max_files    => 5,
     }
 
+You can install a PHP5 module with `nginxpack::php::mod { 'foo' }` (install *php5-foo*).
+
 With this example, you will be able to propose uploads of 5 files of 1G max each together. In this case, the POST-data size limit (from PHP) will automatically be configured to accept until 5G.
 
 You can also configure default https configuration here. See the [first common use case](#reverse-proxy-with-ipv4).
