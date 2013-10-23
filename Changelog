@@ -1,7 +1,0 @@
-2013-10-23 - Julien Vaubourg <http://julien.vaubourg.com>
-  * Fix a problem when PHP was never been installed
-  * Proxies no longer transmit Host values (0 downloads so it's a patch)
-  * Release 0.0.2
-
-2013-10-23 - Julien Vaubourg <http://julien.vaubourg.com>
-  * First release on the PuppetLabs Forge (0.0.1)
