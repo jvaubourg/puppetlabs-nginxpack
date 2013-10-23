@@ -139,12 +139,12 @@
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -209,7 +209,7 @@ define nginxpack::vhost::basic (
     content => template('nginxpack/nginx/vhost.erb'),
     require => [
       Package['nginx'],
-      Exec['mkdir_files_dir'],
+      Exec["mkdir_${files_dir}"],
       File["/var/log/nginx/${name}/"],
     ],
     notify  => [
@@ -218,7 +218,7 @@ define nginxpack::vhost::basic (
     ],
   }
 
-  exec { 'mkdir_files_dir':
+  exec { "mkdir_${files_dir}":
     command => "/bin/mkdir -p ${files_dir}",
     unless  => "/usr/bin/test -d ${files_dir}",
   }
