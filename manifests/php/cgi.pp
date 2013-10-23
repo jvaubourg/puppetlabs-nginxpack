@@ -51,12 +51,12 @@
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -154,14 +154,30 @@ class nginxpack::php::cgi (
 
     Package['spawn-fcgi'] -> Package['php5-mysql'] -> Package['php5-cgi']
 
-    file { [ '/usr/bin/php-fastcgi.sh', '/etc/init.d/php-fastcgi' ]:
+    ensure_packages([ 'psmisc' ])
+
+    file { '/usr/bin/php-fastcgi.sh':
       ensure => absent,
     }
 
-    service { 'php-fastcgi':
-      ensure => 'stopped',
-      enable => false,
-      before => File['/etc/init.d/php-fastcgi'],
+    file { '/etc/init.d/php-fastcgi':
+      ensure => absent,
+      notify => [
+        Exec['kill-php-fastcgi'],
+        Exec['remove-php-service']
+      ],
+    }
+
+    exec { 'kill-php-fastcgi':
+      command     => '/usr/bin/killall php5-cgi',
+      onlyif      => '/bin/ps aux | /bin/grep -q php5-cgi',
+      refreshonly => true,
+      require     => Package['psmisc'],
+    }
+
+    exec { 'remove-php-service':
+      command     => '/usr/sbin/update-rc.d php-fastcgi remove',
+      refreshonly => true,
     }
   }
 }
