@@ -123,9 +123,7 @@ describe 'nginxpack::php::cgi' do
     end
 
     it do
-      should contain_service('php-fastcgi') \
-        .with_ensure('stopped') \
-        .with_enable(false)
+      should_not contain_service('php-fastcgi')
     end
 
     it do
