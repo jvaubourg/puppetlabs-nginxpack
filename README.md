@@ -26,6 +26,7 @@
     * [Port Redirection](#port-redirection)
         * [Seamlessly](#seamlessly)
         * [Not Seamlessly](#not-seamlessly)
+    * [HTTPS Redirection](#https-redirection)
     * [IPv6/IPv4 Proxy](#ipv6ipv4-proxy)
 5. [Limitations (only Debian-likes)](#limitations)
 6. [Development](#development)
