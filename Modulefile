@@ -1,5 +1,5 @@
 name 'jvaubourg-nginxpack'
-version '0.0.1'
+version '0.0.2'
 dependency 'puppetlabs/stdlib', '>= 3.0.0'
 license 'AGPL'
 project_page 'http://forge.puppetlabs.com/jvaubourg/nginxpack'
