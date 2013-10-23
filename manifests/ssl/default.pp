@@ -1,32 +1,38 @@
 # == Class: nginxpack::ssl::default
 #
-# Set the default vhost listening on the 443 port with a default (probably
-# wildcard) ssl certificat. If you want to use https on two vhosts with the ip
-# nginx will use this default vhost (typically with ipv4). Thus, this vhost has
-# to be able to propose a valid ssl certificate for the both (or more) domains.
+# Default vhost listening on the 443 port with a default (and probably wildcard)
+# SSL certificat. If you want to use https on two vhosts with the same IP and
+# the same port, Nginx will use this default vhost. Thus, this vhost has to be
+# able to propose a valid SSL certificate for the both domains.
+# See:
+#  https://github.com/jvaubourg/puppetlabs-nginxpack#well-known-problem-with-ssl
 #
-# Should be used via the main nginxpack class.
+# Should be used through the main nginxpack class.
+#
+# More explanations: https://forge.puppetlabs.com/jvaubourg/nginxpack
+# Sources: https://github.com/jvaubourg/puppetlabs-nginxpack
 #
 # === Parameters
 #
 # [*ssl_default_cert_source*]
-#   Path of the ssl certificate file (pem / crt) to use with the default vhost
-#   listening on the 443 port.  The next parameter must be set to false.
+#   Location of the SSL certificate file (pem or crt) to use with the default
+#   vhost listening on port 443. If not false then the next parameter must
+#   be false.
 #   Default: false
 #
 # [*ssl_default_cert_content*]
-#   Set the ssl certificate directly from a string. The previous parameter must
-#   be set to false.
+#   SSL certificate directly from a string (or through hiera). If not false then
+#   the previous parameter must be false.
 #   Default: false
 #
 # [*ssl_default_key_source*]
-#   Path of the ssl key file to use with the default vhost listening on the
-#   443 port. The next parameter must be set to false.
+#   Location of the SSL key certificate to use with the default vhost listening
+#   on port 443. If not false then the next parameter must be false.
 #   Default: false
 #
 # [*ssl_default_key_content*]
-#   Set the ssl key directly from a string. The previous parameter must be set
-#   to false.
+#   SSL key certificate directly from a string (or through hiera). If not false
+#   then the previous parameter must be false.
 #   Default: false
 #
 # === Examples
@@ -41,19 +47,29 @@
 #     ssl_key_content  => hiera('default-key'),
 #   }
 #
-#   class { 'nginxpack::ssl::default':
-#     ssl_cert_content => '...very long certificate string...',
-#     ssl_key_content  => '...very long key string...',
-#   }
+# More examples: https://forge.puppetlabs.com/jvaubourg/nginxpack
 #
 # === Authors
 #
-# Julien Vaubourg <http://julien.vaubourg.com>
+# Julien Vaubourg
+# http://julien.vaubourg.com
 #
 # === Copyright
 #
-# Copyleft 2013 Julien Vaubourg
-# Consider this file under AGPL
+# Copyright (C) 2013 Julien Vaubourg
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 class nginxpack::ssl::default (
   $ssl_cert_source  = false,

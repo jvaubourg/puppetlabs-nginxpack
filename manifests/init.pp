@@ -1,59 +1,50 @@
 # == Class: nginxpack
 #
-# Install and configure nginx and (optionally) php.
+# Install and configure Nginx, and - optionally - PHP5-FastCGI.
+#
+# More explanations: https://forge.puppetlabs.com/jvaubourg/nginxpack
+# Sources: https://github.com/jvaubourg/puppetlabs-nginxpack
 #
 # === Parameters
 #
 # [*logrotate*]
-#   False if you want to disable log rotating for nginx.
+#   See the parameter definition with logrotate/enable.
 #   Default: true
 #
 # [*ssl_default_cert_source*]
-#   Path of the ssl certificate file (pem / crt) to use with the default vhost
-#   listening on the 443 port. If you want to use https on two vhosts with the
-#   same ip, nginx will use this default vhost (typically with ipv4). Thus, this
-#   vhost has to be able to propose a valid ssl certificate for the both
-#   (or more) domains. You probably need to use a wildcard certificate here.
-#   The next parameter must be set to false.
+#   See the parameter definition with ssl::default/ssl_cert_source
 #   Default: false
 #
 # [*ssl_default_cert_content*]
-#   Set the ssl certificate directly from a string. The previous parameter must
-#   be set to false.
+#   See the parameter definition with ssl::default/ssl_cert_content
 #   Default: false
 #
 # [*ssl_default_key_source*]
-#   Path of the ssl key file to use with the default vhost listening on the
-#   443 port. The next parameter must be set to false.
+#   See the parameter definition with ssl::default/ssl_key_source
 #   Default: false
 #
 # [*ssl_default_key_content*]
-#   Set the ssl key directly from a string. The previous parameter must be set
-#   to false.
+#   See the parameter definition with ssl::default/ssl_key_content
 #   Default: false
 #
 # [*enable_php*]
-#   True if you want to use php-cgi with one of the future vhosts.
+#   See the parameter definition with php::cgi/enable
 #   Default: false
 #
 # [*php_mysql*]
-#   True if you want to allow mysql with php. You have to set enable_php to true
-#   to use it.
+#   See the parameter definition with php::cgi/mysql
 #   Default: false
 #
 # [*php_timezone*]
-#   Define the default timezone for php. You have to set enable_php to true
-#   to use it.
+#   See the parameter definition with php::cgi/timezone
 #   Default: Europe/Paris
 #
 # [*php_upload_max_filesize*]
-#   Define the max upload filesize in MB. You have to set enable_php to true
-#   to use it.
+#   See the parameter definition with php::cgi/upload_max_filesize
 #   Default: 10M
 #
 # [*php_upload_max_files*]
-#   Define the max number of files that can be sent in the same upload. You have
-#   to set enable_php to true to use it.
+#   See the parameter definition with php::cgi/upload_max_files
 #   Default: 10
 #
 # === Examples
@@ -69,14 +60,29 @@
 #     ssl_default_key_content  => hiera('default-key'),
 #   }
 #
+# More examples: https://forge.puppetlabs.com/jvaubourg/nginxpack
+#
 # === Authors
 #
-# Julien Vaubourg <http://julien.vaubourg.com>
+# Julien Vaubourg
+# http://julien.vaubourg.com
 #
 # === Copyright
 #
-# Copyleft 2013 Julien Vaubourg
-# Consider this file under AGPL
+# Copyright (C) 2013 Julien Vaubourg
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 class nginxpack (
   $logrotate                = true,

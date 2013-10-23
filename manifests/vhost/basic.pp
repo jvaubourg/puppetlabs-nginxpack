@@ -1,76 +1,74 @@
 # == Define: nginxpack::vhost::basic
 #
-# Define a classic nginx vhost (website).
+# Standard vhost (website).
+#
+# More explanations: https://forge.puppetlabs.com/jvaubourg/nginxpack
+# Sources: https://github.com/jvaubourg/puppetlabs-nginxpack
 #
 # === Parameters
 #
 # [*domains*]
-#   Array of domains (fqdn) with which the website can be accessed.
+#   Array of domains (FQDN) with which the website can be accessed.
 #   Default: [ 'localhost' ]
 #
 # [*enable*]
-#   False if you want have this website unavailable.
+#   False to have this website unavailable.
 #   Default: true
 #
 # [*ipv6*]
-#   Ipv6 address usable to access to this website. Use false to disable ipv6 but
-#   please never use this possibily! Use :: to listen on all available ipv6
-#   addresses. If ipv6 and ipv4 are false, nginx will listen on all ip available
-#   on the server (default).
+#   IPv6 address usable to access to this website. Use false to disable ipv6
+#   (but please never use this possibily). Use :: to listen on all available
+#   IPv6 addresses. If IPv6 and IPv4 are false, Nginx will listen on all
+#   available IP on the server (default behavior).
 #   Default: false
 #
 # [*ipv4*]
-#   Ipv4 address usable to access to this website. Use false or to disable ipv4
-#   (the strong _wo_men do that!). Use 0.0.0.0 to listen on all available ipv4
-#   addresses. If ipv6 and ipv4 are both false, nginx will listen on all ip
-#   available on the server (default).
+#   IPv4 address usable to access to this website. Use false or to disable IPv4
+#   (real _wo_men do that!). Use 0.0.0.0 to listen on all available IPv4
+#   addresses. If IPv6 and IPv4 are false, Nginx will listen on all available
+#   IP on the server (default behavior).
 #   Default: false
 #
 # [*https*]
-#   True if you want to use a ssl secure connection for this website. You need
-#   have a certificat corresponding to the domains for that. Please use https
-#   each time you have a login process inside your pages.
+#   True to force a SSL secure connection for this website. If true then
+#   defining a cert and key with the following parameters is mandatory.
 #   Default: false
 #
 # [*ssl_cert_source*]
-#   Set a path to the ssl certificate file (pem / crt) to use for the secure
-#   connection. You have to use the https parameter set to true and the next
-#   parameter set to false to use it.
+#   Location of the SSL certificate file (pem or crt). If not false then the
+#   https parameter must be true and the next one must be false.
 #   Default: false
 #
 # [*ssl_cert_content*]
-#   Set the ssl certificate directly from a string. You have to use the https
-#   parameter set to true and the previous parameter set to false to use it.
+#   SSL certificate directly from a string (or through hiera). If not false then
+#   the https parameter must be true and the previous one must be false.
 #   Default: false
 #
 # [*ssl_key_source*]
-#   Set a path to the ssl key certificate file to use for the secure connection.
-#   You have to use the https parameter set to true and the next parameter set
-#   to false to use it.
+#   Location of the SSL key certificate file. If not false then the https
+#   parameter must be true and the next one must be false.
 #   Default: false
 #
 # [*ssl_key_content*]
-#   Set the ssl key certificate directly from a string. You have to use the
-#   https parameter set to true and the previous parameter set to
-#   false to use it.
+#   SSL key certificate directly from a string (or through hiera). If not false
+#   then the https parameter must be true and the previous one must be false.
 #   Default: false
 #
 # [*port*]
-#   Define the tcp port available to access to this website.
+#   TCP port available to access to this website.
 #   Default (https = false): 80
 #   Default (https = true): 443
 #
 # [*upload_max_size*]
-#   Define the maximum size of an upload with postdata. If php was enabled in
-#   your nginxpack call, you should set this option with the value of
-#   (php_upload_max_filesize * php_upload_max_files).
+#   Maximum size of a POST upload. If PHP was enabled in your nginxpack main
+#   class call, it should be in line with:
+#     (php_upload_max_filesize * php_upload_max_files).
 #   Default: 100M
 #
 # [*injectionsafe*]
-#   If true, apply a set of url protections to avoid sql injections and others
-#   kind of attacks. WARNING: In some cases, these protections may cause
-#   problem with your web applications. Rules are from:
-#   http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections
+#   Apply a set of URL protections to avoid XSS injections. These restrictions
+#   might be incompatible with your applications.
+#   See http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections
 #      -file-injections-spam-user-agents-etc
 #   Default: false
 #
@@ -80,25 +78,26 @@
 #   Default: false
 #
 # [*add_config_source*]
-#   Vhost config files are generated from puppet but you could need to add
-#   specific rules for nginx. The content of the file targeted by this option
-#   will be added at the end of the configuration. The next parameter must be
-#   false.
+#   Config files are generated from Puppet but you could need to add specific
+#   rules in your vhost definition. The content of the file targeted will be
+#   added at the end of it, inside the server block. If not false then the next
+#   parameter must be false.
 #   Default: false
 #
 # [*add_config_content*]
-#   Set the additional config directly from a string. The previous parameter
-#   must be false.
+#   Set the custom additional config directly from a string. If not false then
+#   the previous parameter must be false.
 #   Default: false
 #
 # [*htpasswd*]
-#   Give a couple of user:password in htpasswd format with this option to add a
-#   classical httpd authentication (couple can be generated with apache-utils:
-#   /usr/bin/htpasswd -nb username password).
+#   Set a http authentication to your whole website by providing a couple of
+#   user/password. The couple should be in htpasswd format (apache2-utils):
+#     $ htpasswd -nb user1 secretpassword
 #   Default: false
 #
 # [*files_dir*]
-#   Directory to create for the website files.
+#   Location of the website content. Directories will be created if it do not
+#   already exist.
 #   Default: /var/www/<name>/
 #
 # === Examples
@@ -125,14 +124,29 @@
 #     ipv4     => false,
 #   }
 #
+# More examples: https://forge.puppetlabs.com/jvaubourg/nginxpack
+#
 # === Authors
 #
-# Julien Vaubourg <http://julien.vaubourg.com>
+# Julien Vaubourg
+# http://julien.vaubourg.com
 #
 # === Copyright
 #
-# Copyleft 2013 Julien Vaubourg
-# Consider this file under AGPL
+# Copyright (C) 2013 Julien Vaubourg
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 define nginxpack::vhost::basic (
   $domains            = [ 'localhost' ],

@@ -1,28 +1,32 @@
 # == Define: nginxpack::ssl::certificate
 #
-# Install a given ssl certificate to use with a vhost.
+# Add a SSL certificate usable with basic/proxy vhosts.
 #
-# Should be used via nginxpack::vhost::* types.
+# Should be used through nginxpack::vhost::{basic,proxy} types.
+#
+# More explanations: https://forge.puppetlabs.com/jvaubourg/nginxpack
+# Sources: https://github.com/jvaubourg/puppetlabs-nginxpack
 #
 # === Parameters
 #
 # [*ssl_cert_source*]
-#   Path of the ssl certificate file (pem / crt). The next parameter must be set
-#   to false.
+#   Location of the SSL certificate file (pem or crt). If not false then the
+#   next parameter must be false.
 #   Default: false
 #
 # [*ssl_cert_content*]
-#   Set the ssl certificate directly from a string. The previous parameter must
-#   be set to false.
+#   SSL certificate directly from a string (or through hiera). If not false then
+#   the previous parameter must be false.
 #   Default: false
 #
 # [*ssl_key_source*]
-#   Path of the ssl key file. The next parameter must be set to false.
+#   Location of the SSL key certificate file. If not false then the next
+#   parameter must be false.
 #   Default: false
 #
 # [*ssl_key_content*]
-#   Set the ssl key directly from a string. The previous parameter must be set
-#   to false.
+#   SSL key certificate directly from a string (or through hiera). If not false
+#   then the previous parameter must be false.
 #   Default: false
 #
 # === Examples
@@ -37,19 +41,29 @@
 #     ssl_key_content  => hiera('mycert-key'),
 #   }
 #
-#   nginxpack::ssl::certificate { 'mycert':
-#     ssl_cert_content => '...very long certificate string...',
-#     ssl_key_content  => '...very long key string...',
-#   }
+# More examples: https://forge.puppetlabs.com/jvaubourg/nginxpack
 #
 # === Authors
 #
-# Julien Vaubourg <http://julien.vaubourg.com>
+# Julien Vaubourg
+# http://julien.vaubourg.com
 #
 # === Copyright
 #
-# Copyleft 2013 Julien Vaubourg
-# Consider this file under AGPL
+# Copyright (C) 2013 Julien Vaubourg
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 define nginxpack::ssl::certificate (
   $ssl_cert_source  = false,

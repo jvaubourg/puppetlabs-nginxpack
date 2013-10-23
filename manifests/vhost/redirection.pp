@@ -1,59 +1,52 @@
 # == Define: nginxpack::vhost::redirection
 #
-# Define a visible web redirection returning a 301 (Moved Permanently)
-# http code.
+# Not seamlessly web redirection, returning a 301
+# (Moved Permanently) HTTP code.
+#
+# More explanations: https://forge.puppetlabs.com/jvaubourg/nginxpack
+# Sources: https://github.com/jvaubourg/puppetlabs-nginxpack
 #
 # === Parameters
 #
 # [*domains*]
-#   Array of domains (fqdn) with which the redirection can be accessed.
+#   See the parameter definition with vhost::basic/domains.
 #   Default: [ 'localhost' ]
 #
 # [*enable*]
-#   False if you want have this redirection unavailable.
+#   See the parameter definition with vhost::basic/enable.
 #   Default: true
 #
 # [*ipv6*]
-#   Ipv6 address usable to access to this redirection. Use false to disable ipv6
-#   but please never use this possibily! Use :: to listen on all available ipv6
-#   addresses. If ipv6 and ipv4 are both false, nginx will listen on all ip
-#   available on the server (default).
+#   See the parameter definition with vhost::basic/ipv6.
 #   Default: false
 #
 # [*ipv4*]
-#   Ipv4 address usable to access to this redirection. Use false to disable ipv4
-#   (the strong _wo_men do that!). Use 0.0.0.0 to listen on all available ipv4
-#   addresses. If ipv6 and ipv4 are both false, nginx will listen on all ip
-#   available on the server (default).
+#   See the parameter definition with vhost::basic/ipv4.
 #   Default: false
 #
 # [*port*]
-#   Define the tcp port available to access to this redirection.
+#   See the parameter definition with vhost::basic/port.
 #   Default: 80
 #
 # [*to_domain*]
-#   Domain of the remote website.
-#   Default: the first domain available (domains[0])
+#   See the parameter definition with vhost::proxy/to_domain.
+#   Default: $domains[0] (first value of the domains parameter)
 #
 # [*to_https*]
-#   If true, use https instead of http to reach the remote vhost.
+#   See the parameter definition with vhost::proxy/to_https.
 #   Default: false
 #
 # [*to_port*]
-#   Define the tcp port to use to reach the remote vhost.
+#   See the parameter definition with vhost::proxy/to_port.
 #   Default (to_https=true): 443
 #   Default (to_https=false): 80
 #
 # [*add_config_source*]
-#   Vhost config files are generated from puppet but you could need to add
-#   specific rules for nginx. The content of the file targeted by this option
-#   will be added at the end of the configuration. The next parameter must be
-#   false.
+#   See the parameter definition with vhost::basic/add_config_source.
 #   Default: false
 #
 # [*add_config_content*]
-#   Set the additional config directly from a string. The previous parameter
-#   must be false.
+#   See the parameter definition with vhost::basic/add_config_content.
 #   Default: false
 #
 # === Examples
@@ -68,14 +61,29 @@
 #     to_https => true,
 #   }
 #
+# More examples: https://forge.puppetlabs.com/jvaubourg/nginxpack
+#
 # === Authors
 #
-# Julien Vaubourg <http://julien.vaubourg.com>
+# Julien Vaubourg
+# http://julien.vaubourg.com
 #
 # === Copyright
 #
-# Copyleft 2013 Julien Vaubourg
-# Consider this file under AGPL
+# Copyright (C) 2013 Julien Vaubourg
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 define nginxpack::vhost::redirection (
   $domains            = [ 'localhost' ],

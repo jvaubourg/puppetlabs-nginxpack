@@ -432,7 +432,12 @@ Webserver hosting *members.example.com*:
 
 Using *www.example.com* is so 2005 and you want automatically redirect all requests from _http://www.example.com/.*_ to *http://example.com/$1*.
 
-    nginxpack::vhost::redirection { 'blog':
+    nginxpack::vhost::basic { 'eatmytux':
+      domains => [ 'example.com' ],
+      use_php => true,
+    }
+    
+    nginxpack::vhost::redirection { 'www-eatmytux':
       domains   => [ 'www.example.com' ],
       to_domain => 'example.com',
     }
@@ -454,16 +459,32 @@ Your out-of-the-box webapp listens on port 8080 but you want use it on port 80 w
 
 Visible location switching (the client will see his URL transformation: _http://example.com/.*_ => *http://example.com:8080/$1*) means redirection:
 
-    nginxpack::vhost::redirection { 'webapp':
+    nginxpack::vhost::redirection { 'mywebapp':
       domains => [ 'example.com' ],
       to_port => 8080,
+    }
+
+####HTTPS Redirection
+
+Spontaneous switching from *http* to *https*:
+
+    nginxpack::vhost::basic { 'wiki':
+      domains                 => [ 'wiki.example.com' ],
+      https                   => true,
+      ssl_default_cert_source => 'puppet:///certificates/wiki.pem',
+      ssl_default_key_source  => 'puppet:///certificates/wiki.key',
+    }
+    
+    nginxpack::vhost::redirection { 'https-wiki':
+      domains  => [ 'wiki.example.com' ],
+      to_https => true,
     }
 
 ####IPv6/IPv4 Proxy
 
 You own a website not available in IPv6 and you cannot have an IPv6 address on its machine. A way to solving this problem is to create a proxy on a dual-stack machine (listening on IPv6 to accept incoming requests and listening on IPv4 to contact the remote webserver):
 
-    nginxpack::vhost::proxy { 'webapp':
+    nginxpack::vhost::proxy { 'foobar':
       domains   => [ 'example.com' ],
       to_domain => 'ip4.example.com',
       ipv4      => false,
