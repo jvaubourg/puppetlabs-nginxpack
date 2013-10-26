@@ -182,7 +182,7 @@ define nginxpack::vhost::basic (
 
   if !defined_with_params(File['/etc/nginx/sites-enabled/default_https'], {
     'ensure' => 'link',
-  }) and $https and $ipv4 {
+  }) and $https and ($ipv4 or (!$ipv4 and !$ipv6)) and $ipv4 != '' {
     warning('With IPv4 listening and https, you should define ssl_default_*.')
     warning('See Def. Vhosts: http://github.com/jvaubourg/puppetlabs-nginxpack')
   }
