@@ -1,5 +1,11 @@
-* 2013-10-23 - 0.0.2
-- Fix a problem when PHP was never been installed
-- Proxies no longer transmit Host values (0 downloads so it's a patch)
-* 2013-10-23 - 0.0.1
-- First release on PuppetLabs
+2013-10-26 - testing (jvaubourg)
+  * Default server_names_hash_bucket_size to 64
+  * Warnings when PHP vhosts are defined without PHP option for Nginx
+  * Warnings when SSL vhosts are defined with IPv4 and no default SSL vhost
+
+2013-10-23 - 0.0.2 (jvaubourg)
+  * Fix a problem when PHP was never installed
+  * Proxies no longer transmit Host values (0 downloads so it's a patch)
+
+2013-10-23 - 0.0.1 (jvaubourg)
+  * First release

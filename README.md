@@ -45,7 +45,7 @@ Features available:
 * Optionally: install PHP-MySQL connector and/or others PHP5 modules
 * Basic vhosts
 * Proxy vhosts
-* Redirection vhosts
+* 301 Redirection vhosts
 * SSL support
 * Full IPv6 compliant (and still IPv4...)
 * Automatic blackhole for non-existent domains

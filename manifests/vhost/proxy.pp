@@ -145,6 +145,13 @@ define nginxpack::vhost::proxy (
     fail('To have a https connection, please define a cert_pem AND a cert_key.')
   }
 
+  if !defined_with_params(File['/etc/nginx/sites-enabled/default_https'], {
+    'ensure' => 'link',
+  }) and $https and $ipv4 {
+    warning('With IPv4 listening and https, you should define ssl_default_*.')
+    warning('See Def. Vhosts: http://github.com/jvaubourg/puppetlabs-nginxpack')
+  }
+
   if $add_config_source and $add_config_content {
     fail('Use source/content method to define add_config but not the both.')
   }

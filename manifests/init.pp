@@ -132,6 +132,14 @@ class nginxpack (
     require    => Package['nginx'],
   }
 
+  file_line { 'nginx.conf-server_names_hash_bucket_size':
+    path    => '/etc/nginx/nginx.conf',
+    match   => 'server_names_hash_bucket_size',
+    line    => 'server_names_hash_bucket_size 64;',
+    require => Package['nginx'],
+    notify  => Service['nginx'],
+  }
+
   exec { 'find_default_listen':
     command     => '/etc/nginx/find_default_listen.sh',
     require     => Package['nginx'],
