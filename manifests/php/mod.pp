@@ -36,6 +36,7 @@
 define nginxpack::php::mod {
   package { "php5-${name}":
     ensure  => present,
+    notify  => Service['php-fastcgi'],
     require => Package['php5-cgi'],
   }
 }
