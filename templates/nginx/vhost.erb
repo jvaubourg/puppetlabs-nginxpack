@@ -28,7 +28,7 @@ server {
   root <%= @files_dir %>;
   client_max_body_size <%= @upload_max_size %>;
 
-  <% if @https -%>
+  <% if @https then -%>
   ssl on;
   ssl_session_timeout 5m;
   ssl_protocols SSLv3 TLSv1;
@@ -38,7 +38,14 @@ server {
   ssl_certificate_key /etc/nginx/ssl/<%= @name %>.key;
   <% end -%>
 
-  <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
+  <% if @forbidden then -%>
+    <% rules = ""
+      forbidden.each { |url| rules += "location ~ #{url} { return 403; }\n" }
+    -%>
+    <%= rules -%>
+  <% end -%>
+
+  <% if @add_config_source || @add_config_content then -%>
   include /etc/nginx/include/<%= @name %>.conf;
   <% end -%>
 

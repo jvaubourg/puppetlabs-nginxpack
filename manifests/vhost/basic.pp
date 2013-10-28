@@ -95,6 +95,12 @@
 #     $ htpasswd -nb user1 secretpassword
 #   Default: false
 #
+# [*forbidden*]
+#   Array of regexps corresponding to forbidden urls. If your vhost targets
+#   /var/www/myvhost/ and that your logs directory is /var/www/myvhost/logs
+#   you should use forbidden => [ '^/logs/' ].
+#   Default: false
+#
 # [*files_dir*]
 #   Location of the website content. Directories will be created if it do not
 #   already exist.
@@ -165,6 +171,7 @@ define nginxpack::vhost::basic (
   $add_config_source  = false,
   $add_config_content = false,
   $htpasswd           = false,
+  $forbidden          = false,
   $files_dir          = "/var/www/${name}/"
 ) {
 

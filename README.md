@@ -183,6 +183,7 @@ Other options:
       injectionsafe   => true,
       upload_max_size => '5G',
       htpasswd        => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
+      forbidden       => [ '^/logs/', '^/tmp/', '\.inc$' ],
     }
 
 `files_dir`'s default value is */var/www/&lt;name&gt;/* (e.g. */var/www/foobar/*).
