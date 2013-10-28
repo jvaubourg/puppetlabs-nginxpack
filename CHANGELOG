@@ -1,4 +1,4 @@
-2013-10-26 - testing (jvaubourg)
+2013-10-26 - 0.0.3 (jvaubourg)
   * Default server_names_hash_bucket_size to 64
   * Warnings when PHP vhosts are defined without PHP option for Nginx
   * Warnings when SSL vhosts are defined with IPv4 and no default SSL vhost
