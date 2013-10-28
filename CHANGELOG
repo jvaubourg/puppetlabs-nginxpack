@@ -5,6 +5,7 @@
   * Installing php module notifies the php service
   * Blackholes return a 400 error instead of 403
   * Add_configs are now before other locations (for regex priority)
+  * Add forbidden option to vhost::basic
 
 2013-10-23 - 0.0.2 (jvaubourg)
   * Fix a problem when PHP was never installed
