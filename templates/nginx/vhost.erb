@@ -38,6 +38,10 @@ server {
   ssl_certificate_key /etc/nginx/ssl/<%= @name %>.key;
   <% end -%>
 
+  <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
+  include /etc/nginx/include/<%= @name %>.conf;
+  <% end -%>
+
   <% if @use_php then -%>
   location ~ \.php$ {
     include /etc/nginx/fastcgi_params;
@@ -60,8 +64,4 @@ server {
     auth_basic_user_file    /etc/nginx/htpasswd/<%= @name %>;
     <% end -%>
   }
-
-   <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
-   include /etc/nginx/include/<%= @name %>.conf;
-   <% end -%>
 }

@@ -33,6 +33,10 @@ server {
   ssl_certificate_key /etc/nginx/ssl/<%= @name %>_proxy.key;
   <% end -%>
 
+  <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
+  include /etc/nginx/include/<%= @name %>_proxy.conf;
+  <% end -%>
+
   location / {
     proxy_pass http<%= @to_https ? 's' : '' %>://<%= @to_domainval %>:<%= @to_portval %>/;
     proxy_redirect          off;
@@ -45,8 +49,4 @@ server {
     proxy_buffers           32 4k;
     client_body_buffer_size 128k;
   }
-
-   <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
-   include /etc/nginx/include/<%= @name %>_proxy.conf;
-   <% end -%>
 }

@@ -21,12 +21,12 @@ server {
   access_log /dev/null;
   error_log /dev/null;
 
+  <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
+  include /etc/nginx/include/<%= @name %>_redirection.conf;
+  <% end -%>
+
   location / {
     rewrite ^/(.*)$ http<%= @to_https ? 's' : '' %>://<%= @to_domainval %>:<%= @to_portval %>/$1 permanent;
     return 301;
   }
-
-   <% if (@add_config_source && !@add_config_source.empty?) || (@add_config_content && !@add_config_content.empty?) -%>
-   include /etc/nginx/include/<%= @name %>_redirection.conf;
-   <% end -%>
 }
