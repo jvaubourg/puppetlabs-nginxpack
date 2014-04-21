@@ -84,6 +84,8 @@ define nginxpack::ssl::certificate (
     fail('Please define a cert_pem AND a cert_key.')
   }
 
+  File { notify => Service['nginx'] }
+
   if $ssl_cert_source {
     file { "/etc/nginx/ssl/${name}.pem":
       ensure => file,
