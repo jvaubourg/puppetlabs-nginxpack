@@ -149,7 +149,7 @@ Listen on a specific IPv6 and all IPv4 available:
       ipv6    => '2001:db8::42',
     }
 
-You can use the `ipv4` option to listen on a specific IPv4 address. And if you don't want listening on IPv4 you can set `ipv6only => true`.
+You can use the `ipv4` option to listen on a specific IPv4 address. And if you don't want listening on IPv4 you can set `ipv6only => true` (and `ipv4only` for not listening on IPv6, when it's **strictly** necessary).
 
 Listen on a specific port:
 
@@ -223,7 +223,7 @@ Default remote port is 80. In this case it would have been 443 due to `to_https`
 
 SSL (https://) is usable in the same manner as [basic vhosts](#basic-vhost).
 
-Options `ipv6`, `ipv4`, `ipv6only`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
+Options `ipv6`, `ipv4`, `ipv6only`, `ipv4only', `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
 
 ####Redirection Vhost
 
@@ -238,7 +238,7 @@ Default listen identical to basic vhosts, and remote domain reached on port 80 w
 
 Options `to_https` and `to_port` are available in the same way as [proxy vhosts](#proxy-vhost).
 
-Options `ipv6`, `ipv4`, `ipv6only`, `port`, `enable`, `add_config_source` and `add_config_content` are available in the same way as [basic vhosts](#basic-vhost).
+Options `ipv6`, `ipv4`, `ipv6only`, `ipv4only`, `port`, `enable`, `add_config_source` and `add_config_content` are available in the same way as [basic vhosts](#basic-vhost).
 
 ###Documentation
 
