@@ -4,14 +4,24 @@
 
 server {
   <% if (!@ipv6 || @ipv6.empty?) && (!@ipv4 || @ipv4.empty?) then %>
-    listen [::]:<%= @portval %>;
-    listen 0.0.0.0:<%= @portval %>;
+    <% if !@ipv4only then -%>
+      listen [::]:<%= @portval %> ipv6only=on;
+    <% end -%>
+    <% if !@ipv6only then -%>
+      listen 0.0.0.0:<%= @portval %>;
+    <% end -%>
   <% else -%>
     <% if @ipv6 && !@ipv6.empty? then -%>
       listen [<%= @ipv6 %>]:<%= @portval %>;
+      <% if !@ipv6only && (!@ipv4 || @ipv4.empty?) then -%>
+        listen 0.0.0.0:<%= @portval %>;
+      <% end -%>
     <% end -%>
     <% if @ipv4 && !@ipv4.empty? then -%>
       listen <%= @ipv4 %>:<%= @portval %>;
+      <% if !@ipv4only && (!@ipv6 || @ipv6.empty?) then -%>
+        listen [::]:<%= @portval %> ipv6only=on;
+      <% end -%>
     <% end -%>
   <% end -%>
 

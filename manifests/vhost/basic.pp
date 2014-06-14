@@ -16,17 +16,22 @@
 #   Default: true
 #
 # [*ipv6*]
-#   IPv6 address usable to access to this website. Use false to disable ipv6
-#   (but please never use this possibily). Use :: to listen on all available
-#   IPv6 addresses. If IPv6 and IPv4 are false, Nginx will listen on all
-#   available IP on the server (default behavior).
+#   IPv6 address for accessing to this website. Use false to listen on all
+#   available IPv6 addresses (except if ipv6only is true).
 #   Default: false
 #
 # [*ipv4*]
-#   IPv4 address usable to access to this website. Use false or to disable IPv4
-#   (real _wo_men do that!). Use 0.0.0.0 to listen on all available IPv4
-#   addresses. If IPv6 and IPv4 are false, Nginx will listen on all available
-#   IP on the server (default behavior).
+#   IPv4 address for accessing to this website. Use false to listen on all
+#   available IPv4 addresses (except if ipv6only is true).
+#   Default: false
+#
+# [*ipv6only*]
+#   True to disable IPv4 listening. Incompatible with ipv4only.
+#   Default: false
+#
+# [*ipv4only*]
+#   True to disable IPv6 listening. Incompatible with ipv6only.
+#   Please use it only when strictly necessary!
 #   Default: false
 #
 # [*https*]
@@ -159,6 +164,8 @@ define nginxpack::vhost::basic (
   $enable             = true,
   $ipv6               = false,
   $ipv4               = false,
+  $ipv6only           = false,
+  $ipv4only           = false,
   $https              = false,
   $ssl_cert_source    = false,
   $ssl_key_source     = false,
@@ -187,10 +194,19 @@ define nginxpack::vhost::basic (
     fail('To have a https connection, please define a cert_pem AND a cert_key.')
   }
 
+  if $ipv6only and $ipv4only {
+    fail('Using ipv6only with ipv4only does not make sens.')
+  }
+
+  if $ipv4 and $ipv4 != '' and $ipv6only {
+    warning('Defining an IPv4 with ipv6only true is pretty strange.')
+  }
+
   if !defined_with_params(File['/etc/nginx/sites-enabled/default_https'], {
     'ensure' => 'link',
-  }) and $https and ($ipv4 or (!$ipv4 and !$ipv6)) and $ipv4 != '' {
-    warning('With IPv4 listening and https, you should define ssl_default_*.')
+  }) and $https and !$ipv6only and $ipv4 and $ipv4 != '' {
+    warning('With a specific IPv4 and https, if this address is used on')
+    warning('several vhosts, you should define ssl_default_* (no SNI support).')
     warning('See Def. Vhosts: http://github.com/jvaubourg/puppetlabs-nginxpack')
   }
 

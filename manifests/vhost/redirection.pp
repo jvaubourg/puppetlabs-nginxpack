@@ -24,6 +24,14 @@
 #   See the parameter definition with vhost::basic/ipv4.
 #   Default: false
 #
+# [*ipv6only*]
+#   See the parameter definition with vhost::basic/ipv6only.
+#   Default: false
+#
+# [*ipv4only*]
+#   See the parameter definition with vhost::basic/ipv4only.
+#   Default: false
+#
 # [*port*]
 #   See the parameter definition with vhost::basic/port.
 #   Default: 80
@@ -89,6 +97,8 @@ define nginxpack::vhost::redirection (
   $domains            = [ 'localhost' ],
   $ipv6               = false,
   $ipv4               = false,
+  $ipv6only           = false,
+  $ipv4only           = false,
   $port               = 80,
   $to_domain          = -1,
   $to_port            = -1,
@@ -100,6 +110,14 @@ define nginxpack::vhost::redirection (
 
   if $add_config_source and $add_config_content {
     fail('Use source/content method to define add_config but not the both.')
+  }
+
+  if $ipv6only and $ipv4only {
+    fail('Using ipv6only with ipv4only does not make sens.')
+  }
+
+  if $ipv4 and $ipv4 != '' and $ipv6only {
+    warning('Defining an IPv4 with ipv6only true is pretty strange.')
   }
 
   $portval = $port

@@ -47,7 +47,8 @@ Features available:
 * Proxy vhosts
 * 301 Redirection vhosts
 * SSL support
-* Full IPv6 compliant (and still IPv4...)
+* SNI support
+* Full IPv6 compliant (and still IPv4...) including IPv6-Only
 * Automatic blackhole for non-existent domains
 * Several options (upload limits with Nginx/PHP, timezone, logrotate, 
 default SSL certificate, htpasswd, XSS injection protection, etc.)
@@ -148,7 +149,7 @@ Listen on a specific IPv6 and all IPv4 available:
       ipv6    => '2001:db8::42',
     }
 
-You can use the `ipv4` option to listen on a specific IPv4 address or disable it with *false* (real \_wo\_men do that). `ipv6` also can be set to false, but please don't do that.
+You can use the `ipv4` option to listen on a specific IPv4 address. And if you don't want listening on IPv4 you can set `ipv6only => true`.
 
 Listen on a specific port:
 
@@ -222,7 +223,7 @@ Default remote port is 80. In this case it would have been 443 due to `to_https`
 
 SSL (https://) is usable in the same manner as [basic vhosts](#basic-vhost).
 
-Options `ipv6`, `ipv4`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
+Options `ipv6`, `ipv4`, `ipv6only`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
 
 ####Redirection Vhost
 
@@ -237,7 +238,7 @@ Default listen identical to basic vhosts, and remote domain reached on port 80 w
 
 Options `to_https` and `to_port` are available in the same way as [proxy vhosts](#proxy-vhost).
 
-Options `ipv6`, `ipv4`, `port`, `enable`, `add_config_source` and `add_config_content` are available in the same way as [basic vhosts](#basic-vhost).
+Options `ipv6`, `ipv4`, `ipv6only`, `port`, `enable`, `add_config_source` and `add_config_content` are available in the same way as [basic vhosts](#basic-vhost).
 
 ###Documentation
 
@@ -263,13 +264,23 @@ The full circle is easy to understand:
 2. When a client initiates a SSL connection, this field is encrypted, until Nginx decrypts the request.
 3. Informations about decryption (e.g. certificate location) are in the correct vhost. Back to *1*.
 
-Thus, if you have several vhosts listening on the same port with the same IP (or *all* IP) and that use SSL, you have a problem.
+Thus, if you have several vhosts listening on the same port with the same IP (or *all* IP) and using SSL, you have a problem.
 
-The good solution is to use a default vhost, listening on all ports and IP used by SSL vhosts on the webserver and containing the decryption informations. When Nginx will receive a SSL request, it will use this vhost, and so, will be able to decrypt it. Once the *host* field is readable, it can chose the correct vhost. The latter don't have to propose SSL but it absolutely must listen on port 443 (or another if you use SSL with another one).
+With Nginx >= 0.7.62 and OpenSSL >= 0.9.8j, you can use [SNI](http://en.wikipedia.org/wiki/Server_Name_Indication), the modern way to solve this problem. You have nothing to do, but your visitors must have recent browsers:
 
-Good news! Nginxpack creates this default vhost for you if you use `ssl_default_cert_source` (or `ssl_default_cert_key`) and `ssl_default_key_source` (or `ssl_default_key_source`) options. This certificate must be valid for all domains used, so it will probably be a wildcard certificate.
+* Opera 8.0;
+* MSIE 7.0 (but only on Windows Vista or higher);
+* Firefox 2.0 and other browsers using Mozilla Platform rv:1.8.1;
+* Safari 3.2.1 (Windows version supports SNI on Vista or higher);
+* or Chrome (Windows version supports SNI on Vista or higher, too).
 
-The [first common use case](#reverse-proxy-with-ipv4) in the next section provides an example.
+The other constraint is that you cannot use specific addresses (`ipv6` and `ipv4` options) with SNI.
+
+If you don't want to restrict compatible browsers or you want use specific addresses, the good solution is to use a default vhost, listening on all ports and IP used by SSL vhosts on the webserver and containing the decryption informations. When Nginx will receive a SSL request, it will use this vhost, and so, will be able to decrypt it. Once the *host* field is readable, it can chose the correct vhost. The latter don't have to propose SSL but it absolutely must listen on port 443 (or another if you use SSL with another one).
+
+Nginxpack creates this default vhost for you if you use `ssl_default_cert_source` (or `ssl_default_cert_key`) and `ssl_default_key_source` (or `ssl_default_key_source`) options. This certificate must be valid for all domains used, so it will probably be a wildcard certificate.
+
+The [first common use case](#reverse-proxy-with-ipv4) in the next section provides an example with this solution.
 
 ##Common Use Cases
 
@@ -314,14 +325,14 @@ Webserver hosting the reverse-proxy:
 
     nginxpack::vhost::proxy { 'blog':
       domains   => [ 'blog.example.com' ],
-      ipv6      => false,
+      ipv4only  => true,
       to_domain => 'blog.lan',
     }
 
     nginxpack::vhost::proxy { 'wiki':
       domains   => [ 'wiki.example.com' ],
       port      => 443,
-      ipv6      => false,
+      ipv4only  => true,
       to_domain => 'wiki.lan',
       to_https  => true,
     }
@@ -329,7 +340,7 @@ Webserver hosting the reverse-proxy:
     nginxpack::vhost::proxy { 'members':
       domains   => [ 'members.example.com' ],
       port      => 443,
-      ipv6      => false,
+      ipv4only  => true,
       to_domain => 'members.lan',
       to_https  => true,
     }
@@ -337,9 +348,9 @@ Webserver hosting the reverse-proxy:
 Webserver hosting *blog.example.com*:
 
     nginxpack::vhost::basic { 'blog':
-      domains => [ 'blog.example.com' ],
-      ipv4    => false,
-      use_php => true,
+      domains  => [ 'blog.example.com' ],
+      ipv6only => true,
+      use_php  => true,
     }
 
 Webserver hosting *wiki.example.com*:
@@ -349,7 +360,7 @@ Webserver hosting *wiki.example.com*:
       https           => true,
       ssl_cert_source => 'puppet:///certificates/default.pem',
       ssl_key_source  => 'puppet:///certificates/default.key',
-      ipv4            => false,
+      ipv6only        => true,
       use_php         => true,
     }
 
@@ -360,7 +371,7 @@ Webserver hosting *members.example.com*:
       https           => true,
       ssl_cert_source => 'puppet:///certificates/default.pem',
       ssl_key_source  => 'puppet:///certificates/default.key',
-      ipv4            => false,
+      ipv6only        => true,
       use_php         => true,
     }
 
@@ -487,7 +498,7 @@ You own a website not available in IPv6 and you cannot have an IPv6 address on i
     nginxpack::vhost::proxy { 'foobar':
       domains   => [ 'example.com' ],
       to_domain => 'ip4.example.com',
-      ipv4      => false,
+      ipv6only  => true,
     }
 
 DNS configuration:

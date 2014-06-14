@@ -9,10 +9,6 @@ server {
 	include /etc/nginx/include/default_listen_https.conf;
 
 	ssl on;
-	ssl_session_timeout 5m;
-	ssl_protocols SSLv3 TLSv1;
-	ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
-	ssl_prefer_server_ciphers on;
         ssl_certificate /etc/nginx/ssl/default.pem;
         ssl_certificate_key /etc/nginx/ssl/default.key;
 
