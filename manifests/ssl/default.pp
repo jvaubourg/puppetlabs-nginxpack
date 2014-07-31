@@ -14,23 +14,23 @@
 #
 # === Parameters
 #
-# [*ssl_default_cert_source*]
+# [*ssl_default_cert_content_source*]
 #   Location of the SSL certificate file (pem or crt) to use with the default
 #   vhost listening on port 443. If not false then the next parameter must
 #   be false.
 #   Default: false
 #
-# [*ssl_default_cert_content*]
+# [*ssl_default_cert_content_content*]
 #   SSL certificate directly from a string (or through hiera). If not false then
 #   the previous parameter must be false.
 #   Default: false
 #
-# [*ssl_default_key_source*]
+# [*ssl_default_key_content_source*]
 #   Location of the SSL key certificate to use with the default vhost listening
 #   on port 443. If not false then the next parameter must be false.
 #   Default: false
 #
-# [*ssl_default_key_content*]
+# [*ssl_default_key_content_content*]
 #   SSL key certificate directly from a string (or through hiera). If not false
 #   then the previous parameter must be false.
 #   Default: false
@@ -78,11 +78,41 @@ class nginxpack::ssl::default (
   $ssl_key_content  = false
 ) {
 
+  $default_cert_content = '-----BEGIN CERTIFICATE-----
+MIICBzCCAbGgAwIBAgIJALs62qEPOMXjMA0GCSqGSIb3DQEBCwUAMF8xCzAJBgNV
+BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMRIwEAYDVQQKDAlOZ2lueHBhY2sx
+EjAQBgNVBAsMCU5naW54cGFjazETMBEGA1UEAwwKbmdpbngucGFjazAeFw0xNDA3
+MzExODAxMjhaFw0xNDA4MzAxODAxMjhaMF8xCzAJBgNVBAYTAkFVMRMwEQYDVQQI
+DApTb21lLVN0YXRlMRIwEAYDVQQKDAlOZ2lueHBhY2sxEjAQBgNVBAsMCU5naW54
+cGFjazETMBEGA1UEAwwKbmdpbngucGFjazBcMA0GCSqGSIb3DQEBAQUAA0sAMEgC
+QQDPj8jC1RI7zBiJW1MdCT7amRbm1RTzA1hcmTcvgc2kXMGb+aFHoqzaZGbHK2Au
++nOX/UPb0Q6lGIuj2HHybwc1AgMBAAGjUDBOMB0GA1UdDgQWBBSKnFTu3TG0MlVL
+/i5uOCzuolSquTAfBgNVHSMEGDAWgBSKnFTu3TG0MlVL/i5uOCzuolSquTAMBgNV
+HRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA0EAfhS7AMgCc6ZXh7pXVFx6Q7+aIp6b
+yPNPEZF3VUZuj6Ooc0voMjlspEGuRFaDQuVTRu4wMlpNTRJND/dcsE8KhA==
+-----END CERTIFICATE-----'
+
+  $default_key_content = '-----BEGIN PRIVATE KEY-----
+MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAz4/IwtUSO8wYiVtT
+HQk+2pkW5tUU8wNYXJk3L4HNpFzBm/mhR6Ks2mRmxytgLvpzl/1D29EOpRiLo9hx
+8m8HNQIDAQABAkBho2SwaiTapkbAjopJdWjw0eUZDxF8w40UeiqgmXIQJ40y1pLM
+WvMvxfp7YXYJZHE4fA4s3bBQHlaOQ/LuinSBAiEA6eu+YKhDcQQeeT97PbTFmRkb
+KLwk3M2abxXR/IyxLSECIQDjJx6ujL1+qRlGnGgae2Gyln0kW7gTd8Kc5PZp81xj
+lQIgKcDsoHAoaZnknpvYMbF8u9Ehaen7YnZIpJ9udfffAEECIQCn0kgtx5dc08vz
+yixznEJi8iIE0aqe33Ut+08+mejhPQIhANwuqnyN/sHHf3dTzgZVcQCYMeQdj5Sh
+nLf3fOvdDEfw
+-----END PRIVATE KEY-----'
+
+  if $ssl_cert_content and $ssl_key_content {
+    $default_cert_content = $ssl_cert_content
+    $default_key_content  = $ssl_key_content
+  }
+
   nginxpack::ssl::certificate { 'default':
     ssl_cert_source  => $ssl_cert_source,
     ssl_key_source   => $ssl_key_source,
-    ssl_cert_content => $ssl_cert_content,
-    ssl_key_content  => $ssl_key_content,
+    ssl_cert_content => $default_cert_content,
+    ssl_key_content  => $default_key_content,
   }
 
   file { '/etc/nginx/sites-available/default_https':

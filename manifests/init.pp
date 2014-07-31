@@ -27,6 +27,11 @@
 #   See the parameter definition with ssl::default/ssl_key_content
 #   Default: Nginxpack default key
 #
+# [*default_https_blackhole*]
+#   False if you don't want a default https blackhole (useful if you
+#   have no https vhosts and you don't want Nginx listening 443).
+#   Default: true
+#
 # [*enable_php*]
 #   See the parameter definition with php::cgi/enable
 #   Default: false
@@ -89,43 +94,28 @@ class nginxpack (
   $logrotate                = true,
   $ssl_default_cert_source  = false,
   $ssl_default_key_source   = false,
-  $ssl_default_cert_content = '-----BEGIN CERTIFICATE-----
-MIICBzCCAbGgAwIBAgIJALs62qEPOMXjMA0GCSqGSIb3DQEBCwUAMF8xCzAJBgNV
-BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMRIwEAYDVQQKDAlOZ2lueHBhY2sx
-EjAQBgNVBAsMCU5naW54cGFjazETMBEGA1UEAwwKbmdpbngucGFjazAeFw0xNDA3
-MzExODAxMjhaFw0xNDA4MzAxODAxMjhaMF8xCzAJBgNVBAYTAkFVMRMwEQYDVQQI
-DApTb21lLVN0YXRlMRIwEAYDVQQKDAlOZ2lueHBhY2sxEjAQBgNVBAsMCU5naW54
-cGFjazETMBEGA1UEAwwKbmdpbngucGFjazBcMA0GCSqGSIb3DQEBAQUAA0sAMEgC
-QQDPj8jC1RI7zBiJW1MdCT7amRbm1RTzA1hcmTcvgc2kXMGb+aFHoqzaZGbHK2Au
-+nOX/UPb0Q6lGIuj2HHybwc1AgMBAAGjUDBOMB0GA1UdDgQWBBSKnFTu3TG0MlVL
-/i5uOCzuolSquTAfBgNVHSMEGDAWgBSKnFTu3TG0MlVL/i5uOCzuolSquTAMBgNV
-HRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA0EAfhS7AMgCc6ZXh7pXVFx6Q7+aIp6b
-yPNPEZF3VUZuj6Ooc0voMjlspEGuRFaDQuVTRu4wMlpNTRJND/dcsE8KhA==
------END CERTIFICATE-----',
-  $ssl_default_key_content  = '-----BEGIN PRIVATE KEY-----
-MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAz4/IwtUSO8wYiVtT
-HQk+2pkW5tUU8wNYXJk3L4HNpFzBm/mhR6Ks2mRmxytgLvpzl/1D29EOpRiLo9hx
-8m8HNQIDAQABAkBho2SwaiTapkbAjopJdWjw0eUZDxF8w40UeiqgmXIQJ40y1pLM
-WvMvxfp7YXYJZHE4fA4s3bBQHlaOQ/LuinSBAiEA6eu+YKhDcQQeeT97PbTFmRkb
-KLwk3M2abxXR/IyxLSECIQDjJx6ujL1+qRlGnGgae2Gyln0kW7gTd8Kc5PZp81xj
-lQIgKcDsoHAoaZnknpvYMbF8u9Ehaen7YnZIpJ9udfffAEECIQCn0kgtx5dc08vz
-yixznEJi8iIE0aqe33Ut+08+mejhPQIhANwuqnyN/sHHf3dTzgZVcQCYMeQdj5Sh
-nLf3fOvdDEfw
------END PRIVATE KEY-----',
+  $ssl_default_cert_content = false,
+  $ssl_default_key_content  = false,
+  $default_https_blackhole  = true,
   $enable_php               = false,
   $php_mysql                = false,
   $php_timezone             = 'Europe/Paris',
   $php_upload_max_filesize  = '10M',
-  $php_upload_max_files     = 10
+  $php_upload_max_files     = 10,
 ) {
+
+  if ($ssl_default_cert_source or $ssl_default_key_source or $ssl_default_cert_content
+    or $ssl_default_key_content) and !$default_https_blackhole {
+
+    fail('Use a default certificate without enable default_https_blackhole')
+    fail('does not make sense.')
+  }
 
   class { 'nginxpack::logrotate':
     enable => $logrotate,
   }
 
-  if $ssl_default_cert_source or $ssl_default_cert_content or
-      $ssl_default_key_source or $ssl_default_key_content
-  {
+  if $default_https_blackhole {
     class { 'nginxpack::ssl::default':
       ssl_cert_source  => $ssl_default_cert_source,
       ssl_key_source   => $ssl_default_key_source,
