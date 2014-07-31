@@ -48,6 +48,7 @@ Features available:
 * 301 Redirection vhosts
 * SSL support
 * SNI support
+* AcceptPathInfo support
 * Full IPv6 compliant (and still IPv4...) including IPv6-Only
 * Automatic blackhole for non-existent domains
 * Several options (upload limits with Nginx/PHP, timezone, logrotate, 
@@ -140,7 +141,7 @@ With PHP:
       use_php => true,
     }
 
-Since you use `use_php` for at least one vhost, you have to use `enable_php` with the webserver.
+Since you use `use_php` for at least one vhost, you have to use `enable_php` with the webserver. For activating [AcceptPathInfo](https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo), add `php_AcceptPathInfo => true` to the vhost (e.g. */foo/index.php/bar/* with *PATH_INFO=/bar/*).
 
 Listen on a specific IPv6 and all IPv4 available:
 
@@ -178,16 +179,18 @@ The default listening port becomes 443 but you still could force a different one
 Other options:
 
     nginxpack::vhost::basic { 'foobar':
-      domains         => [ 'foobar.example.com' ],
-      enable          => false,
-      files_dir       => '/srv/websites/foobar/',
-      injectionsafe   => true,
-      upload_max_size => '5G',
-      htpasswd        => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
-      forbidden       => [ '^/logs/', '^/tmp/', '\.inc$' ],
+      domains            => [ 'foobar.example.com' ],
+      enable             => false,
+      files_dir          => '/srv/websites/foobar/',
+      injectionsafe      => true,
+      upload_max_size    => '5G',
+      htpasswd           => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
+      forbidden          => [ '^/logs/', '^/tmp/', '\.inc$' ],
+      add_config_content => 'location @barfoo { rewrite ^(.+)$ /files/$1; }',
+      try_files          => '@barfoo',
     }
 
-`files_dir`'s default value is */var/www/&lt;name&gt;/* (e.g. */var/www/foobar/*).
+`files_dir` (*DocumentRoot*) default value is */var/www/&lt;name&gt;/* (e.g. */var/www/foobar/*).
 
 `injectionsafe` applies [these protections](http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections-file-injections-spam-user-agents-etc) against XSS injections. These restrictions might be incompatible with your applications.
 
@@ -254,8 +257,6 @@ Have a determinist way to access to the vhosts is a good practice in web securit
 
 Good news! Nginxpack creates this default vhost for you and redirects any request out of your scopes to a blackhole.
 
-If you use at least one vhost with SSL, you need to define `ssl_default_*` options. See the [next section about SSL](#well-known-problem-with-ssl).
-
 ####Well-known problem with SSL
 
 The full circle is easy to understand:
@@ -276,9 +277,9 @@ With Nginx >= 0.7.62 and OpenSSL >= 0.9.8j, you can use [SNI](http://en.wikipedi
 
 The other constraint is that you cannot use specific addresses (`ipv6` and `ipv4` options) with SNI.
 
-If you don't want to restrict compatible browsers or you want use specific addresses, the good solution is to use a default vhost, listening on all ports and IP used by SSL vhosts on the webserver and containing the decryption informations. When Nginx will receive a SSL request, it will use this vhost, and so, will be able to decrypt it. Once the *host* field is readable, it can chose the correct vhost. The latter don't have to propose SSL but it absolutely must listen on port 443 (or another if you use SSL with another one).
+If you don't want to restrict compatible browsers or you want use specific addresses or you want to manage only one wildcard certificate, the good solution is to use a default vhost, listening on all ports and IP used by SSL vhosts on the webserver and containing the decryption informations. When Nginx will receive a SSL request, it will use this vhost, and so, will be able to decrypt it. Once the *host* field is readable, it can chose the correct vhost. The latter don't have to propose SSL but it absolutely must listen on port 443 (or another if you use SSL with another one).
 
-Nginxpack creates this default vhost for you if you use `ssl_default_cert_source` (or `ssl_default_cert_key`) and `ssl_default_key_source` (or `ssl_default_key_source`) options. This certificate must be valid for all domains used, so it will probably be a wildcard certificate.
+Nginxpack creates this default vhost for you, with a default certificate. To replace the default certificate, you can use `ssl_default_cert_source` (or `ssl_default_cert_key`) and `ssl_default_key_source` (or `ssl_default_key_source`) options. This certificate should be valid for all domains used, so it will probably be at least a wildcard certificate. 
 
 The [first common use case](#reverse-proxy-with-ipv4) in the next section provides an example with this solution.
 

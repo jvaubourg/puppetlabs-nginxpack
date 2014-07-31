@@ -82,6 +82,11 @@
 #   previously with enable_php=true.
 #   Default: false
 #
+# [*php_AcceptPathInfo*]
+#   True if you to want activate AcceptPathInfo with PHP.
+#   See: https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo
+#   Default: false
+#
 # [*add_config_source*]
 #   Config files are generated from Puppet but you could need to add specific
 #   rules in your vhost definition. The content of the file targeted will be
@@ -110,6 +115,11 @@
 #   Location of the website content. Directories will be created if it do not
 #   already exist.
 #   Default: /var/www/<name>/
+#
+# [*try_files*]
+#   Additional default try_files in the location / (e.g. tryfiles => '@foobar',
+#   with a location "@foobar" defined in add_config_* for use in last resort).
+#   Default: ''
 #
 # === Examples
 #
@@ -175,11 +185,13 @@ define nginxpack::vhost::basic (
   $upload_max_size    = '100M',
   $injectionsafe      = false,
   $use_php            = false,
+  $php_AcceptPathInfo = false,
   $add_config_source  = false,
   $add_config_content = false,
   $htpasswd           = false,
   $forbidden          = false,
-  $files_dir          = "/var/www/${name}/"
+  $files_dir          = "/var/www/${name}/",
+  $try_files          = ''
 ) {
 
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
@@ -202,12 +214,8 @@ define nginxpack::vhost::basic (
     warning('Defining an IPv4 with ipv6only true is pretty strange.')
   }
 
-  if !defined_with_params(File['/etc/nginx/sites-enabled/default_https'], {
-    'ensure' => 'link',
-  }) and $https and !$ipv6only and $ipv4 and $ipv4 != '' {
-    warning('With a specific IPv4 and https, if this address is used on')
-    warning('several vhosts, you should define ssl_default_* (no SNI support).')
-    warning('See Def. Vhosts: http://github.com/jvaubourg/puppetlabs-nginxpack')
+  if $php_AcceptPathInfo and !$use_php {
+    warning('AcceptPathInfo activated has no sens if PHP is not used.')
   }
 
   if $add_config_source and $add_config_content {

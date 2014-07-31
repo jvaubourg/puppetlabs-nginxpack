@@ -163,14 +163,6 @@ define nginxpack::vhost::proxy (
     warning('Defining an IPv4 with ipv6only true is pretty strange.')
   }
 
-  if !defined_with_params(File['/etc/nginx/sites-enabled/default_https'], {
-    'ensure' => 'link',
-  }) and $https and !$ipv6only and $ipv4 and $ipv4 != '' {
-    warning('With a specific IPv4 and https, if this address is used on')
-    warning('several vhosts, you should define ssl_default_* (no SNI support).')
-    warning('See Def. Vhosts: http://github.com/jvaubourg/puppetlabs-nginxpack')
-  }
-
   if $to_port == -1 {
     $to_portval = $to_https ? { true => 443, false => 80 }
   } else {

@@ -17,7 +17,7 @@
 #
 # [*ssl_default_cert_content*]
 #   See the parameter definition with ssl::default/ssl_cert_content
-#   Default: false
+#   Default: Nginxpack default cert
 #
 # [*ssl_default_key_source*]
 #   See the parameter definition with ssl::default/ssl_key_source
@@ -25,7 +25,7 @@
 #
 # [*ssl_default_key_content*]
 #   See the parameter definition with ssl::default/ssl_key_content
-#   Default: false
+#   Default: Nginxpack default key
 #
 # [*enable_php*]
 #   See the parameter definition with php::cgi/enable
@@ -84,12 +84,33 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 class nginxpack (
   $logrotate                = true,
   $ssl_default_cert_source  = false,
   $ssl_default_key_source   = false,
-  $ssl_default_cert_content = false,
-  $ssl_default_key_content  = false,
+  $ssl_default_cert_content = '-----BEGIN CERTIFICATE-----
+MIICBzCCAbGgAwIBAgIJALs62qEPOMXjMA0GCSqGSIb3DQEBCwUAMF8xCzAJBgNV
+BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMRIwEAYDVQQKDAlOZ2lueHBhY2sx
+EjAQBgNVBAsMCU5naW54cGFjazETMBEGA1UEAwwKbmdpbngucGFjazAeFw0xNDA3
+MzExODAxMjhaFw0xNDA4MzAxODAxMjhaMF8xCzAJBgNVBAYTAkFVMRMwEQYDVQQI
+DApTb21lLVN0YXRlMRIwEAYDVQQKDAlOZ2lueHBhY2sxEjAQBgNVBAsMCU5naW54
+cGFjazETMBEGA1UEAwwKbmdpbngucGFjazBcMA0GCSqGSIb3DQEBAQUAA0sAMEgC
+QQDPj8jC1RI7zBiJW1MdCT7amRbm1RTzA1hcmTcvgc2kXMGb+aFHoqzaZGbHK2Au
++nOX/UPb0Q6lGIuj2HHybwc1AgMBAAGjUDBOMB0GA1UdDgQWBBSKnFTu3TG0MlVL
+/i5uOCzuolSquTAfBgNVHSMEGDAWgBSKnFTu3TG0MlVL/i5uOCzuolSquTAMBgNV
+HRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA0EAfhS7AMgCc6ZXh7pXVFx6Q7+aIp6b
+-----END CERTIFICATE-----',
+  $ssl_default_key_content  = '-----BEGIN PRIVATE KEY-----
+MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAz4/IwtUSO8wYiVtT
+HQk+2pkW5tUU8wNYXJk3L4HNpFzBm/mhR6Ks2mRmxytgLvpzl/1D29EOpRiLo9hx
+8m8HNQIDAQABAkBho2SwaiTapkbAjopJdWjw0eUZDxF8w40UeiqgmXIQJ40y1pLM
+WvMvxfp7YXYJZHE4fA4s3bBQHlaOQ/LuinSBAiEA6eu+YKhDcQQeeT97PbTFmRkb
+KLwk3M2abxXR/IyxLSECIQDjJx6ujL1+qRlGnGgae2Gyln0kW7gTd8Kc5PZp81xj
+lQIgKcDsoHAoaZnknpvYMbF8u9Ehaen7YnZIpJ9udfffAEECIQCn0kgtx5dc08vz
+yixznEJi8iIE0aqe33Ut+08+mejhPQIhANwuqnyN/sHHf3dTzgZVcQCYMeQdj5Sh
+nLf3fOvdDEfw
+-----END PRIVATE KEY-----',
   $enable_php               = false,
   $php_mysql                = false,
   $php_timezone             = 'Europe/Paris',
