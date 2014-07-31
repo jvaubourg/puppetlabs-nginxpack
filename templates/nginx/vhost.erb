@@ -56,7 +56,13 @@ server {
   <% end -%>
 
   <% if @use_php then -%>
+
+  <% if @php_AcceptPathInfo then -%>
+  location ~ \.php {
+  <% else -%>
   location ~ \.php$ {
+  <% end -%>
+
     include /etc/nginx/fastcgi_params;
 
     <% if @php_AcceptPathInfo then -%>
