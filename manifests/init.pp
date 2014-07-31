@@ -29,7 +29,7 @@
 #
 # [*default_https_blackhole*]
 #   False if you don't want a default https blackhole (useful if you
-#   have no https vhosts and you don't want Nginx listening 443).
+#   have no https vhosts and you don't want Nginx listening on 443).
 #   Default: true
 #
 # [*enable_php*]

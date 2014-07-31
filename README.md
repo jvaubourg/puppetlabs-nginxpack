@@ -226,7 +226,7 @@ Default remote port is 80. In this case it would have been 443 due to `to_https`
 
 SSL (https://) is usable in the same manner as [basic vhosts](#basic-vhost).
 
-Options `ipv6`, `ipv4`, `ipv6only`, `ipv4only', `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
+Options `ipv6`, `ipv4`, `ipv6only`, `ipv4only`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
 
 ####Redirection Vhost
 
@@ -256,6 +256,8 @@ If you want a detailed documentation of types and options, there is a full docum
 Have a determinist way to access to the vhosts is a good practice in web security. If you say that a vhost can be reached via *my.example.com*, any request using another domain should not success. If you do not have a *default vhost* with a listen line for each port used on the webserver, Nginx will use a doubful algorithm to determine which vhost is usable in the case of an unknown domain.
 
 Good news! Nginxpack creates this default vhost for you and redirects any request out of your scopes to a blackhole.
+
+You can disable the https blackhole with `default_https_blackhole => false` (useful if you have no https vhosts and you don't want Nginx listening on 443).
 
 ####Well-known problem with SSL
 
