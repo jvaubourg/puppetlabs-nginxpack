@@ -41,8 +41,7 @@ This module installs and configures Nginx (lightweight and robust webserver). It
 Features available:
 
 * Install and configure Nginx
-* Optionally: install and configure PHP5-FastCGI
-* Optionally: install and use PHP5-FPM instead of classical PHP5-FastCGI
+* Optionally: install and configure PHP5-FastCGI or PHP5-FPM
 * Optionally: install PHP-MySQL connector and/or others PHP5 modules
 * Basic vhosts
 * Proxy vhosts
@@ -68,7 +67,7 @@ Installed packages:
 
 *logrotate* is used with a configuration file in */etc/logrotate.d/nginx* allowing it to daily rotate vhost logs. The configuration uses *killall* from *psmisc* in order to force nginx to update his inodes (this is the classic way). With `enable_php` but no `php_fpm`, *killall* is also used in `nginxpack::php::cgi` to ensure that PHP is not still running when disabled.
 
-Use `nginxpack::php::mod { 'foo' }` involves installing *php5-foo*.
+Use `nginxpack::php::mod { 'foo': }` involves installing *php5-foo* (e.g. `nginxpack::php::mod { [ 'gd', 'json' ]: }`).
 
 Added services:
 

@@ -125,6 +125,80 @@ def vhost_common_tests(suffix = '')
     end
   end
 
+  context 'with ipv6 but no ipv6only' do
+    let(:params) {{
+      :ipv6     => '2001:db8::42',
+      :ipv6only => false,
+    }}
+
+    it do
+      should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*listen\s+0\.0\.0\.0:80;$/)
+    end
+  end
+
+  context 'with ipv6 and port but no ipv6only' do
+    let(:params) {{
+      :ipv6     => '2001:db8::42',
+      :ipv6only => false,
+      :port     => 8080,
+    }}
+
+    it do
+      should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*listen\s+0\.0\.0\.0:8080;$/)
+    end
+  end
+
+  context 'with ipv6 and ipv6only' do
+    let(:params) {{
+      :ipv6     => '2001:db8::42',
+      :ipv6only => true,
+    }}
+
+    it do
+      should_not contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*listen\s+0\.0\.0\.0:80;$/)
+    end
+  end
+
+  context 'with ipv4 but no ipv4only' do
+    let(:params) {{
+      :ipv4     => '203.0.113.42',
+      :ipv4only => false,
+    }}
+
+    it do
+      should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*listen\s+\[::\]:80;$/)
+    end
+  end
+
+  context 'with ipv4 and port but no ipv4only' do
+    let(:params) {{
+      :ipv4     => '203.0.113.42',
+      :ipv4only => false,
+      :port     => 8080,
+    }}
+
+    it do
+      should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*listen\s+\[::\]:8080;$/)
+    end
+  end
+
+  context 'with ipv4 and ipv4only' do
+    let(:params) {{
+      :ipv4     => '203.0.113.42',
+      :ipv4only => true,
+    }}
+
+    it do
+      should_not contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*listen\s+\[::\]:80;$/)
+    end
+  end
+
   if suffix != '_redirection' then
     context 'with ipv6 and https (default port)' do
       let(:params) {{
@@ -274,6 +348,45 @@ def vhost_common_tests(suffix = '')
       expect {
         subject
       }.to raise_error(Puppet::Error, /add_config but not the both/)
+    end
+  end
+
+  context 'with ipv6only and ipv4only' do
+    let(:params) {{
+      :ipv6only => true,
+      :ipv4only => true,
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /Using ipv6only with ipv4only/)
+    end
+  end
+
+  context 'with ipv6only and ipv4' do
+    let(:params) {{
+      :ipv6only => true,
+      :ipv4     => '203.0.113.42',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /Defining an IPv4 with ipv6only/)
+    end
+  end
+
+  context 'with ipv4only and ipv6' do
+    let(:params) {{
+      :ipv4only => true,
+      :ipv6     => '2001:db8::42',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /Defining an IPv6 with ipv4only/)
     end
   end
 end

@@ -78,7 +78,15 @@ class nginxpack::ssl::default (
   $ssl_key_content  = false
 ) {
 
-  $default_cert_content = '-----BEGIN CERTIFICATE-----
+  if ($ssl_cert_content and $ssl_key_content)
+    or ($ssl_cert_source and $ssl_key_source) {
+
+    $default_cert_content = $ssl_cert_content
+    $default_key_content  = $ssl_key_content
+
+  } else {
+
+    $default_cert_content = '-----BEGIN CERTIFICATE-----
 MIICBzCCAbGgAwIBAgIJALs62qEPOMXjMA0GCSqGSIb3DQEBCwUAMF8xCzAJBgNV
 BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMRIwEAYDVQQKDAlOZ2lueHBhY2sx
 EjAQBgNVBAsMCU5naW54cGFjazETMBEGA1UEAwwKbmdpbngucGFjazAeFw0xNDA3
@@ -92,7 +100,7 @@ HRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA0EAfhS7AMgCc6ZXh7pXVFx6Q7+aIp6b
 yPNPEZF3VUZuj6Ooc0voMjlspEGuRFaDQuVTRu4wMlpNTRJND/dcsE8KhA==
 -----END CERTIFICATE-----'
 
-  $default_key_content = '-----BEGIN PRIVATE KEY-----
+    $default_key_content = '-----BEGIN PRIVATE KEY-----
 MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAz4/IwtUSO8wYiVtT
 HQk+2pkW5tUU8wNYXJk3L4HNpFzBm/mhR6Ks2mRmxytgLvpzl/1D29EOpRiLo9hx
 8m8HNQIDAQABAkBho2SwaiTapkbAjopJdWjw0eUZDxF8w40UeiqgmXIQJ40y1pLM
@@ -103,9 +111,6 @@ yixznEJi8iIE0aqe33Ut+08+mejhPQIhANwuqnyN/sHHf3dTzgZVcQCYMeQdj5Sh
 nLf3fOvdDEfw
 -----END PRIVATE KEY-----'
 
-  if $ssl_cert_content and $ssl_key_content {
-    $default_cert_content = $ssl_cert_content
-    $default_key_content  = $ssl_key_content
   }
 
   nginxpack::ssl::certificate { 'default':

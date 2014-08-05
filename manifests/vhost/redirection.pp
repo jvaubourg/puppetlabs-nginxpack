@@ -117,7 +117,11 @@ define nginxpack::vhost::redirection (
   }
 
   if $ipv4 and $ipv4 != '' and $ipv6only {
-    warning('Defining an IPv4 with ipv6only true is pretty strange.')
+    fail('Defining an IPv4 with ipv6only true is not consistent.')
+  }
+
+  if $ipv6 and $ipv6 != '' and $ipv4only {
+    fail('Defining an IPv6 with ipv4only true is not consistent.')
   }
 
   $portval = $port

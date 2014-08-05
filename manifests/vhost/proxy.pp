@@ -160,7 +160,15 @@ define nginxpack::vhost::proxy (
   }
 
   if $ipv4 and $ipv4 != '' and $ipv6only {
-    warning('Defining an IPv4 with ipv6only true is pretty strange.')
+    fail('Defining an IPv4 with ipv6only true is not consistent.')
+  }
+
+  if $ipv6 and $ipv6 != '' and $ipv4only {
+    fail('Defining an IPv6 with ipv4only true is not consistent.')
+  }
+
+  if $add_config_source and $add_config_content {
+    fail('Use source/content method to define add_config but not the both.')
   }
 
   if $to_port == -1 {

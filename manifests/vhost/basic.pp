@@ -211,7 +211,11 @@ define nginxpack::vhost::basic (
   }
 
   if $ipv4 and $ipv4 != '' and $ipv6only {
-    warning('Defining an IPv4 with ipv6only true is pretty strange.')
+    fail('Defining an IPv4 with ipv6only true is not consistent.')
+  }
+
+  if $ipv6 and $ipv6 != '' and $ipv4only {
+    fail('Defining an IPv6 with ipv4only true is not consistent.')
   }
 
   if $php_AcceptPathInfo and !$use_php {
@@ -222,8 +226,10 @@ define nginxpack::vhost::basic (
     fail('Use source/content method to define add_config but not the both.')
   }
 
-  if !defined_with_params(File['/etc/init.d/php-fastcgi'], {
-    'ensure' => 'file',
+  if !defined_with_params(Package['php5-cgi'], {
+    'ensure' => 'present',
+  }) and !defined_with_params(Package['php5-fpm'], {
+    'ensure' => 'present',
   }) and $use_php {
     warning('Nginxpack class seems not to have been called with enable_php.')
   }

@@ -107,7 +107,7 @@ class nginxpack (
   $php_mysql                = false,
   $php_timezone             = 'Europe/Paris',
   $php_upload_max_filesize  = '10M',
-  $php_upload_max_files     = 10,
+  $php_upload_max_files     = 10
 ) {
 
   if ($ssl_default_cert_source or $ssl_default_key_source or $ssl_default_cert_content
