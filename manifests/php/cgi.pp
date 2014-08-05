@@ -87,29 +87,12 @@ class nginxpack::php::cgi (
 
       package { [ 'php5-fpm' ]:
         ensure  => present,
-        require => File['/etc/php5/cgi/conf.d/'],
       }
 
-      file { '/var/run/php5-cgi.sock':
+      file { '/var/run/php.sock':
         ensure => link,
         force  => true,
         target => '/var/run/php5-fpm.sock',
-      }
-
-      file { '/etc/php5/fpm/php.ini':
-        ensure  => link,
-        force   => true,
-        target  => '/etc/php5/cgi/php.ini',
-        require => File['/etc/php5/cgi/php.ini'],
-        notify  => Service['php5-fpm'],
-      }
-
-      file { '/etc/php5/fpm/conf.d/timezone.ini':
-        ensure  => link,
-        force   => true,
-        target  => '/etc/php5/cgi/conf.d/timezone.ini',
-        require => File['/etc/php5/cgi/conf.d/timezone.ini'],
-        notify  => Service['php5-fpm'],
       }
 
       service { 'php5-fpm':
@@ -117,17 +100,11 @@ class nginxpack::php::cgi (
         enable     => true,
         hasrestart => true,
         hasstatus  => true,
-        require    => File['/etc/php5/fpm/php.ini'],
-      }
-
-      file { '/etc/php5/cgi/conf.d/':
-        ensure  => directory,
-        recurse => true,
-        mode    => '0755',
       }
 
       $php_package = 'php5-fpm'
       $php_service = 'php5-fpm'
+      $php_confdir = 'fpm'
 
     } else {
 
@@ -138,7 +115,7 @@ class nginxpack::php::cgi (
   
       Package['php5-cgi'] -> Package['spawn-fcgi']
 
-      file { '/var/run/php5-cgi.sock':
+      file { '/var/run/php.sock':
         ensure => link,
         force  => true,
         target => '/var/run/php-fastcgi/php-fastcgi.socket',
@@ -171,10 +148,11 @@ class nginxpack::php::cgi (
 
       $php_package = 'php5-cgi'
       $php_service = 'php-fastcgi'
+      $php_confdir = 'cgi'
     }
 
     file_line { 'php.ini-upload_max_filesize':
-      path    => '/etc/php5/cgi/php.ini',
+      path    => "/etc/php5/${php_confdir}/php.ini",
       match   => 'upload_max_filesize',
       line    => "upload_max_filesize = ${upload_max_filesize}",
       require => Package[$php_package],
@@ -182,7 +160,7 @@ class nginxpack::php::cgi (
     }
 
     file_line { 'php.ini-max_file_uploads':
-      path    => '/etc/php5/cgi/php.ini',
+      path    => "/etc/php5/${php_confdir}/php.ini",
       match   => 'max_file_uploads',
       line    => "max_file_uploads = ${upload_max_files}",
       require => Package[$php_package],
@@ -190,7 +168,7 @@ class nginxpack::php::cgi (
     }
 
     file_line { 'php.ini-post_max_size':
-      path    => '/etc/php5/cgi/php.ini',
+      path    => "/etc/php5/${php_confdir}/php.ini",
       match   => 'post_max_size',
       line    => inline_template('post_max_size = <%= \
         (upload_max_files.to_i * upload_max_filesize[0..-2].to_i).to_s\
@@ -199,7 +177,7 @@ class nginxpack::php::cgi (
       notify  => Service[$php_service],
     }
 
-    file { '/etc/php5/cgi/conf.d/timezone.ini':
+    file { "/etc/php5/${php_confdir}/conf.d/timezone.ini":
       ensure  => file,
       mode    => '0644',
       content => "date.timezone = '${timezone}'",
