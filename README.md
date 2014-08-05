@@ -31,7 +31,7 @@
 
 ##Overview
 
-This module installs and configures Nginx (lightweight and robust webserver). It's a pack because you can **optionally** install and configure PHP5 at the same time. There are three types of vhost available (basic, proxy and redirection) and some smart options for Nginx and PHP. This module is full IPv6 compliant because we are in 2013.
+This module installs and configures Nginx (lightweight and robust webserver). It's a pack because you can **optionally** install and configure PHP5 at the same time. There are three types of vhost available (basic, proxy and redirection) and some smart options for Nginx and PHP. This module is full IPv6 compliant because we are in the 21st century.
 
 * [PuppetLabs Forge](https://forge.puppetlabs.com/jvaubourg/nginxpack)
 * [GitHub Repository](https://github.com/jvaubourg/puppetlabs-nginxpack/)
