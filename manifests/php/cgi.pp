@@ -262,4 +262,5 @@ class nginxpack::php::cgi (
         refreshonly => true,
       }
     }
+  }
 }
