@@ -36,6 +36,10 @@
 #   See the parameter definition with php::cgi/enable
 #   Default: false
 #
+# [*php_fpm*]
+#   See the parameter definition with php::cgi/fpm
+#   Default: false
+#
 # [*php_mysql*]
 #   See the parameter definition with php::cgi/mysql
 #   Default: false
@@ -56,6 +60,7 @@
 #
 #   class { 'nginxpack':
 #     enable_php              => true,
+#     php_fpm                 => true,
 #     ssl_default_cert_source => 'puppet:///certificates/default.pem',
 #     ssl_default_key_source  => 'puppet:///certificates/default.key',
 #   }
@@ -98,6 +103,7 @@ class nginxpack (
   $ssl_default_key_content  = false,
   $default_https_blackhole  = true,
   $enable_php               = false,
+  $php_fpm                  = false,
   $php_mysql                = false,
   $php_timezone             = 'Europe/Paris',
   $php_upload_max_filesize  = '10M',
@@ -126,6 +132,7 @@ class nginxpack (
 
   class { 'nginxpack::php::cgi':
     enable              => $enable_php,
+    fpm                 => $php_fpm,
     mysql               => $php_mysql,
     timezone            => $php_timezone,
     upload_max_filesize => $php_upload_max_filesize,
