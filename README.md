@@ -31,7 +31,7 @@
 
 ##Overview
 
-This module installs and configures Nginx (lightweight and robust webserver). It's a pack because you can **optionally** install and configure PHP5 at the same time. There are three types of vhost available (basic, proxy and redirection) and some smart options for Nginx and PHP. This module is full IPv6 compliant because we are in 2013.
+This module installs and configures Nginx (lightweight and robust webserver). It's a pack because you can **optionally** install and configure PHP5 at the same time. There are three types of vhost available (basic, proxy and redirection) and some smart options for Nginx and PHP. This module is full IPv6 compliant because we are in the 21st century.
 
 * [PuppetLabs Forge](https://forge.puppetlabs.com/jvaubourg/nginxpack)
 * [GitHub Repository](https://github.com/jvaubourg/puppetlabs-nginxpack/)
@@ -41,35 +41,41 @@ This module installs and configures Nginx (lightweight and robust webserver). It
 Features available:
 
 * Install and configure Nginx
-* Optionally: install and configure PHP5-FastCGI
+* Optionally: install and configure PHP5-FPM or PHP5-FastCGI/Spawn-FCGI
 * Optionally: install PHP-MySQL connector and/or others PHP5 modules
 * Basic vhosts
 * Proxy vhosts
 * 301 Redirection vhosts
 * SSL support
-* Full IPv6 compliant (and still IPv4...)
+* SNI support
+* AcceptPathInfo support
+* Full IPv6 compliant (and still IPv4...) including IPv6-Only
 * Automatic blackhole for non-existent domains
 * Several options (upload limits with Nginx/PHP, timezone, logrotate, 
-default SSL certificate, htpasswd, XSS injection protection, etc.)
+default SSL certificate, htpasswd, listing, XSS injection protection, etc.)
 * Custom configuration option for non-supported features
+
+Recipes validated with [+200 rspec tests](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack).
 
 ##What nginxpack affects
 
 Installed packages:
 
 * *nginx*
-* With `enable_php`: *php5-cgi*, *spawn-fcgi*
+* With `enable_php` and `php_fpm`: *php5-fpm* (default PHP configuration)
+* With `enable_php` and no `php_fpm`: *php5-cgi*, *spawn-fcgi*
 * With `php_mysql`: *php5-mysql*
 * With `logrotate`: *logrotate*, *psmisc* (if not already present)
 
-*logrotate* is used with a configuration file in */etc/logrotate.d/nginx* allowing it to daily rotate vhost logs. The configuration uses *killall* from *psmisc* in order to force nginx to update his inodes (this is the classic way). *killall* is also used in `nginxpack::php::cgi` to ensure that PHP is not still running.
+*logrotate* is used with a configuration file in */etc/logrotate.d/nginx* allowing it to daily rotate vhost logs. The configuration uses *killall* from *psmisc* in order to force nginx to update his inodes (this is the classic way). With `enable_php` but no `php_fpm`, *killall* is also used in `nginxpack::php::cgi` to ensure that PHP is not still running when disabled.
 
-Use `nginxpack::php::mod { 'foo' }` involves installing *php5-foo*.
+Use `nginxpack::php::mod { 'foo': }` involves installing *php5-foo* (e.g. `nginxpack::php::mod { [ 'mcrypt', 'gd' ]: }`).
 
 Added services:
 
 * Use `/etc/init.d/nginx`
-* Add `/etc/init.d/php-fastcgi` (and associated script `/usr/bin/php-fastcgi.sh`)
+* With `enable_php` and no `php_fpm`: add `/etc/init.d/php-fastcgi` (and associated script `/usr/bin/php-fastcgi.sh`)
+* With `enable_php` and `php_fpm`: use `/etc/init.d/php5-fpm`
 
 Added files:
 
@@ -94,6 +100,13 @@ And with PHP:
 
     class { 'nginxpack':
       enable_php => true,
+    }
+
+If you want a classical PHP5-FastCGI/Spawn-FCGI instead of [PHP5-FPM](http://php-fpm.org), you can add:
+
+    class { 'nginxpack':
+      enable_php => true,
+      php_fpm    => false,
     }
 
 With PHP-MySQL connector:
@@ -139,7 +152,7 @@ With PHP:
       use_php => true,
     }
 
-Since you use `use_php` for at least one vhost, you have to use `enable_php` with the webserver.
+Since you use `use_php` for at least one vhost, you have to use `enable_php` with the webserver. For activating [AcceptPathInfo](https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo), add `php_AcceptPathInfo => true` to the vhost (e.g. */foo/index.php/bar/* with *PATH_INFO=/bar/*).
 
 Listen on a specific IPv6 and all IPv4 available:
 
@@ -148,7 +161,7 @@ Listen on a specific IPv6 and all IPv4 available:
       ipv6    => '2001:db8::42',
     }
 
-You can use the `ipv4` option to listen on a specific IPv4 address or disable it with *false* (real \_wo\_men do that). `ipv6` also can be set to false, but please don't do that.
+You can use the `ipv4` option to listen on a specific IPv4 address. And if you don't want listening on IPv4 you can set `ipv6only => true` (and `ipv4only` for not listening on IPv6, when it's **strictly** necessary).
 
 Listen on a specific port:
 
@@ -177,20 +190,26 @@ The default listening port becomes 443 but you still could force a different one
 Other options:
 
     nginxpack::vhost::basic { 'foobar':
-      domains         => [ 'foobar.example.com' ],
-      enable          => false,
-      files_dir       => '/srv/websites/foobar/',
-      injectionsafe   => true,
-      upload_max_size => '5G',
-      htpasswd        => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
-      forbidden       => [ '^/logs/', '^/tmp/', '\.inc$' ],
+      domains            => [ 'foobar.example.com' ],
+      enable             => false,
+      files_dir          => '/srv/websites/foobar/',
+      injectionsafe      => true,
+      upload_max_size    => '5G',
+      htpasswd           => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
+      htpasswd_msg       => "Restricted Foobar's access",
+      forbidden          => [ '^/logs/', '^/tmp/', '\.inc$' ],
+      add_config_content => 'location @barfoo { rewrite ^(.+)$ /files/$1; }',
+      try_files          => '@barfoo =404',
+      listing            => true
     }
 
-`files_dir`'s default value is */var/www/&lt;name&gt;/* (e.g. */var/www/foobar/*).
+`files_dir` (*DocumentRoot*) default value is */var/www/&lt;name&gt;/* (e.g. */var/www/foobar/*).
 
 `injectionsafe` applies [these protections](http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections-file-injections-spam-user-agents-etc) against XSS injections. These restrictions might be incompatible with your applications.
 
 `upload_max_size` should be in line with `php_upload_max_filesize` *x* `php_upload_max_files`
+
+`listing` corresponds to directory index enabled (auto files indexing)
 
 `htpasswd`'s value can be generated from a command line tool (*apache2-utils*):
 
@@ -222,7 +241,7 @@ Default remote port is 80. In this case it would have been 443 due to `to_https`
 
 SSL (https://) is usable in the same manner as [basic vhosts](#basic-vhost).
 
-Options `ipv6`, `ipv4`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
+Options `ipv6`, `ipv4`, `ipv6only`, `ipv4only`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
 
 ####Redirection Vhost
 
@@ -237,7 +256,7 @@ Default listen identical to basic vhosts, and remote domain reached on port 80 w
 
 Options `to_https` and `to_port` are available in the same way as [proxy vhosts](#proxy-vhost).
 
-Options `ipv6`, `ipv4`, `port`, `enable`, `add_config_source` and `add_config_content` are available in the same way as [basic vhosts](#basic-vhost).
+Options `ipv6`, `ipv4`, `ipv6only`, `ipv4only`, `port`, `enable`, `add_config_source` and `add_config_content` are available in the same way as [basic vhosts](#basic-vhost).
 
 ###Documentation
 
@@ -253,7 +272,7 @@ Have a determinist way to access to the vhosts is a good practice in web securit
 
 Good news! Nginxpack creates this default vhost for you and redirects any request out of your scopes to a blackhole.
 
-If you use at least one vhost with SSL, you need to define `ssl_default_*` options. See the [next section about SSL](#well-known-problem-with-ssl).
+You can disable the https blackhole with `default_https_blackhole => false` (useful if you have no https vhosts and you don't want Nginx listening on 443).
 
 ####Well-known problem with SSL
 
@@ -263,13 +282,23 @@ The full circle is easy to understand:
 2. When a client initiates a SSL connection, this field is encrypted, until Nginx decrypts the request.
 3. Informations about decryption (e.g. certificate location) are in the correct vhost. Back to *1*.
 
-Thus, if you have several vhosts listening on the same port with the same IP (or *all* IP) and that use SSL, you have a problem.
+Thus, if you have several vhosts listening on the same port with the same IP (or *all* IP) and using SSL, you have a problem.
 
-The good solution is to use a default vhost, listening on all ports and IP used by SSL vhosts on the webserver and containing the decryption informations. When Nginx will receive a SSL request, it will use this vhost, and so, will be able to decrypt it. Once the *host* field is readable, it can chose the correct vhost. The latter don't have to propose SSL but it absolutely must listen on port 443 (or another if you use SSL with another one).
+With Nginx >= 0.7.62 and OpenSSL >= 0.9.8j, you can use [SNI](http://en.wikipedia.org/wiki/Server_Name_Indication), the modern way to solve this problem. You have nothing to do, but your visitors must have recent browsers:
 
-Good news! Nginxpack creates this default vhost for you if you use `ssl_default_cert_source` (or `ssl_default_cert_key`) and `ssl_default_key_source` (or `ssl_default_key_source`) options. This certificate must be valid for all domains used, so it will probably be a wildcard certificate.
+* Opera 8.0;
+* MSIE 7.0 (but only on Windows Vista or higher);
+* Firefox 2.0 and other browsers using Mozilla Platform rv:1.8.1;
+* Safari 3.2.1 (Windows version supports SNI on Vista or higher);
+* or Chrome (Windows version supports SNI on Vista or higher, too).
 
-The [first common use case](#reverse-proxy-with-ipv4) in the next section provides an example.
+The other constraint is that you cannot use specific addresses (`ipv6` and `ipv4` options) with SNI.
+
+If you don't want to restrict compatible browsers or you want use specific addresses or you want to manage only one wildcard certificate, the good solution is to use a default vhost, listening on all ports and IP used by SSL vhosts on the webserver and containing the decryption informations. When Nginx will receive a SSL request, it will use this vhost, and so, will be able to decrypt it. Once the *host* field is readable, it can chose the correct vhost. The latter don't have to propose SSL but it absolutely must listen on port 443 (or another if you use SSL with another one).
+
+Nginxpack creates this default vhost for you, with a default certificate. To replace the default certificate, you can use `ssl_default_cert_source` (or `ssl_default_cert_key`) and `ssl_default_key_source` (or `ssl_default_key_source`) options. This certificate should be valid for all domains used, so it will probably be at least a wildcard certificate. 
+
+The [first common use case](#reverse-proxy-with-ipv4) in the next section provides an example with this solution.
 
 ##Common Use Cases
 
@@ -314,14 +343,14 @@ Webserver hosting the reverse-proxy:
 
     nginxpack::vhost::proxy { 'blog':
       domains   => [ 'blog.example.com' ],
-      ipv6      => false,
+      ipv4only  => true,
       to_domain => 'blog.lan',
     }
 
     nginxpack::vhost::proxy { 'wiki':
       domains   => [ 'wiki.example.com' ],
       port      => 443,
-      ipv6      => false,
+      ipv4only  => true,
       to_domain => 'wiki.lan',
       to_https  => true,
     }
@@ -329,7 +358,7 @@ Webserver hosting the reverse-proxy:
     nginxpack::vhost::proxy { 'members':
       domains   => [ 'members.example.com' ],
       port      => 443,
-      ipv6      => false,
+      ipv4only  => true,
       to_domain => 'members.lan',
       to_https  => true,
     }
@@ -337,9 +366,9 @@ Webserver hosting the reverse-proxy:
 Webserver hosting *blog.example.com*:
 
     nginxpack::vhost::basic { 'blog':
-      domains => [ 'blog.example.com' ],
-      ipv4    => false,
-      use_php => true,
+      domains  => [ 'blog.example.com' ],
+      ipv6only => true,
+      use_php  => true,
     }
 
 Webserver hosting *wiki.example.com*:
@@ -349,7 +378,7 @@ Webserver hosting *wiki.example.com*:
       https           => true,
       ssl_cert_source => 'puppet:///certificates/default.pem',
       ssl_key_source  => 'puppet:///certificates/default.key',
-      ipv4            => false,
+      ipv6only        => true,
       use_php         => true,
     }
 
@@ -360,7 +389,7 @@ Webserver hosting *members.example.com*:
       https           => true,
       ssl_cert_source => 'puppet:///certificates/default.pem',
       ssl_key_source  => 'puppet:///certificates/default.key',
-      ipv4            => false,
+      ipv6only        => true,
       use_php         => true,
     }
 
@@ -487,7 +516,7 @@ You own a website not available in IPv6 and you cannot have an IPv6 address on i
     nginxpack::vhost::proxy { 'foobar':
       domains   => [ 'example.com' ],
       to_domain => 'ip4.example.com',
-      ipv4      => false,
+      ipv6only  => true,
     }
 
 DNS configuration:

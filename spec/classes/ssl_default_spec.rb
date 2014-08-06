@@ -38,6 +38,24 @@ describe 'nginxpack::ssl::default' do
 
   # GENERAL TESTS
 
+  context 'with neither cert nor key' do
+    it do
+      should contain_file('/etc/nginx/ssl/default.key') \
+        .with_content(/^MIIBVwIBADANBgkqhkiG9w0BAQEFAASCAUE/)
+    end
+
+    it do
+      should contain_file('/etc/nginx/ssl/default.pem') \
+        .with_content(/^MIICDzCCAbmgAwIBAgIJAOdD3ZnAmgBzMA0/)
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-enabled/default_https') \
+        .with_ensure('link') \
+        .with_target('/etc/nginx/sites-available/default_https')
+    end
+  end
+
   context 'with cert and key' do
     let(:params) {{
       :ssl_cert_content => 'bar',
@@ -54,5 +72,4 @@ describe 'nginxpack::ssl::default' do
         .with_target('/etc/nginx/sites-available/default_https')
     end
   end
-
 end

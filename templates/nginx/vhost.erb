@@ -4,14 +4,24 @@
 
 server {
   <% if (!@ipv6 || @ipv6.empty?) && (!@ipv4 || @ipv4.empty?) then %>
-    listen [::]:<%= @portval %>;
-    listen 0.0.0.0:<%= @portval %>;
+    <% if !@ipv4only then -%>
+      listen [::]:<%= @portval %>;
+    <% end -%>
+    <% if !@ipv6only then -%>
+      listen 0.0.0.0:<%= @portval %>;
+    <% end -%>
   <% else -%>
     <% if @ipv6 && !@ipv6.empty? then -%>
       listen [<%= @ipv6 %>]:<%= @portval %>;
+      <% if !@ipv6only && (!@ipv4 || @ipv4.empty?) then -%>
+        listen 0.0.0.0:<%= @portval %>;
+      <% end -%>
     <% end -%>
     <% if @ipv4 && !@ipv4.empty? then -%>
       listen <%= @ipv4 %>:<%= @portval %>;
+      <% if !@ipv4only && (!@ipv6 || @ipv6.empty?) then -%>
+        listen [::]:<%= @portval %>;
+      <% end -%>
     <% end -%>
   <% end -%>
 
@@ -30,10 +40,6 @@ server {
 
   <% if @https then -%>
   ssl on;
-  ssl_session_timeout 5m;
-  ssl_protocols SSLv3 TLSv1;
-  ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
-  ssl_prefer_server_ciphers on;
   ssl_certificate /etc/nginx/ssl/<%= @name %>.pem;
   ssl_certificate_key /etc/nginx/ssl/<%= @name %>.key;
   <% end -%>
@@ -50,24 +56,40 @@ server {
   <% end -%>
 
   <% if @use_php then -%>
+
+  <% if @php_AcceptPathInfo then -%>
+  location ~ \.php {
+  <% else -%>
   location ~ \.php$ {
+  <% end -%>
+
     include /etc/nginx/fastcgi_params;
-    fastcgi_pass unix:/var/run/php-fastcgi/php-fastcgi.socket;
+
+    <% if @php_AcceptPathInfo then -%>
+    fastcgi_split_path_info ^((?U).+\.php)(/?.+)$;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+    <% end -%>
+
     fastcgi_index index.php;
-    fastcgi_param SCRIPT_FILENAME <%= @files_dir %>/$fastcgi_script_name;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass unix:/var/run/php.sock;
 
     <% if @htpasswd then -%>
-    auth_basic              "Restricted";
+    auth_basic              "<%= @htpasswd_msg.gsub('"', "''") %>";
     auth_basic_user_file    /etc/nginx/htpasswd/<%= @name %>;
     <% end -%>
   }
   <% end -%>
 
   location ~ / {
-    index index index.html<%= @use_php ? ' index.php' : '' %>;
+    try_files $uri $uri/ $uri/index.html<%= @use_php ? ' $uri/index.php' : '' %> <%= @try_files %>;
+
+    <% if @listing then -%>
+    autoindex on;
+    <% end -%>
 
     <% if @htpasswd then -%>
-    auth_basic              "Restricted";
+    auth_basic              "<%= @htpasswd_msg.gsub('"', "''") %>";
     auth_basic_user_file    /etc/nginx/htpasswd/<%= @name %>;
     <% end -%>
   }

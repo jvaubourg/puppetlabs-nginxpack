@@ -60,9 +60,99 @@ describe 'nginxpack' do
     end
   end
 
-  context 'with neither default cert nor key' do
+  # HTTPS BLACKHOLE
+
+  context 'with neither default cert nor key but default https blackhole' do
+    let(:params) {{
+      :default_https_blackhole => true,
+    }}
+
     it do
-      should_not contain_class('nginxpack::ssl::default')
+      should contain_class('nginxpack::ssl::default').with(
+        'ssl_cert_source'  => false,
+        'ssl_key_source'   => false,
+        'ssl_cert_content' => false,
+        'ssl_key_content'  => false
+      )
+    end
+  end
+
+  context 'with neither default cert nor key and no default https blackhole' do
+    let(:params) {{
+      :default_https_blackhole => false,
+    }}
+
+    it do
+      should_not contain_file('/etc/nginx/ssl/default.key')
+    end
+
+    it do
+      should_not contain_file('/etc/nginx/ssl/default.pem')
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-enabled/default_https') \
+        .with_ensure('absent')
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-available/default_https') \
+        .with_ensure('absent')
+    end
+  end
+
+  context 'with default cert/key from content and no default https blackhole' do
+    let(:params) {{
+      :default_https_blackhole  => false,
+      :ssl_default_cert_content => 'foo',
+      :ssl_default_key_content  => 'bar',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /Use a default certificate without/)
+    end
+  end
+
+  context 'with default cert/key from source and no default https blackhole' do
+    let(:params) {{
+      :default_https_blackhole => false,
+      :ssl_default_cert_source => 'foo',
+      :ssl_default_key_source  => 'bar',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /Use a default certificate without/)
+    end
+  end
+
+  context 'with no default http blackhole' do
+    let(:params) {{
+      :default_http_blackhole => false,
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-enabled/default') \
+        .with_ensure('absent')
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-available/default') \
+        .with_ensure('absent')
+    end
+  end
+
+  context 'with neither default http blackhole nor default https blackhole' do
+    let(:params) {{
+      :default_http_blackhole => false,
+      :default_https_blackhole => false,
+    }}
+
+    it do
+      should_not contain_exec('find_default_listen')
     end
   end
 

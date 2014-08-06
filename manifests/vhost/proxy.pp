@@ -40,6 +40,14 @@
 #   See the parameter definition with vhost::basic/ipv4.
 #   Default: false
 #
+# [*ipv6only*]
+#   See the parameter definition with vhost::basic/ipv6only.
+#   Default: false
+#
+# [*ipv4only*]
+#   See the parameter definition with vhost::basic/ipv4only.
+#   Default: false
+#
 # [*https*]
 #   See the parameter definition with vhost::basic/https.
 #   Default: false
@@ -127,6 +135,8 @@ define nginxpack::vhost::proxy (
   $enable             = true,
   $ipv6               = false,
   $ipv4               = false,
+  $ipv6only           = false,
+  $ipv4only           = false,
   $port               = -1,
   $upload_max_size    = '10M',
   $add_config_source  = false,
@@ -145,11 +155,16 @@ define nginxpack::vhost::proxy (
     fail('To have a https connection, please define a cert_pem AND a cert_key.')
   }
 
-  if !defined_with_params(File['/etc/nginx/sites-enabled/default_https'], {
-    'ensure' => 'link',
-  }) and $https and ($ipv4 or (!$ipv4 and !$ipv6)) and $ipv4 != '' {
-    warning('With IPv4 listening and https, you should define ssl_default_*.')
-    warning('See Def. Vhosts: http://github.com/jvaubourg/puppetlabs-nginxpack')
+  if $ipv6only and $ipv4only {
+    fail('Using ipv6only with ipv4only does not make sens.')
+  }
+
+  if $ipv4 and $ipv4 != '' and $ipv6only {
+    fail('Defining an IPv4 with ipv6only true is not consistent.')
+  }
+
+  if $ipv6 and $ipv6 != '' and $ipv4only {
+    fail('Defining an IPv6 with ipv4only true is not consistent.')
   }
 
   if $add_config_source and $add_config_content {

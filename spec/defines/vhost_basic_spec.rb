@@ -68,6 +68,83 @@ describe 'nginxpack::vhost::basic' do
     end
   end
 
+  context 'with htpasswd and htpasswd_msg' do
+    let(:params) {{
+      :htpasswd     => 'foo:bar',
+      :htpasswd_msg => 'barfoo',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/\s*auth_basic\s+"barfoo";/)
+    end
+  end
+
+  context 'with htpasswd and htpasswd_msg with quotes' do
+    let(:params) {{
+      :htpasswd     => 'foo:bar',
+      :htpasswd_msg => 'ba"rf"oo',
+    }}
+
+    it do
+      should_not contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/\s*auth_basic\s+"ba\\"rf\\"oo";/)
+    end
+  end
+
+  context 'with htpasswd_msg but no htpasswd' do
+    let(:params) {{
+      :htpasswd     => false,
+      :htpasswd_msg => 'barfoo',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /You need to use htpasswd/)
+    end
+  end
+
+  # FORBIDDEN TESTS
+
+  context 'with forbidden' do
+    let(:params) {{
+      :forbidden => [ 'foo', 'bar' ],
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*location\s+~\s+foo\s+{\s+return\s+403;\s+}$/) \
+        .with_content(/^\s*location\s+~\s+bar\s+{\s+return\s+403;\s+}$/)
+    end
+  end
+
+  # LISTING TESTS
+
+  context 'with listing' do
+    let(:params) {{
+      :listing => true,
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*autoindex on;$/)
+    end
+  end
+
+  # TRY_FILES TESTS
+
+  context 'with try_files' do
+    let(:params) {{
+      :try_files => 'barfoo',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*try_files.+\s+barfoo;$/)
+    end
+  end
+
   # USE_PHP TESTS
 
   context 'with use_php' do
@@ -82,7 +159,7 @@ describe 'nginxpack::vhost::basic' do
 
     it do
       should contain_file('/etc/nginx/sites-available/foobar') \
-        .with_content(/^\s*index.*index.php/)
+        .with_content(/^\s*try_files.+\s+\$uri\/index\.php/)
     end
   end
 
@@ -99,6 +176,33 @@ describe 'nginxpack::vhost::basic' do
     it do
       should_not contain_file('/etc/nginx/sites-available/foobar') \
         .with_content(/^\s*index.*index.php/)
+    end
+  end
+
+  # PHP_ACCEPTPATHINFO TESTS
+
+  context 'with php_AcceptPathInfo and use_php' do
+    let(:params) {{
+      :use_php            => true,
+      :php_AcceptPathInfo => true,
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*fastcgi_split_path_info/) \
+        .with_content(/^\s*fastcgi_param\s+PATH_INFO\s+\$fastcgi_path_info;$/)
+    end
+  end
+
+  context 'with php_AcceptPathInfo but no use_php' do
+    let(:params) {{
+      :use_php            => false,
+      :php_AcceptPathInfo => true,
+    }}
+
+    it do
+      should_not contain_file('/etc/nginx/sites-available/foobar')
+        .with_content(/fastcgi_split_path_info/)
     end
   end
 
@@ -132,29 +236,6 @@ describe 'nginxpack::vhost::basic' do
     it do
       should contain_file('/etc/nginx/sites-available/foobar') \
         .with_content(/^\s*root \/var\/www\/foobar\/;$/)
-    end
-  end
-
-  context 'with use_php and files_dir' do
-    let(:params) {{
-      :use_php   => true,
-      :files_dir => '/foo/bar/',
-    }}
-
-    it do
-      should contain_file('/etc/nginx/sites-available/foobar') \
-        .with_content(/^\s*fastcgi_param\s+SCRIPT_FILENAME\s+\/foo\/bar\/\/\$fastcgi_script_name;$/)
-    end
-  end
-
-  context 'with use_php and no files_dir' do
-    let(:params) {{
-      :use_php   => true,
-    }}
-
-    it do
-      should contain_file('/etc/nginx/sites-available/foobar') \
-        .with_content(/^\s*fastcgi_param\s+SCRIPT_FILENAME\s+\/var\/www\/foobar\/\/\$fastcgi_script_name;$/)
     end
   end
 end

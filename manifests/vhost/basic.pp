@@ -16,17 +16,22 @@
 #   Default: true
 #
 # [*ipv6*]
-#   IPv6 address usable to access to this website. Use false to disable ipv6
-#   (but please never use this possibily). Use :: to listen on all available
-#   IPv6 addresses. If IPv6 and IPv4 are false, Nginx will listen on all
-#   available IP on the server (default behavior).
+#   IPv6 address for accessing to this website. Use false to listen on all
+#   available IPv6 addresses (except if ipv6only is true).
 #   Default: false
 #
 # [*ipv4*]
-#   IPv4 address usable to access to this website. Use false or to disable IPv4
-#   (real _wo_men do that!). Use 0.0.0.0 to listen on all available IPv4
-#   addresses. If IPv6 and IPv4 are false, Nginx will listen on all available
-#   IP on the server (default behavior).
+#   IPv4 address for accessing to this website. Use false to listen on all
+#   available IPv4 addresses (except if ipv6only is true).
+#   Default: false
+#
+# [*ipv6only*]
+#   True to disable IPv4 listening. Incompatible with ipv4only.
+#   Default: false
+#
+# [*ipv4only*]
+#   True to disable IPv6 listening. Incompatible with ipv6only.
+#   Please use it only when strictly necessary!
 #   Default: false
 #
 # [*https*]
@@ -77,6 +82,11 @@
 #   previously with enable_php=true.
 #   Default: false
 #
+# [*php_AcceptPathInfo*]
+#   True if you to want activate AcceptPathInfo with PHP.
+#   See: https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo
+#   Default: false
+#
 # [*add_config_source*]
 #   Config files are generated from Puppet but you could need to add specific
 #   rules in your vhost definition. The content of the file targeted will be
@@ -95,6 +105,10 @@
 #     $ htpasswd -nb user1 secretpassword
 #   Default: false
 #
+# [*htpasswd_msg*]
+#   Set http authentication message.
+#   Default: "Restricted" 
+#
 # [*forbidden*]
 #   Array of regexps corresponding to forbidden urls. If your vhost targets
 #   /var/www/myvhost/ and that your logs directory is /var/www/myvhost/logs
@@ -105,6 +119,15 @@
 #   Location of the website content. Directories will be created if it do not
 #   already exist.
 #   Default: /var/www/<name>/
+#
+# [*try_files*]
+#   Additional default try_files in the location / (e.g. tryfiles => '@foobar',
+#   with a location "@foobar" defined in add_config_* for use in last resort).
+#   Default: =404
+#
+# [*listing*]
+#   True if you want to enable files auto indexing (directory index).
+#   Default: false
 #
 # === Examples
 #
@@ -159,6 +182,8 @@ define nginxpack::vhost::basic (
   $enable             = true,
   $ipv6               = false,
   $ipv4               = false,
+  $ipv6only           = false,
+  $ipv4only           = false,
   $https              = false,
   $ssl_cert_source    = false,
   $ssl_key_source     = false,
@@ -168,11 +193,15 @@ define nginxpack::vhost::basic (
   $upload_max_size    = '100M',
   $injectionsafe      = false,
   $use_php            = false,
+  $php_AcceptPathInfo = false,
   $add_config_source  = false,
   $add_config_content = false,
   $htpasswd           = false,
+  $htpasswd_msg       = "Restricted",
   $forbidden          = false,
-  $files_dir          = "/var/www/${name}/"
+  $files_dir          = "/var/www/${name}/",
+  $try_files          = '=404',
+  $listing            = false
 ) {
 
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
@@ -187,21 +216,33 @@ define nginxpack::vhost::basic (
     fail('To have a https connection, please define a cert_pem AND a cert_key.')
   }
 
-  if !defined_with_params(File['/etc/nginx/sites-enabled/default_https'], {
-    'ensure' => 'link',
-  }) and $https and ($ipv4 or (!$ipv4 and !$ipv6)) and $ipv4 != '' {
-    warning('With IPv4 listening and https, you should define ssl_default_*.')
-    warning('See Def. Vhosts: http://github.com/jvaubourg/puppetlabs-nginxpack')
+  if $ipv6only and $ipv4only {
+    fail('Using ipv6only with ipv4only does not make sens.')
+  }
+
+  if $ipv4 and $ipv4 != '' and $ipv6only {
+    fail('Defining an IPv4 with ipv6only true is not consistent.')
+  }
+
+  if $ipv6 and $ipv6 != '' and $ipv4only {
+    fail('Defining an IPv6 with ipv4only true is not consistent.')
+  }
+
+  if $php_AcceptPathInfo and !$use_php {
+    warning('AcceptPathInfo activated has no sens if PHP is not used.')
   }
 
   if $add_config_source and $add_config_content {
     fail('Use source/content method to define add_config but not the both.')
   }
 
-  if !defined_with_params(File['/etc/init.d/php-fastcgi'], {
-    'ensure' => 'file',
-  }) and $use_php {
-    warning('Nginxpack class seems not to have been called with enable_php.')
+  if $htpasswd_msg != 'Restricted' and !$htpasswd {
+    fail('You need to use htpasswd with htpasswd_msg.')
+  }
+
+  if $use_php {
+    notice('Use PHP in at least 1 vhost implies to use enable_php in init.')
+    notice('Add if it is not already, otherwise ignore this notice.')
   }
 
   if $port == -1 {
