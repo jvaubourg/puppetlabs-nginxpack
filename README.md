@@ -55,6 +55,8 @@ Features available:
 default SSL certificate, htpasswd, XSS injection protection, etc.)
 * Custom configuration option for non-supported features
 
+Recipes validated with [+200 rspec tests](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack).
+
 ##What nginxpack affects
 
 Installed packages:
@@ -100,18 +102,17 @@ And with PHP:
       enable_php => true,
     }
 
-If you want [PHP5-FPM](http://php-fpm.org) instead of classical PHP5-FastCGI (it seems that is a good idea for performance), you can add:
+If you want a classical PHP5-FastCGI / Spawn-FCGI instead of [PHP5-FPM](http://php-fpm.org), you can add:
 
     class { 'nginxpack':
       enable_php => true,
-      php_fpm    => true,
+      php_fpm    => false,
     }
 
 With PHP-MySQL connector:
 
     class { 'nginxpack':
       enable_php => true,
-      php_fpm    => true,
       php_mysql  => true,
     }
 
@@ -119,7 +120,6 @@ Others options for PHP:
 
     class { 'nginxpack':
       enable_php              => true,
-      php_fpm                 => true,
       php_timezone            => 'Antarctica/Vostok',
       php_upload_max_filesize => '1G',
       php_upload_max_files    => 5,

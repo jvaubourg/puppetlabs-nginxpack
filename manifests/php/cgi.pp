@@ -1,6 +1,6 @@
 # == Class: nginxpack::php::cgi
 #
-# Install classical PHP5-FastCGI (with a dedicated service) or PHP5-FPM.
+# Install PHP5-FPM or classical PHP5-FastCGI.
 #
 # Should be used through the main nginxpack class.
 #
@@ -14,8 +14,8 @@
 #   Default: true
 #
 # [*fpm*]
-#   True if you want use PHP5-FPM instead of classical PHP5-FastCGI.
-#   It seems that it is a good idea to use it for better performance.
+#   False if you want to use classical PHP5-FastCGI instead of PHP5-FPM.
+#   FPM seems have better performance.
 #   See: http://php-fpm.org
 #   Default: false
 #
@@ -38,7 +38,6 @@
 # === Examples
 #
 #   class { 'nginxpack::php::cgi':
-#     fpm                 => true,
 #     mysql               => true,
 #     upload_max_filesize => '100M',
 #   }
@@ -69,14 +68,14 @@
 #
 class nginxpack::php::cgi (
   $enable              = true,
-  $fpm                 = false,
+  $fpm                 = true,
   $mysql               = false,
   $timezone            = 'Europe/Paris',
   $upload_max_filesize = '10M',
   $upload_max_files    = '10'
 ) {
 
-  if !$enable and ($fpm or $mysql or $timezone != 'Europe/Paris'
+  if !$enable and ($mysql or $timezone != 'Europe/Paris'
     or $upload_max_filesize != '10M' or $upload_max_files != '10') {
 
     warning('You use PHP options without enabling PHP.')
