@@ -9,6 +9,7 @@
   * Add possibility to disable blackholes
   * Add fake default HTTPS certificate for the blackhole, when using SNI
   * Add AcceptPathInfo support
+  * Add listing (autoindex) support
   * Add final "try_files" support (useful with add_config_*)
   * Fix IPv6-Only / IPv4-Only support. But please don't use IPv4-Only.
   * Add custom error for blackholes
