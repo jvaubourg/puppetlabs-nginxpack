@@ -41,7 +41,7 @@ This module installs and configures Nginx (lightweight and robust webserver). It
 Features available:
 
 * Install and configure Nginx
-* Optionally: install and configure PHP5-FastCGI or PHP5-FPM
+* Optionally: install and configure PHP5-FPM or PHP5-FastCGI/Spawn-FCGI
 * Optionally: install PHP-MySQL connector and/or others PHP5 modules
 * Basic vhosts
 * Proxy vhosts
@@ -52,7 +52,7 @@ Features available:
 * Full IPv6 compliant (and still IPv4...) including IPv6-Only
 * Automatic blackhole for non-existent domains
 * Several options (upload limits with Nginx/PHP, timezone, logrotate, 
-default SSL certificate, htpasswd, XSS injection protection, etc.)
+default SSL certificate, htpasswd, listing, XSS injection protection, etc.)
 * Custom configuration option for non-supported features
 
 Recipes validated with [+200 rspec tests](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack).
@@ -62,14 +62,14 @@ Recipes validated with [+200 rspec tests](https://travis-ci.org/jvaubourg/puppet
 Installed packages:
 
 * *nginx*
+* With `enable_php` and `php_fpm`: *php5-fpm* (default PHP configuration)
 * With `enable_php` and no `php_fpm`: *php5-cgi*, *spawn-fcgi*
-* With `enable_php` and `php_fpm`: *php5-fpm*
 * With `php_mysql`: *php5-mysql*
 * With `logrotate`: *logrotate*, *psmisc* (if not already present)
 
 *logrotate* is used with a configuration file in */etc/logrotate.d/nginx* allowing it to daily rotate vhost logs. The configuration uses *killall* from *psmisc* in order to force nginx to update his inodes (this is the classic way). With `enable_php` but no `php_fpm`, *killall* is also used in `nginxpack::php::cgi` to ensure that PHP is not still running when disabled.
 
-Use `nginxpack::php::mod { 'foo': }` involves installing *php5-foo* (e.g. `nginxpack::php::mod { [ 'gd', 'json' ]: }`).
+Use `nginxpack::php::mod { 'foo': }` involves installing *php5-foo* (e.g. `nginxpack::php::mod { [ 'mcrypt', 'gd' ]: }`).
 
 Added services:
 
@@ -102,7 +102,7 @@ And with PHP:
       enable_php => true,
     }
 
-If you want a classical PHP5-FastCGI / Spawn-FCGI instead of [PHP5-FPM](http://php-fpm.org), you can add:
+If you want a classical PHP5-FastCGI/Spawn-FCGI instead of [PHP5-FPM](http://php-fpm.org), you can add:
 
     class { 'nginxpack':
       enable_php => true,
@@ -196,9 +196,11 @@ Other options:
       injectionsafe      => true,
       upload_max_size    => '5G',
       htpasswd           => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
+      htpasswd_msg       => "Restricted Foobar's access",
       forbidden          => [ '^/logs/', '^/tmp/', '\.inc$' ],
       add_config_content => 'location @barfoo { rewrite ^(.+)$ /files/$1; }',
-      try_files          => '@barfoo',
+      try_files          => '@barfoo =404',
+      listing            => true
     }
 
 `files_dir` (*DocumentRoot*) default value is */var/www/&lt;name&gt;/* (e.g. */var/www/foobar/*).
@@ -206,6 +208,8 @@ Other options:
 `injectionsafe` applies [these protections](http://www.howtoforge.com/nginx-how-to-block-exploits-sql-injections-file-injections-spam-user-agents-etc) against XSS injections. These restrictions might be incompatible with your applications.
 
 `upload_max_size` should be in line with `php_upload_max_filesize` *x* `php_upload_max_files`
+
+`listing` corresponds to directory index enabled (auto files indexing)
 
 `htpasswd`'s value can be generated from a command line tool (*apache2-utils*):
 

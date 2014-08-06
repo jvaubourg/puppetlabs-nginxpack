@@ -91,7 +91,13 @@ describe 'nginxpack' do
     end
 
     it do
-      should_not contain_file('/etc/nginx/sites-enabled/default_https')
+      should contain_file('/etc/nginx/sites-enabled/default_https') \
+        .with_ensure('absent')
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-available/default_https') \
+        .with_ensure('absent')
     end
   end
 
@@ -120,6 +126,33 @@ describe 'nginxpack' do
       expect {
         subject
       }.to raise_error(Puppet::Error, /Use a default certificate without/)
+    end
+  end
+
+  context 'with no default http blackhole' do
+    let(:params) {{
+      :default_http_blackhole => false,
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-enabled/default') \
+        .with_ensure('absent')
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-available/default') \
+        .with_ensure('absent')
+    end
+  end
+
+  context 'with neither default http blackhole nor default https blackhole' do
+    let(:params) {{
+      :default_http_blackhole => false,
+      :default_https_blackhole => false,
+    }}
+
+    it do
+      should_not contain_exec('find_default_listen')
     end
   end
 

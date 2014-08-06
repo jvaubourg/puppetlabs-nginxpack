@@ -105,6 +105,10 @@
 #     $ htpasswd -nb user1 secretpassword
 #   Default: false
 #
+# [*htpasswd_msg*]
+#   Set http authentication message.
+#   Default: "Restricted" 
+#
 # [*forbidden*]
 #   Array of regexps corresponding to forbidden urls. If your vhost targets
 #   /var/www/myvhost/ and that your logs directory is /var/www/myvhost/logs
@@ -119,7 +123,11 @@
 # [*try_files*]
 #   Additional default try_files in the location / (e.g. tryfiles => '@foobar',
 #   with a location "@foobar" defined in add_config_* for use in last resort).
-#   Default: ''
+#   Default: =404
+#
+# [*listing*]
+#   True if you want to enable files auto indexing (directory index).
+#   Default: false
 #
 # === Examples
 #
@@ -189,9 +197,11 @@ define nginxpack::vhost::basic (
   $add_config_source  = false,
   $add_config_content = false,
   $htpasswd           = false,
+  $htpasswd_msg       = "Restricted",
   $forbidden          = false,
   $files_dir          = "/var/www/${name}/",
-  $try_files          = ''
+  $try_files          = '=404',
+  $listing            = false
 ) {
 
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
@@ -226,12 +236,13 @@ define nginxpack::vhost::basic (
     fail('Use source/content method to define add_config but not the both.')
   }
 
-  if !defined_with_params(Package['php5-cgi'], {
-    'ensure' => 'present',
-  }) and !defined_with_params(Package['php5-fpm'], {
-    'ensure' => 'present',
-  }) and $use_php {
-    warning('Nginxpack class seems not to have been called with enable_php.')
+  if $htpasswd_msg != 'Restricted' and !$htpasswd {
+    fail('You need to use htpasswd with htpasswd_msg.')
+  }
+
+  if $use_php {
+    notice('Use PHP in at least 1 vhost implies to use enable_php in init.')
+    notice('Add if it is not already, otherwise ignore this notice.')
   }
 
   if $port == -1 {

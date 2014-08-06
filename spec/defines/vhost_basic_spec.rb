@@ -68,6 +68,43 @@ describe 'nginxpack::vhost::basic' do
     end
   end
 
+  context 'with htpasswd and htpasswd_msg' do
+    let(:params) {{
+      :htpasswd     => 'foo:bar',
+      :htpasswd_msg => 'barfoo',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/\s*auth_basic\s+"barfoo";/)
+    end
+  end
+
+  context 'with htpasswd and htpasswd_msg with quotes' do
+    let(:params) {{
+      :htpasswd     => 'foo:bar',
+      :htpasswd_msg => 'ba"rf"oo',
+    }}
+
+    it do
+      should_not contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/\s*auth_basic\s+"ba\\"rf\\"oo";/)
+    end
+  end
+
+  context 'with htpasswd_msg but no htpasswd' do
+    let(:params) {{
+      :htpasswd     => false,
+      :htpasswd_msg => 'barfoo',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /You need to use htpasswd/)
+    end
+  end
+
   # FORBIDDEN TESTS
 
   context 'with forbidden' do
@@ -79,6 +116,19 @@ describe 'nginxpack::vhost::basic' do
       should contain_file('/etc/nginx/sites-available/foobar') \
         .with_content(/^\s*location\s+~\s+foo\s+{\s+return\s+403;\s+}$/) \
         .with_content(/^\s*location\s+~\s+bar\s+{\s+return\s+403;\s+}$/)
+    end
+  end
+
+  # LISTING TESTS
+
+  context 'with listing' do
+    let(:params) {{
+      :listing => true,
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*autoindex on;$/)
     end
   end
 
@@ -109,7 +159,7 @@ describe 'nginxpack::vhost::basic' do
 
     it do
       should contain_file('/etc/nginx/sites-available/foobar') \
-        .with_content(/^\s*index.*index.php/)
+        .with_content(/^\s*try_files.+\s+\$uri\/index\.php/)
     end
   end
 

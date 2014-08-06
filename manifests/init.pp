@@ -29,7 +29,12 @@
 #
 # [*default_https_blackhole*]
 #   False if you don't want a default https blackhole (useful if you
-#   have no https vhosts and you don't want Nginx listening on 443).
+#   have no https vhosts on port 443 and you don't want Nginx listening
+#   on 443).
+#   Default: true
+#
+# [*default_http_blackhole*]
+#   False if you don't want a default http blackhole (any ports listened).
 #   Default: true
 #
 # [*enable_php*]
@@ -101,6 +106,7 @@ class nginxpack (
   $ssl_default_cert_content = false,
   $ssl_default_key_content  = false,
   $default_https_blackhole  = true,
+  $default_http_blackhole  = true,
   $enable_php               = false,
   $php_fpm                  = true,
   $php_mysql                = false,
@@ -109,8 +115,9 @@ class nginxpack (
   $php_upload_max_files     = 10
 ) {
 
-  if ($ssl_default_cert_source or $ssl_default_key_source or $ssl_default_cert_content
-    or $ssl_default_key_content) and !$default_https_blackhole {
+  if ($ssl_default_cert_source or $ssl_default_key_source
+    or $ssl_default_cert_content or $ssl_default_key_content)
+    and !$default_https_blackhole {
 
     fail('Use a default certificate without enable default_https_blackhole')
     fail('does not make sense.')
@@ -118,15 +125,6 @@ class nginxpack (
 
   class { 'nginxpack::logrotate':
     enable => $logrotate,
-  }
-
-  if $default_https_blackhole {
-    class { 'nginxpack::ssl::default':
-      ssl_cert_source  => $ssl_default_cert_source,
-      ssl_key_source   => $ssl_default_key_source,
-      ssl_cert_content => $ssl_default_cert_content,
-      ssl_key_content  => $ssl_default_key_content,
-    }
   }
 
   class { 'nginxpack::php::cgi':
@@ -158,19 +156,6 @@ class nginxpack (
     notify  => Service['nginx'],
   }
 
-  exec { 'find_default_listen':
-    command     => '/etc/nginx/find_default_listen.sh',
-    require     => Package['nginx'],
-    refreshonly => true,
-  }
-
-  file { '/etc/nginx/find_default_listen.sh':
-    ensure  => file,
-    mode    => '0755',
-    source  => 'puppet:///modules/nginxpack/nginx/find_default_listen.sh',
-    require => File['/etc/nginx/include/'],
-  }
-
   file { [ '/etc/nginx/ssl/', '/etc/nginx/htpasswd/', '/etc/nginx/include/' ]:
     ensure  => directory,
     mode    => '0550',
@@ -187,25 +172,74 @@ class nginxpack (
     require => Package['nginx'],
   }
 
-  file { '/etc/nginx/sites-available/default':
-    ensure  => file,
-    mode    => '0644',
-    source  => 'puppet:///modules/nginxpack/nginx/vhost_default',
-    notify  => Service['nginx'],
-    require => Package['nginx'],
-  }
-
-  file { '/etc/nginx/sites-enabled/default':
-    ensure  => link,
-    target  => '/etc/nginx/sites-available/default',
-    require => File['/etc/nginx/sites-available/default'],
-  }
-
   file { '/etc/nginx/include/attacks.conf':
     ensure  => file,
     mode    => '0644',
     source  => 'puppet:///modules/nginxpack/nginx/attacks.conf',
     require => Package['nginx'],
     notify  => Service['nginx'],
+  }
+
+  if $default_https_blackhole {
+    class { 'nginxpack::ssl::default':
+      ssl_cert_source  => $ssl_default_cert_source,
+      ssl_key_source   => $ssl_default_key_source,
+      ssl_cert_content => $ssl_default_cert_content,
+      ssl_key_content  => $ssl_default_key_content,
+    }
+  } else {
+    file { [ '/etc/nginx/sites-available/default_https',
+      '/etc/nginx/sites-enabled/default_https' ]:
+
+      ensure  => absent,
+      notify  => Service['nginx'],
+      require => Package['nginx'],
+    }
+  }
+
+  if $default_http_blackhole {
+    file { '/etc/nginx/sites-available/default':
+      ensure  => file,
+      mode    => '0644',
+      source  => 'puppet:///modules/nginxpack/nginx/vhost_default',
+      notify  => Service['nginx'],
+      require => Package['nginx'],
+    }
+  
+    file { '/etc/nginx/sites-enabled/default':
+      ensure  => link,
+      target  => '/etc/nginx/sites-available/default',
+      require => File['/etc/nginx/sites-available/default'],
+    }
+  } else {
+    file { [ '/etc/nginx/sites-available/default',
+      '/etc/nginx/sites-enabled/default' ]:
+
+      ensure  => absent,
+      notify  => Service['nginx'],
+      require => Package['nginx'],
+    }
+  }
+
+  if $default_http_blackhole or $default_https_blackhole {
+    exec { 'find_default_listen':
+      command     => '/etc/nginx/find_default_listen.sh',
+      require     => Package['nginx'],
+      refreshonly => true,
+    }
+  
+    file { '/etc/nginx/find_default_listen.sh':
+      ensure  => file,
+      mode    => '0755',
+      source  => 'puppet:///modules/nginxpack/nginx/find_default_listen.sh',
+      require => File['/etc/nginx/include/'],
+    }
+  
+    file { '/etc/nginx/blackhole.html':
+      ensure  => file,
+      mode    => '0644',
+      source  => 'puppet:///modules/nginxpack/nginx/blackhole.html',
+      require => Package['nginx'],
+    }
   }
 }

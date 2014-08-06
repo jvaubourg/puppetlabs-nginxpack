@@ -75,18 +75,21 @@ server {
     fastcgi_pass unix:/var/run/php.sock;
 
     <% if @htpasswd then -%>
-    auth_basic              "Restricted";
+    auth_basic              "<%= @htpasswd_msg.gsub('"', "''") %>";
     auth_basic_user_file    /etc/nginx/htpasswd/<%= @name %>;
     <% end -%>
   }
   <% end -%>
 
   location ~ / {
-    index index index.html<%= @use_php ? ' index.php' : '' %>;
-    try_files $uri $uri/ <%= @try_files %>;
+    try_files $uri $uri/ $uri/index.html<%= @use_php ? ' $uri/index.php' : '' %> <%= @try_files %>;
+
+    <% if @listing then -%>
+    autoindex on;
+    <% end -%>
 
     <% if @htpasswd then -%>
-    auth_basic              "Restricted";
+    auth_basic              "<%= @htpasswd_msg.gsub('"', "''") %>";
     auth_basic_user_file    /etc/nginx/htpasswd/<%= @name %>;
     <% end -%>
   }

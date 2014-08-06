@@ -17,7 +17,7 @@
 #   False if you want to use classical PHP5-FastCGI instead of PHP5-FPM.
 #   FPM seems have better performance.
 #   See: http://php-fpm.org
-#   Default: false
+#   Default: true
 #
 # [*mysql*]
 #   True to have a PHP-MySQL connector available.

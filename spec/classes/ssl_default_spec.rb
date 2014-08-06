@@ -41,12 +41,12 @@ describe 'nginxpack::ssl::default' do
   context 'with neither cert nor key' do
     it do
       should contain_file('/etc/nginx/ssl/default.key') \
-        .with_content(/^MIIBVQIBADANB/)
+        .with_content(/^MIIBVwIBADANBgkqhkiG9w0BAQEFAASCAUE/)
     end
 
     it do
       should contain_file('/etc/nginx/ssl/default.pem') \
-        .with_content(/^MIICBzCCAbGgA/)
+        .with_content(/^MIICDzCCAbmgAwIBAgIJAOdD3ZnAmgBzMA0/)
     end
 
     it do

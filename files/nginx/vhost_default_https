@@ -6,6 +6,17 @@ server {
 	listen [::]:443 default_server ipv6only=on;
 	listen 0.0.0.0:443 default_server;
 
+        root /etc/nginx;
+        error_page 400 /blackhole.html;
+
+        location = /blackhole.html {
+          internal;
+        }
+
+        location / {
+          return 400;
+        }
+
 	include /etc/nginx/include/default_listen_https.conf;
 
 	ssl on;
@@ -16,6 +27,4 @@ server {
 
 	access_log /dev/null;
 	error_log /dev/null;
-
-	return 400;
 }
