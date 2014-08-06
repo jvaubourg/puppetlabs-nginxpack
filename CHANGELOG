@@ -1,4 +1,4 @@
-2014-XX-XX - 0.0.4 (jvaubourg)
+2014-08-06 - 0.0.4 (jvaubourg)
   * Add SNI support
   * Add PHP5-FPM support
   ** [WARNING] If you upgrade Nginxpack, you can use "php_fpm => false" 
@@ -6,11 +6,12 @@
      Otherwise, think cleaning useless php5-cgi/spawn-fcgi packages and
      process (just for cleanness).
   * Add HTTP authentication support
-  * Add possibility to disable the HTTPS blackhole
+  * Add possibility to disable blackholes
   * Add fake default HTTPS certificate for the blackhole, when using SNI
   * Add AcceptPathInfo support
   * Add final "try_files" support (useful with add_config_*)
   * Fix IPv6-Only / IPv4-Only support. But please don't use IPv4-Only.
+  * Add custom error for blackholes
 
 2013-10-26 - 0.0.3 (jvaubourg)
   * Default server_names_hash_bucket_size to 64
