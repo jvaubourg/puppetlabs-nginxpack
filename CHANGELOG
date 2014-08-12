@@ -1,3 +1,6 @@
+2014-08-12 - 0.1.0 (jvaubourg)
+  * Fix bug with default index.php
+
 2014-08-06 - 0.0.4 (jvaubourg)
   * Add SNI support
   * Add PHP5-FPM support

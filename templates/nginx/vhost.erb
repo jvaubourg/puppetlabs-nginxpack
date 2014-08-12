@@ -82,7 +82,8 @@ server {
   <% end -%>
 
   location ~ / {
-    try_files $uri $uri/ $uri/index.html<%= @use_php ? ' $uri/index.php' : '' %> <%= @try_files %>;
+    index index.html<%= @use_php ? ' index.php' : '' %>;
+    try_files $uri $uri/ <%= @try_files %>;
 
     <% if @listing then -%>
     autoindex on;

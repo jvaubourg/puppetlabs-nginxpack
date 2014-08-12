@@ -159,7 +159,7 @@ describe 'nginxpack::vhost::basic' do
 
     it do
       should contain_file('/etc/nginx/sites-available/foobar') \
-        .with_content(/^\s*try_files.+\s+\$uri\/index\.php/)
+        .with_content(/^\s*index.+\s+index\.php/)
     end
   end
 
