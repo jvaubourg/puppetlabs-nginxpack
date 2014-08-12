@@ -1,6 +1,6 @@
 {
   "name": "jvaubourg-nginxpack",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "author": "Julien Vaubourg <http://julien.vaubourg.com>",
   "license": "AGPLv2",
   "summary": "Nginx & PHP5 (opt.), vhosts, proxies, redirections, IPv6, SSL, and so on.",
