@@ -11,6 +11,14 @@
 #   See the parameter definition with logrotate/enable.
 #   Default: true
 #
+# [*logrotate_frequency*]
+#   See the parameter definition with logrotate/frequency.
+#   Default: weekly
+#
+# [*logrotate_rotate*]
+#   See the parameter definition with logrotate/rotate.
+#   Default: 52
+#
 # [*ssl_default_cert_source*]
 #   See the parameter definition with ssl::default/ssl_cert_source
 #   Default: false
@@ -101,6 +109,8 @@
 
 class nginxpack (
   $logrotate                = true,
+  $logrotate_frequency      = 'weekly',
+  $logrotate_rotate         = '52',
   $ssl_default_cert_source  = false,
   $ssl_default_key_source   = false,
   $ssl_default_cert_content = false,
@@ -124,7 +134,9 @@ class nginxpack (
   }
 
   class { 'nginxpack::logrotate':
-    enable => $logrotate,
+    enable    => $logrotate,
+    frequency => $logrotate_frequency,
+    rotate    => $logrotate_rotate,
   }
 
   class { 'nginxpack::php::cgi':
