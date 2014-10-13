@@ -283,8 +283,8 @@ define nginxpack::vhost::basic (
   file { "/var/log/nginx/${name}/":
     ensure => directory,
     mode   => '0770',
-    owner  => 'www-data',
-    group  => 'www-data',
+    owner  => 'root',
+    group  => 'root',
   }
 
   if $htpasswd {
