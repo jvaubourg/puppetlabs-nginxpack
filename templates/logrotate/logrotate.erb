@@ -1,6 +1,7 @@
-# Managed by puppet
+# MANAGED BY PUPPET
 # Module:: nginxpack::logrotate
-#
+# File:: nginxpack/templates/logrotate/logrotate.erb
+
 /var/log/nginx/*/*.log {
   <%= @frequency %>
   missingok

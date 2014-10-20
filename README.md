@@ -189,7 +189,9 @@ Generate *pem* (*crt*) and *key* files (put your full qualified domain name in *
 
 You also could use `ssl_cert_content` and `ssl_key_content` to define the certificate from a string (useful if you use hiera to store your certificates: `ssl_cert_content => hiera('foobar-cert')`).
 
-The default listening port becomes 443 but you still could force a different one with `port`.
+Additional parameters `ssl_ocsp_dns1` and `ssl_ocsp_dns2` can be set in order to set the DNS resolvers used for obtaining the IP address of the [OCSP responder](https://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol) (certificates revocation status). OCSP DNS can be IP addresses (IPv6 starting from Nginx 1.2.2) or names (resolving into IPv6 starting from Nginx 1.5.8). You can set optional ports with *IP:port* or *name:port* with Nginx version equal or greater than 1.2.2 (default 53).
+
+The default listening port becomes 443 but you still could force a different one with `port`. The SSL configuration is compliant with [Cipherli.st](http://cipherli.st) recommendations (*ssl_stapling* options are disabled with Debian Wheezy and Ubuntu Precise). 
 
 Other options:
 
