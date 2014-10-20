@@ -547,20 +547,11 @@ This trick could also be used in the opposite case.
 
 ##Dependencies
 
-* [puppetlabs/stdlib](http://forge.puppetlabs.com/puppetlabs/stdlib) &gt;= 3.x (`file_line` is used to edit *php.ini* and `ensure_packages` to install *logrotate* and *psmisc*)
+* [puppetlabs/stdlib](http://forge.puppetlabs.com/puppetlabs/stdlib) &gt;= 3.x (`file_line` is used to edit *php.ini*, `validate_re` to check some parameters and `ensure_packages` to install *logrotate* and *psmisc*)
 
 ##Limitations
 
 This module is **only available for Debian-likes**.
-
-Tests are made with:
-
-* Debian Wheezy 7.1
-* Puppet 3.2.4 ([Build Tests](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack))
-* Nginx 1.2.1
-* PHP 5.4.4
-
-This does not mean that this module can't be used with other versions but I have no idea about the compatibility.
 
 ##Development
 
@@ -568,4 +559,7 @@ I developed this module for my own needs but I think it's generic enough to be u
 
 [Feel free to contribute](https://github.com/jvaubourg/puppetlabs-nginxpack/). I'm not a big fan of centralized services like GitHub but I used it to permit easy pull-requests, so show me that's a good idea!
 
-Thank [Lorraine Data Network](http://ldn-fai.net) for testing the module.
+##Thanks
+
+* [Lorraine Data Network](http://ldn-fai.net) for testing the module
+* [Sébastien BADIA](https://github.com/sbadia) for adding LogRotate options with comprehensive documention
