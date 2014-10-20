@@ -15,6 +15,32 @@
 #   due to possible conflicts.
 #   Default: true
 #
+# [*frequency*]
+#   The log rotation frequency, should be daily, weekly or monthly.
+#   hourly - Log  files  are  rotated every hour.
+#     Note that usually logrotate is configured to be run by cron daily.
+#     You have to change this configuration and run logrotate hourly to
+#     be able to really rotate logs hourly.
+#   daily - Log files are rotated every day
+#   weekly - Log files are rotated if the current weekday is less than
+#     the weekday of the last rotation or if more than a week has passed
+#     since the last rotation.
+#     This is normally the same as rotating logs on the first day of
+#     the week, but it works better if logrotate is not run every night.
+#   monthly - Log files are rotated the first time logrotate is run
+#     in a month (this is normally on the first day of the month).
+#   yearly - Log files are rotated if the current year is not the same
+#     as the last rotation.
+#   Default: weekly
+#
+# [*rotate*]
+#   Log files are rotated $rotate times before being removed or mailed
+#   to the address specified in a mail directive.
+#   If $rotate is 0, old versions are removed rather than rotated.
+#   Be aware that due to some legals constraints you must to keep
+#   HTTP logs during one year.
+#   Default: 52
+#
 # === Authors
 #
 # Julien Vaubourg
@@ -38,16 +64,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 class nginxpack::logrotate (
-  $enable = true,
+  $enable    = true,
+  $frequency = 'weekly',
+  $rotate    = '52',
 ) {
 
   if $enable {
+
+    validate_re($frequency, '^(hourly|daily|weekly|monthly|yearly)$',
+      "${frequency} is not supported for frequency. Allowed values are 'hourly', 'daily', 'weekly', 'monthly' or 'yearly'.")
+    validate_re($rotate, '^\d+$', 'rotate is not a valid number')
+
     ensure_packages([ 'logrotate', 'psmisc' ])
 
     file { '/etc/logrotate.d/nginx':
       ensure  => file,
       mode    => '0644',
-      source  => 'puppet:///modules/nginxpack/logrotate/logrotate',
+      content => template('nginxpack/logrotate/logrotate.erb'),
       require => [
         Package['nginx'],
         File['/var/log/nginx/'],
