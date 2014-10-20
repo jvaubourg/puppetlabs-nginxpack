@@ -1,8 +1,8 @@
 {
   "name": "jvaubourg-nginxpack",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Julien Vaubourg <http://julien.vaubourg.com>",
-  "license": "AGPLv2",
+  "license": "AGPLv3",
   "summary": "Nginx & PHP5 (opt.), vhosts, proxies, redirections, IPv6, SSL, and so on.",
   "source": "https://github.com/jvaubourg/puppetlabs-nginxpack",
   "project_page": "(https://forge.puppetlabs.com/examplecorp/mymodule)",
@@ -10,10 +10,18 @@
   "tags": ["nginx", "php", "fpm", "fastcgi", "ipv6", "ssl", "proxy", "vhost" ],
   "operatingsystem_support": [
     {
-    "operatingsystem": "Debian"
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7",
+        "8"
+      ]
     },
     {
-    "operatingsystem": "Ubuntu"
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04"
+      ]
     }
    ],
   "dependencies": [

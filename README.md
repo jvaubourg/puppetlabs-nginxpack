@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack.png)](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack)
 [![Puppet Forge](http://img.shields.io/puppetforge/v/jvaubourg/nginxpack.svg)](https://forge.puppetlabs.com/jvaubourg/nginxpack)
-[![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
+[![License](http://img.shields.io/:license-agpl3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 
 ####Table of Contents
 
@@ -131,6 +131,16 @@ Others options for PHP:
 
 With this example, you will be able to propose uploads of 5 files of 1G max each together. In this case, the POST-data size limit (from PHP) will automatically be configured to accept until 5G.
 
+With LogRotate (enabled by default):
+
+    class { 'nginxpack':
+      logrotate           => true,
+      logrotate_frequency => 'weekly',
+      logrotate_rotate    => 52,
+    }
+
+LogRotate values given in this example are the default ones. `logrotate_rotate` corresponds to the number of rotating before being removed (zero means that old versions are removed rather than rotated).
+
 You can also configure default https configuration here. See the [first common use case](#reverse-proxy-with-ipv4).
 
 ####Basic Vhost
@@ -189,7 +199,9 @@ Generate *pem* (*crt*) and *key* files (put your full qualified domain name in *
 
 You also could use `ssl_cert_content` and `ssl_key_content` to define the certificate from a string (useful if you use hiera to store your certificates: `ssl_cert_content => hiera('foobar-cert')`).
 
-The default listening port becomes 443 but you still could force a different one with `port`.
+Additional parameters `ssl_ocsp_dns1` and `ssl_ocsp_dns2` can be set in order to set the DNS resolvers used for obtaining the IP address of the [OCSP responder](https://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol) (certificates revocation status). OCSP DNS can be IP addresses (IPv6 starting from Nginx 1.2.2) or names (resolving into IPv6 starting from Nginx 1.5.8). You can set optional ports with *IP:port* or *name:port* with Nginx version equal or greater than 1.2.2 (default 53).
+
+The default listening port becomes 443 but you still could force a different one with `port`. The SSL configuration is compliant with [Cipherli.st](http://cipherli.st) recommendations (*ssl_stapling* options are disabled with Debian Wheezy and Ubuntu Precise). 
 
 Other options:
 
@@ -535,20 +547,11 @@ This trick could also be used in the opposite case.
 
 ##Dependencies
 
-* [puppetlabs/stdlib](http://forge.puppetlabs.com/puppetlabs/stdlib) &gt;= 3.x (`file_line` is used to edit *php.ini* and `ensure_packages` to install *logrotate* and *psmisc*)
+* [puppetlabs/stdlib](http://forge.puppetlabs.com/puppetlabs/stdlib) &gt;= 3.x (`file_line` is used to edit *php.ini*, `validate_re` to check some parameters and `ensure_packages` to install *logrotate* and *psmisc*)
 
 ##Limitations
 
 This module is **only available for Debian-likes**.
-
-Tests are made with:
-
-* Debian Wheezy 7.1
-* Puppet 3.2.4 ([Build Tests](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack))
-* Nginx 1.2.1
-* PHP 5.4.4
-
-This does not mean that this module can't be used with other versions but I have no idea about the compatibility.
 
 ##Development
 
@@ -556,4 +559,7 @@ I developed this module for my own needs but I think it's generic enough to be u
 
 [Feel free to contribute](https://github.com/jvaubourg/puppetlabs-nginxpack/). I'm not a big fan of centralized services like GitHub but I used it to permit easy pull-requests, so show me that's a good idea!
 
-Thank [Lorraine Data Network](http://ldn-fai.net) for testing the module.
+##Thanks
+
+* [Lorraine Data Network](http://ldn-fai.net) for testing the module
+* [Sébastien BADIA](https://github.com/sbadia) for adding LogRotate options with comprehensive documention

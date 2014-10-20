@@ -59,6 +59,18 @@
 #   then the https parameter must be true and the previous one must be false.
 #   Default: false
 #
+# [*ssl_ocsp_dns1*]
+#   DNS resolver for obtaining the IP address of the OCSP responder. Use IP
+#   address or name. IPv6 address is supported starting from nginx 1.2.2
+#   and resolving IPv6 address is supported starting from nginx 1.5.8.
+#   An optional port can be set with IP:port or name:port, starting from
+#   nginx 1.2.2. If false, system dns will be used.
+#   Default: false
+#
+# [*ssl_ocsp_dns2*]
+#   See the parameter definition with ssl_ocsp_dns1.
+#   Default: false
+#
 # [*port*]
 #   TCP port available to access to this website.
 #   Default (https = false): 80
@@ -189,6 +201,8 @@ define nginxpack::vhost::basic (
   $ssl_key_source     = false,
   $ssl_cert_content   = false,
   $ssl_key_content    = false,
+  $ssl_ocsp_dns1      = false,
+  $ssl_ocsp_dns2      = false,
   $port               = -1,
   $upload_max_size    = '100M',
   $injectionsafe      = false,
@@ -214,6 +228,10 @@ define nginxpack::vhost::basic (
     or (!$ssl_key_source and !$ssl_key_content)) {
 
     fail('To have a https connection, please define a cert_pem AND a cert_key.')
+  }
+
+  if ($ssl_ocsp_dns1 or $ssl_ocsp_dns2) and !$https {
+    fail('Use OCSP DNS resolvers without enable https does not make sense.')
   }
 
   if $ipv6only and $ipv4only {

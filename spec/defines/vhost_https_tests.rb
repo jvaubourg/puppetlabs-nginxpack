@@ -51,6 +51,51 @@ def vhost_https_tests(suffix = '')
     end
   end
 
+  # OCSP DNS TESTS
+
+  context 'with ocsp dns1 and dns2' do
+    let(:params) {{
+      :https            => true,
+      :ssl_cert_content => 'foo',
+      :ssl_key_content  => 'bar',
+      :ssl_ocsp_dns1    => 'foo',
+      :ssl_ocsp_dns2    => 'bar',
+    }}
+
+    it do
+      should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*resolver\s+foo\s+bar\s+/)
+    end
+  end
+
+  context 'with only ocsp dns1' do
+    let(:params) {{
+      :https            => true,
+      :ssl_cert_content => 'foo',
+      :ssl_key_content  => 'bar',
+      :ssl_ocsp_dns1    => 'foo',
+    }}
+
+    it do
+      should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*resolver\s+foo\s+/)
+    end
+  end
+
+  context 'with only ocsp dns2' do
+    let(:params) {{
+      :https            => true,
+      :ssl_cert_content => 'foo',
+      :ssl_key_content  => 'bar',
+      :ssl_ocsp_dns2    => 'bar',
+    }}
+
+    it do
+      should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*resolver\s+bar\s+/)
+    end
+  end
+ 
   # HTTPS ERRORS TESTS
 
   context 'with https and no certificates' do
@@ -86,6 +131,43 @@ def vhost_https_tests(suffix = '')
       expect {
         subject
       }.to raise_error(Puppet::Error, /without enable https does not make sense/)
+    end
+  end
+
+  context 'with ocsp dns1 and dns2 but no https' do
+    let(:params) {{
+      :ssl_ocsp_dns1 => 'foo',
+      :ssl_ocsp_dns2 => 'bar',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /Use OCSP DNS resolvers without/)
+    end
+  end
+
+  context 'with only ocsp dns1 but no https' do
+    let(:params) {{
+      :ssl_ocsp_dns1 => 'foo',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /Use OCSP DNS resolvers without/)
+    end
+  end
+
+  context 'with only ocsp dns2 but no https' do
+    let(:params) {{
+      :ssl_ocsp_dns2 => 'bar',
+    }}
+
+    it do
+      expect {
+        subject
+      }.to raise_error(Puppet::Error, /Use OCSP DNS resolvers without/)
     end
   end
 end

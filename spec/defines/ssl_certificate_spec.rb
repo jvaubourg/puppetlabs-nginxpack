@@ -36,7 +36,7 @@ describe 'nginxpack::ssl::certificate' do
       should contain_file('/etc/nginx/ssl/foobar.key')
     end
   end
-  
+ 
   # SSL_*_* ERRORS TESTS
 
   context 'with cert source and content' do

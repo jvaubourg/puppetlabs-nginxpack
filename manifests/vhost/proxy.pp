@@ -60,6 +60,15 @@
 #   See the parameter definition with vhost::basic/ssl_cert_content.
 #   Default: false
 #
+# [*ssl_ocsp_dns1*]
+#   See the parameter definition with vhost::basic/ssl_ocsp_dns1.
+#   Default: false
+#
+# [*ssl_ocsp_dns2*]
+#   See the parameter definition with vhost::basic/ssl_ocsp_dns1.
+#   Default: false
+#   Default: false
+#
 # [*ssl_key_source*]
 #   See the parameter definition with vhost::basic/ssl_key_source.
 #   Default: false
@@ -129,6 +138,8 @@ define nginxpack::vhost::proxy (
   $ssl_key_source     = false,
   $ssl_cert_content   = false,
   $ssl_key_content    = false,
+  $ssl_ocsp_dns1      = false,
+  $ssl_ocsp_dns2      = false,
   $to_domain          = -1,
   $to_https           = false,
   $to_port            = -1,
@@ -153,6 +164,10 @@ define nginxpack::vhost::proxy (
     or (!$ssl_key_source and !$ssl_key_content)) {
 
     fail('To have a https connection, please define a cert_pem AND a cert_key.')
+  }
+
+  if ($ssl_ocsp_dns1 or $ssl_ocsp_dns2) and !$https {
+    fail('Use OCSP DNS resolvers without enable https does not make sense.')
   }
 
   if $ipv6only and $ipv4only {
