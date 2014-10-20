@@ -11,9 +11,20 @@ describe 'nginxpack::logrotate' do
 
     it do
       should contain_package('logrotate')
+    end
+
+    it do
       should contain_package('psmisc')
-      should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*rotate 52$/)
-      should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*weekly$/)
+    end
+
+    it do
+      should contain_file('/etc/logrotate.d/nginx')\
+        .with_content(/^\s*rotate 52$/)
+    end
+
+    it do
+      should contain_file('/etc/logrotate.d/nginx')\
+        .with_content(/^\s*weekly$/)
     end
   end
 
@@ -25,8 +36,14 @@ describe 'nginxpack::logrotate' do
     }}
 
     it do
-      should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*rotate #{params[:rotate]}$/)
-      should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*#{params[:frequency]}$/)
+      should contain_file('/etc/logrotate.d/nginx')\
+        .with_content(/^\s*rotate #{params[:rotate]}$/)
+    end
+
+    it do
+      should contain_file('/etc/logrotate.d/nginx')\
+        .with_content(/^\s*#{params[:frequency]}$/)
+    end
   end
 
   context 'with a martian value for rotate' do
