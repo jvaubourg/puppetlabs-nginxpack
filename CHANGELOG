@@ -1,3 +1,8 @@
+2014-10-21 - 0.1.1 (jvaubourg)
+  * Add LogRotate frequency and rotate options (sbadia)
+  * Remove SSLv3 with HTTPS
+  * SSL config now compliant with Cipherli.st recommendations
+
 2014-08-12 - 0.1.0 (jvaubourg)
   * Fix bug with default index.php
 

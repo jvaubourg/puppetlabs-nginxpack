@@ -562,4 +562,4 @@ I developed this module for my own needs but I think it's generic enough to be u
 ##Thanks
 
 * [Lorraine Data Network](http://ldn-fai.net) for testing the module
-* [Sébastien BADIA](https://github.com/sbadia) for adding LogRotate options with comprehensive documention
+* [Sébastien Badia](https://github.com/sbadia) for adding LogRotate options with comprehensive documention
