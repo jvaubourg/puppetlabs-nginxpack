@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack.png)](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack)
 [![Puppet Forge](http://img.shields.io/puppetforge/v/jvaubourg/nginxpack.svg)](https://forge.puppetlabs.com/jvaubourg/nginxpack)
-[![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
+[![License](http://img.shields.io/:license-agpl3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 
 ####Table of Contents
 
