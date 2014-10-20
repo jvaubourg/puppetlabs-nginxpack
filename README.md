@@ -131,6 +131,16 @@ Others options for PHP:
 
 With this example, you will be able to propose uploads of 5 files of 1G max each together. In this case, the POST-data size limit (from PHP) will automatically be configured to accept until 5G.
 
+With LogRotate (enabled by default):
+
+    class { 'nginxpack':
+      logrotate           => true,
+      logrotate_frequency => 'weekly',
+      logrotate_rotate    => 52,
+    }
+
+LogRotate values given in this example are the default ones. `logrotate_rotate` corresponds to the number of rotating before being removed (zero means that old versions are removed rather than rotated).
+
 You can also configure default https configuration here. See the [first common use case](#reverse-proxy-with-ipv4).
 
 ####Basic Vhost

@@ -66,7 +66,7 @@
 class nginxpack::logrotate (
   $enable    = true,
   $frequency = 'weekly',
-  $rotate    = '52',
+  $rotate    = 52,
 ) {
 
   if $enable {

@@ -11,14 +11,10 @@ describe 'nginxpack::logrotate' do
 
     it do
       should contain_package('logrotate')
-    end
-
-    it do
       should contain_package('psmisc')
+      should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*rotate 52$/)
+      should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*weekly$/)
     end
-
-    it { should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*rotate 52$/)}
-    it { should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*weekly$/)}
   end
 
   context 'with custom params' do
@@ -28,14 +24,15 @@ describe 'nginxpack::logrotate' do
       :frequency => 'daily',
     }}
 
-    it { should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*rotate #{params[:rotate]}$/)}
-    it { should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*#{params[:frequency]}$/)}
+    it do
+      should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*rotate #{params[:rotate]}$/)
+      should contain_file('/etc/logrotate.d/nginx').with_content(/^\s*#{params[:frequency]}$/)
   end
 
   context 'with a martian value for rotate' do
     let(:params) {{
-      :enable    => true,
-      :rotate    => 'ET',
+      :enable => true,
+      :rotate => 'foo',
     }}
 
     it 'should fail' do
@@ -48,7 +45,7 @@ describe 'nginxpack::logrotate' do
   context 'with a martian value for frequency' do
     let(:params) {{
       :enable    => true,
-      :frequency => 'ET',
+      :frequency => 'foo',
     }}
 
     it 'should fail' do

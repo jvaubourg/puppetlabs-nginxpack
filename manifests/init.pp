@@ -110,7 +110,7 @@
 class nginxpack (
   $logrotate                = true,
   $logrotate_frequency      = 'weekly',
-  $logrotate_rotate         = '52',
+  $logrotate_rotate         = 52,
   $ssl_default_cert_source  = false,
   $ssl_default_key_source   = false,
   $ssl_default_cert_content = false,
