@@ -34,12 +34,13 @@ server {
   client_max_body_size <%= @upload_max_size %>;
 
   <% if @https then -%>
-  # Values from https://cipherli.st
   ssl on;
-  ssl_ciphers "AES256+EECDH:AES256+EDH";
+  ssl_ciphers ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA;
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
   ssl_prefer_server_ciphers on;
-  ssl_session_cache shared:SSL:10m;
+  ssl_ecdh_curve secp384r1;
+  ssl_session_timeout 5m;
+  ssl_session_cache shared:SSL:50m;
   add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
   add_header X-Frame-Options DENY;
   add_header X-Content-Type-Options nosniff;
