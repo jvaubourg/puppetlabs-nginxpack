@@ -55,6 +55,9 @@ server {
   resolver_timeout 5s;
   ssl_certificate /etc/nginx/ssl/<%= @name %>_proxy.pem;
   ssl_certificate_key /etc/nginx/ssl/<%= @name %>_proxy.key;
+  <% if (@ssl_dhparam && !@ssl_dhparam.empty?) %>
+  ssl_dhparam <%= @ssl_dhparam %>;
+  <% end -%>
   <% end -%>
 
   <% if @add_config_source || @add_config_content then -%>

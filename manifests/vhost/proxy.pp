@@ -67,6 +67,9 @@
 # [*ssl_ocsp_dns2*]
 #   See the parameter definition with vhost::basic/ssl_ocsp_dns1.
 #   Default: false
+#
+# [*ssl_dhparam*]
+#   The Diffie-Hellman parameter file (a path on the local FS).
 #   Default: false
 #
 # [*ssl_key_source*]
@@ -140,6 +143,7 @@ define nginxpack::vhost::proxy (
   $ssl_key_content    = false,
   $ssl_ocsp_dns1      = false,
   $ssl_ocsp_dns2      = false,
+  $ssl_dhparam        = false,
   $to_domain          = -1,
   $to_https           = false,
   $to_port            = -1,
