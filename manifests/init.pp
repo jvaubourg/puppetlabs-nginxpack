@@ -217,7 +217,7 @@ class nginxpack (
       notify  => Service['nginx'],
       require => Package['nginx'],
     }
-  
+
     file { '/etc/nginx/sites-enabled/default':
       ensure  => link,
       target  => '/etc/nginx/sites-available/default',
@@ -239,14 +239,14 @@ class nginxpack (
       require     => Package['nginx'],
       refreshonly => true,
     }
-  
+
     file { '/etc/nginx/find_default_listen.sh':
       ensure  => file,
       mode    => '0755',
       source  => 'puppet:///modules/nginxpack/nginx/find_default_listen.sh',
       require => File['/etc/nginx/include/'],
     }
-  
+
     file { '/etc/nginx/blackhole.html':
       ensure  => file,
       mode    => '0644',

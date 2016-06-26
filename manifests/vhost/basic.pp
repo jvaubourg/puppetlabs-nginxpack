@@ -71,6 +71,10 @@
 #   See the parameter definition with ssl_ocsp_dns1.
 #   Default: false
 #
+# [*ssl_dhparam*]
+#   The Diffie-Hellman parameter file (a path on the local FS).
+#   Default: false
+#
 # [*port*]
 #   TCP port available to access to this website.
 #   Default (https = false): 80
@@ -119,7 +123,7 @@
 #
 # [*htpasswd_msg*]
 #   Set http authentication message.
-#   Default: "Restricted" 
+#   Default: "Restricted"
 #
 # [*forbidden*]
 #   Array of regexps corresponding to forbidden urls. If your vhost targets
@@ -203,6 +207,7 @@ define nginxpack::vhost::basic (
   $ssl_key_content    = false,
   $ssl_ocsp_dns1      = false,
   $ssl_ocsp_dns2      = false,
+  $ssl_dhparam        = false,
   $port               = -1,
   $upload_max_size    = '100M',
   $injectionsafe      = false,

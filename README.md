@@ -55,7 +55,7 @@ Features available:
 * AcceptPathInfo support
 * Full IPv6 compliant (and still IPv4...) including IPv6-Only
 * Automatic blackhole for non-existent domains
-* Several options (upload limits with Nginx/PHP, timezone, logrotate, 
+* Several options (upload limits with Nginx/PHP, timezone, logrotate,
 default SSL certificate, htpasswd, listing, XSS injection protection, etc.)
 * Custom configuration option for non-supported features
 
@@ -191,17 +191,23 @@ With SSL (https://):
       https           => true,
       ssl_cert_source => 'puppet:///certificates/foobar.pem',
       ssl_key_source  => 'puppet:///certificates/foobar.key',
+      ssl_dhparam     => 'puppet:///certificates/dhparam.pem',
     }
 
 Generate *pem* (*crt*) and *key* files (put your full qualified domain name in *Common Name*):
 
     $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout foobar.key -out foobar.pem
 
+Generate *dhparams* file (Diffie-Hellman is a key agreement algorithm which
+allows two parties to establish a secure communications channel)
+
+    $ openssl dhparam -out dhparam.pem 4096
+
 You also could use `ssl_cert_content` and `ssl_key_content` to define the certificate from a string (useful if you use hiera to store your certificates: `ssl_cert_content => hiera('foobar-cert')`).
 
 Additional parameters `ssl_ocsp_dns1` and `ssl_ocsp_dns2` can be set in order to set the DNS resolvers used for obtaining the IP address of the [OCSP responder](https://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol) (certificates revocation status). OCSP DNS can be IP addresses (IPv6 starting from Nginx 1.2.2) or names (resolving into IPv6 starting from Nginx 1.5.8). You can set optional ports with *IP:port* or *name:port* with Nginx version equal or greater than 1.2.2 (default 53).
 
-The default listening port becomes 443 but you still could force a different one with `port`. The SSL configuration is compliant with [Cipherli.st](http://cipherli.st) recommendations (*ssl_stapling* options are disabled with Debian Wheezy and Ubuntu Precise). 
+The default listening port becomes 443 but you still could force a different one with `port`. The SSL configuration is compliant with [Cipherli.st](http://cipherli.st) recommendations (*ssl_stapling* options are disabled with Debian Wheezy and Ubuntu Precise).
 
 Other options:
 
@@ -312,7 +318,7 @@ The other constraint is that you cannot use specific addresses (`ipv6` and `ipv4
 
 If you don't want to restrict compatible browsers or you want use specific addresses or you want to manage only one wildcard certificate, the good solution is to use a default vhost, listening on all ports and IP used by SSL vhosts on the webserver and containing the decryption informations. When Nginx will receive a SSL request, it will use this vhost, and so, will be able to decrypt it. Once the *host* field is readable, it can chose the correct vhost. The latter don't have to propose SSL but it absolutely must listen on port 443 (or another if you use SSL with another one).
 
-Nginxpack creates this default vhost for you, with a default certificate. To replace the default certificate, you can use `ssl_default_cert_source` (or `ssl_default_cert_key`) and `ssl_default_key_source` (or `ssl_default_key_source`) options. This certificate should be valid for all domains used, so it will probably be at least a wildcard certificate. 
+Nginxpack creates this default vhost for you, with a default certificate. To replace the default certificate, you can use `ssl_default_cert_source` (or `ssl_default_cert_key`) and `ssl_default_key_source` (or `ssl_default_key_source`) options. This certificate should be valid for all domains used, so it will probably be at least a wildcard certificate.
 
 The [first common use case](#reverse-proxy-with-ipv4) in the next section provides an example with this solution.
 
@@ -481,7 +487,7 @@ Using *www.example.com* is so 2005 and you want automatically redirect all reque
       domains => [ 'example.com' ],
       use_php => true,
     }
-    
+
     nginxpack::vhost::redirection { 'www-eatmytux':
       domains   => [ 'www.example.com' ],
       to_domain => 'example.com',
@@ -519,7 +525,7 @@ Spontaneous switching from *http* to *https*:
       ssl_cert_source => 'puppet:///certificates/wiki.pem',
       ssl_key_source  => 'puppet:///certificates/wiki.key',
     }
-    
+
     nginxpack::vhost::redirection { 'https-wiki':
       domains  => [ 'wiki.example.com' ],
       to_https => true,
