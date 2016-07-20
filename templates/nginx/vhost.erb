@@ -86,6 +86,10 @@ server {
 
     include /etc/nginx/fastcgi_params;
 
+    # httpoxy mitigation
+    # https://www.nginx.com/blog/mitigating-the-httpoxy-vulnerability-with-nginx/
+    fastcgi_param HTTP_PROXY "";
+
     <% if @php_AcceptPathInfo then -%>
     fastcgi_split_path_info ^((?U).+\.php)(/?.+)$;
     fastcgi_param PATH_INFO $fastcgi_path_info;
