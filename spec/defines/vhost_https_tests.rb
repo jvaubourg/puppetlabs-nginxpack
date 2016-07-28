@@ -95,19 +95,14 @@ def vhost_https_tests(suffix = '')
         .with_content(/^\s*resolver\s+bar\s+/)
     end
   end
- 
+
   # HTTPS ERRORS TESTS
 
   context 'with https and no certificates' do
     let(:params) {{
       :https => true,
     }}
-
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /To have a https connection/)
-    end
+    it_raises 'a Puppet::Error', /To have a https connection/
   end
 
   context 'with no https and just key' do
@@ -115,11 +110,7 @@ def vhost_https_tests(suffix = '')
       :ssl_key_content => 'foo',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /without enable https does not make sense/)
-    end
+    it_raises 'a Puppet::Error', /without enable https does not make sense/
   end
 
   context 'with no https and just cert' do
@@ -127,11 +118,7 @@ def vhost_https_tests(suffix = '')
       :ssl_cert_source => 'foo',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /without enable https does not make sense/)
-    end
+    it_raises 'a Puppet::Error', /without enable https does not make sense/
   end
 
   context 'with ocsp dns1 and dns2 but no https' do
@@ -140,11 +127,7 @@ def vhost_https_tests(suffix = '')
       :ssl_ocsp_dns2 => 'bar',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Use OCSP DNS resolvers without/)
-    end
+    it_raises 'a Puppet::Error', /Use OCSP DNS resolvers without/
   end
 
   context 'with only ocsp dns1 but no https' do
@@ -152,11 +135,7 @@ def vhost_https_tests(suffix = '')
       :ssl_ocsp_dns1 => 'foo',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Use OCSP DNS resolvers without/)
-    end
+    it_raises 'a Puppet::Error', /Use OCSP DNS resolvers without/
   end
 
   context 'with only ocsp dns2 but no https' do
@@ -164,10 +143,6 @@ def vhost_https_tests(suffix = '')
       :ssl_ocsp_dns2 => 'bar',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Use OCSP DNS resolvers without/)
-    end
+    it_raises 'a Puppet::Error', /Use OCSP DNS resolvers without/
   end
 end

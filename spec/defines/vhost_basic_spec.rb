@@ -5,7 +5,7 @@ require_relative 'vhost_https_tests'
 
 describe 'nginxpack::vhost::basic' do
   let(:title) { 'foobar' }
-  
+
   vhost_common_tests()
   vhost_https_tests()
 
@@ -98,11 +98,7 @@ describe 'nginxpack::vhost::basic' do
       :htpasswd_msg => 'barfoo',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /You need to use htpasswd/)
-    end
+    it_raises 'a Puppet::Error', /You need to use htpasswd/
   end
 
   # FORBIDDEN TESTS
