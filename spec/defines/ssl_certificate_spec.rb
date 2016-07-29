@@ -36,7 +36,7 @@ describe 'nginxpack::ssl::certificate' do
       should contain_file('/etc/nginx/ssl/foobar.key')
     end
   end
- 
+
   # SSL_*_* ERRORS TESTS
 
   context 'with cert source and content' do
@@ -45,11 +45,7 @@ describe 'nginxpack::ssl::certificate' do
       :ssl_cert_content => 'bar',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /certificate but not the both/)
-    end
+    it_raises 'a Puppet::Error', /certificate but not the both/
   end
 
   context 'with key source and content' do
@@ -58,11 +54,7 @@ describe 'nginxpack::ssl::certificate' do
       :ssl_key_content => 'bar',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /certificate but not the both/)
-    end
+    it_raises 'a Puppet::Error', /certificate but not the both/
   end
 
   context 'with only cert' do
@@ -70,11 +62,7 @@ describe 'nginxpack::ssl::certificate' do
       :ssl_cert_content => 'bar',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Please define a cert_pem/)
-    end
+    it_raises 'a Puppet::Error', /Please define a cert_pem/
   end
 
   context 'with only key' do
@@ -82,10 +70,6 @@ describe 'nginxpack::ssl::certificate' do
       :ssl_key_content => 'bar',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Please define a cert_pem/)
-    end
+    it_raises 'a Puppet::Error', /Please define a cert_pem/
   end
 end

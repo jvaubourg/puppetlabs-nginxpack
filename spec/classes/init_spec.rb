@@ -108,11 +108,7 @@ describe 'nginxpack' do
       :ssl_default_key_content  => 'bar',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Use a default certificate without/)
-    end
+    it_raises 'a Puppet::Error', /Use a default certificate without/
   end
 
   context 'with default cert/key from source and no default https blackhole' do
@@ -122,11 +118,7 @@ describe 'nginxpack' do
       :ssl_default_key_source  => 'bar',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Use a default certificate without/)
-    end
+    it_raises 'a Puppet::Error', /Use a default certificate without/
   end
 
   context 'with no default http blackhole' do

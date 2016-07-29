@@ -52,11 +52,7 @@ describe 'nginxpack::logrotate' do
       :rotate => 'foo',
     }}
 
-    it 'should fail' do
-      expect {
-        should raise_error(Puppet::Error, /rotate is not a valid number/)
-      }
-    end
+    it_raises 'a Puppet::Error', /rotate is not a valid number/
   end
 
   context 'with a martian value for frequency' do
@@ -65,11 +61,7 @@ describe 'nginxpack::logrotate' do
       :frequency => 'foo',
     }}
 
-    it 'should fail' do
-      expect {
-        should raise_error(Puppet::Error, /is not supported for frequency/)
-      }
-    end
+    it_raises 'a Puppet::Error', /is not supported for frequency/
   end
 
 

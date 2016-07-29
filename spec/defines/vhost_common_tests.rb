@@ -207,13 +207,13 @@ def vhost_common_tests(suffix = '')
         :ssl_cert_content => 'foo',
         :ssl_key_content  => 'bar',
       }}
-  
+
       it do
         should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
           .with_content(/^\s*listen\s+\[2001:db8::42\]:443;$/)
       end
     end
-  
+
     context 'with ipv4 and https (default port)' do
       let(:params) {{
         :ipv4             => '203.0.113.42',
@@ -221,13 +221,13 @@ def vhost_common_tests(suffix = '')
         :ssl_cert_content => 'foo',
         :ssl_key_content  => 'bar',
       }}
-  
+
       it do
         should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
           .with_content(/^\s*listen\s+203\.0\.113\.42:443;$/)
       end
     end
-  
+
     context 'with ipv6, https and port' do
       let(:params) {{
         :ipv6             => '2001:db8::42',
@@ -236,13 +236,13 @@ def vhost_common_tests(suffix = '')
         :ssl_key_content  => 'bar',
         :port             => 8080,
       }}
-  
+
       it do
         should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
           .with_content(/^\s*listen\s+\[2001:db8::42\]:8080;$/)
       end
     end
-  
+
     context 'with ipv4, https and port' do
       let(:params) {{
         :ipv4             => '203.0.113.42',
@@ -251,7 +251,7 @@ def vhost_common_tests(suffix = '')
         :ssl_key_content  => 'bar',
         :port             => 8080,
       }}
-  
+
       it do
         should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
           .with_content(/^\s*listen\s+203\.0\.113\.42:8080;$/)
@@ -344,11 +344,7 @@ def vhost_common_tests(suffix = '')
       :add_config_source  => 'bar',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /add_config but not the both/)
-    end
+    it_raises 'a Puppet::Error', /add_config but not the both/
   end
 
   context 'with ipv6only and ipv4only' do
@@ -357,11 +353,7 @@ def vhost_common_tests(suffix = '')
       :ipv4only => true,
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Using ipv6only with ipv4only/)
-    end
+    it_raises 'a Puppet::Error', /Using ipv6only with ipv4only/
   end
 
   context 'with ipv6only and ipv4' do
@@ -370,11 +362,7 @@ def vhost_common_tests(suffix = '')
       :ipv4     => '203.0.113.42',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Defining an IPv4 with ipv6only/)
-    end
+    it_raises 'a Puppet::Error', /Defining an IPv4 with ipv6only/
   end
 
   context 'with ipv4only and ipv6' do
@@ -383,10 +371,6 @@ def vhost_common_tests(suffix = '')
       :ipv6     => '2001:db8::42',
     }}
 
-    it do
-      expect {
-        subject
-      }.to raise_error(Puppet::Error, /Defining an IPv6 with ipv4only/)
-    end
+    it_raises 'a Puppet::Error', /Defining an IPv6 with ipv4only/
   end
 end
