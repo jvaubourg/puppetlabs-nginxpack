@@ -344,6 +344,7 @@ define nginxpack::vhost::basic (
       ensure => file,
       mode   => '0644',
       source => $add_config_source,
+      notify => Service['nginx'],
     }
   }
 
@@ -352,6 +353,7 @@ define nginxpack::vhost::basic (
       ensure  => file,
       mode    => '0644',
       content => $add_config_content,
+      notify => Service['nginx'],
     }
   }
 }
