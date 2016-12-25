@@ -82,13 +82,20 @@ class nginxpack::php::cgi (
   }
 
   if $enable {
+    file { [ '/var/local/run/' ]:
+      ensure  => directory,
+      mode    => '0755',
+      owner   => 'root',
+      group   => 'root'
+    }
+
     if $fpm {
 
       package { [ 'php5-fpm' ]:
         ensure  => present,
       }
 
-      file { '/var/run/php.sock':
+      file { '/var/local/run/php.sock':
         ensure => link,
         force  => true,
         target => '/var/run/php5-fpm.sock',
@@ -114,7 +121,7 @@ class nginxpack::php::cgi (
   
       Package['php5-cgi'] -> Package['spawn-fcgi']
 
-      file { '/var/run/php.sock':
+      file { '/var/local/run/php.sock':
         ensure => link,
         force  => true,
         target => '/var/run/php-fastcgi/php-fastcgi.socket',

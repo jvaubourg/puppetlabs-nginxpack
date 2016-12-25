@@ -97,11 +97,11 @@ server {
 
     fastcgi_index index.php;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    fastcgi_pass unix:/var/run/php.sock;
+    fastcgi_pass unix:/var/local/run/php.sock;
 
     <% if @htpasswd then -%>
-    auth_basic              "<%= @htpasswd_msg.gsub('"', "''") %>";
-    auth_basic_user_file    /etc/nginx/htpasswd/<%= @name %>;
+    auth_basic "<%= @htpasswd_msg.gsub('"', "''") %>";
+    auth_basic_user_file /etc/nginx/htpasswd/<%= @name %>;
     <% end -%>
   }
   <% end -%>
@@ -115,8 +115,8 @@ server {
     <% end -%>
 
     <% if @htpasswd then -%>
-    auth_basic              "<%= @htpasswd_msg.gsub('"', "''") %>";
-    auth_basic_user_file    /etc/nginx/htpasswd/<%= @name %>;
+    auth_basic "<%= @htpasswd_msg.gsub('"', "''") %>";
+    auth_basic_user_file /etc/nginx/htpasswd/<%= @name %>;
     <% end -%>
   }
 }

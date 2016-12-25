@@ -116,7 +116,7 @@ describe 'nginxpack::php::cgi' do
     end
 
     it do
-      should contain_file('/var/run/php.sock') \
+      should contain_file('/var/local/run/php.sock') \
         .with_ensure('link')
     end
   end
@@ -133,7 +133,7 @@ describe 'nginxpack::php::cgi' do
     end
 
     it do
-      should contain_file('/var/run/php.sock') \
+      should contain_file('/var/local/run/php.sock') \
         .with_ensure('link')
     end
   end
