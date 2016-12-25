@@ -5,7 +5,7 @@
   "license": "AGPLv3",
   "summary": "Nginx & PHP5 (opt.), vhosts, proxies, redirections, IPv6, SSL, and so on.",
   "source": "https://github.com/jvaubourg/puppetlabs-nginxpack",
-  "project_page": "(https://forge.puppetlabs.com/examplecorp/mymodule)",
+  "project_page": "https://forge.puppetlabs.com/jvaubourg/nginxpack",
   "issues_url": "",
   "tags": ["nginx", "php", "fpm", "fastcgi", "ipv6", "ssl", "proxy", "vhost" ],
   "operatingsystem_support": [
