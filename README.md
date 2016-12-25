@@ -198,8 +198,7 @@ Generate *pem* (*crt*) and *key* files (put your full qualified domain name in *
 
     $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout foobar.key -out foobar.pem
 
-Generate *dhparams* file (Diffie-Hellman is a key agreement algorithm which
-allows two parties to establish a secure communications channel)
+Generate *dhparams* file (Diffie-Hellman is a key agreement algorithm which allows two parties to establish a secure communications channel):
 
     $ openssl dhparam -out dhparam.pem 4096
 
