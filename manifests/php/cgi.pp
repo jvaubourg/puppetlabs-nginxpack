@@ -83,10 +83,10 @@ class nginxpack::php::cgi (
 
   if $enable {
     file { [ '/var/local/run/' ]:
-      ensure  => directory,
-      mode    => '0755',
-      owner   => 'root',
-      group   => 'root',
+      ensure => directory,
+      mode   => '0755',
+      owner  => 'root',
+      group  => 'root',
     }
 
     if $fpm {
@@ -118,7 +118,7 @@ class nginxpack::php::cgi (
         ensure  => present,
         require => Package['nginx'],
       }
-  
+
       Package['php5-cgi'] -> Package['spawn-fcgi']
 
       file { '/var/local/run/php.sock':
@@ -134,7 +134,7 @@ class nginxpack::php::cgi (
         require => Package['spawn-fcgi'],
         notify  => Service['php-fastcgi'],
       }
-  
+
       file { '/etc/init.d/php-fastcgi':
         ensure  => file,
         mode    => '0755',
@@ -217,15 +217,15 @@ class nginxpack::php::cgi (
       package { [ 'php5-mysql', 'php5-cgi', 'spawn-fcgi' ]:
         ensure => absent,
       }
-  
+
       Package['spawn-fcgi'] -> Package['php5-mysql'] -> Package['php5-cgi']
-  
+
       ensure_packages([ 'psmisc' ])
-  
+
       file { '/usr/bin/php-fastcgi.sh':
         ensure => absent,
       }
-  
+
       file { '/etc/init.d/php-fastcgi':
         ensure => absent,
         notify => [
@@ -233,14 +233,14 @@ class nginxpack::php::cgi (
           Exec['remove-php-service']
         ],
       }
-  
+
       exec { 'kill-php-fastcgi':
         command     => '/usr/bin/killall php5-cgi',
         onlyif      => '/bin/ps aux | /bin/grep -q php5-cgi',
         refreshonly => true,
         require     => Package['psmisc'],
       }
-  
+
       exec { 'remove-php-service':
         command     => '/usr/sbin/update-rc.d php-fastcgi remove',
         refreshonly => true,

@@ -98,7 +98,7 @@
 #   previously with enable_php=true.
 #   Default: false
 #
-# [*php_AcceptPathInfo*]
+# [*php_acceptpathinfo*]
 #   True if you to want activate AcceptPathInfo with PHP.
 #   See: https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo
 #   Default: false
@@ -213,11 +213,11 @@ define nginxpack::vhost::basic (
   $upload_max_size     = '100M',
   $injectionsafe       = false,
   $use_php             = false,
-  $php_AcceptPathInfo  = false,
+  $php_acceptpathinfo  = false,
   $add_config_source   = false,
   $add_config_content  = false,
   $htpasswd            = false,
-  $htpasswd_msg        = "Restricted",
+  $htpasswd_msg        = 'Restricted',
   $forbidden           = false,
   $files_dir           = "/var/www/${name}/",
   $try_files           = '=404',
@@ -256,7 +256,7 @@ define nginxpack::vhost::basic (
     fail('Defining an IPv6 with ipv4only true is not consistent.')
   }
 
-  if $php_AcceptPathInfo and !$use_php {
+  if $php_acceptpathinfo and !$use_php {
     warning('AcceptPathInfo activated has no sens when PHP is not used.')
   }
 
@@ -360,7 +360,7 @@ define nginxpack::vhost::basic (
       ensure  => file,
       mode    => '0644',
       content => $add_config_content,
-      notify => Service['nginx'],
+      notify  => Service['nginx'],
     }
   }
 }

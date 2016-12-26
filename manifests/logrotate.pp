@@ -71,9 +71,9 @@ class nginxpack::logrotate (
 
   if $enable {
 
-    validate_re("$frequency", '^(hourly|daily|weekly|monthly|yearly)$',
+    validate_re($frequency, '^(hourly|daily|weekly|monthly|yearly)$',
       "${frequency} is not supported for frequency. Allowed values are 'hourly', 'daily', 'weekly', 'monthly' or 'yearly'.")
-    validate_re("$rotate", '^\d+$', 'rotate is not a valid number')
+    validate_integer($rotate)
 
     ensure_packages([ 'logrotate', 'psmisc' ])
 

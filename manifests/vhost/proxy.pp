@@ -286,7 +286,7 @@ define nginxpack::vhost::proxy (
       ensure  => file,
       mode    => '0644',
       content => $add_config_content,
-      notify => Service['nginx'],
+      notify  => Service['nginx'],
     }
   }
 }
