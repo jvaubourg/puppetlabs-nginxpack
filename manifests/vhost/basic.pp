@@ -40,23 +40,27 @@
 #   Default: false
 #
 # [*ssl_cert_source*]
-#   Location of the SSL certificate file (pem or crt). If not false then the
-#   https parameter must be true and the next one must be false.
+#   See the parameter definition with ssl::certificate/ssl_cert_source.
 #   Default: false
 #
 # [*ssl_cert_content*]
-#   SSL certificate directly from a string (or through hiera). If not false then
-#   the https parameter must be true and the previous one must be false.
+#   See the parameter definition with ssl::certificate/ssl_cert_content.
 #   Default: false
 #
 # [*ssl_key_source*]
-#   Location of the SSL key certificate file. If not false then the https
-#   parameter must be true and the next one must be false.
+#   See the parameter definition with ssl::certificate/ssl_key_source.
 #   Default: false
 #
 # [*ssl_key_content*]
-#   SSL key certificate directly from a string (or through hiera). If not false
-#   then the https parameter must be true and the previous one must be false.
+#   See the parameter definition with ssl::certificate/ssl_key_content.
+#   Default: false
+#
+# [*ssl_dhparam_source*]
+#   See the parameter definition with ssl::certificate/ssl_dhparam_source.
+#   Default: false
+#
+# [*ssl_dhparam_content*]
+#   See the parameter definition with ssl::certificate/ssl_dhparam_content.
 #   Default: false
 #
 # [*ssl_ocsp_dns1*]
@@ -69,10 +73,6 @@
 #
 # [*ssl_ocsp_dns2*]
 #   See the parameter definition with ssl_ocsp_dns1.
-#   Default: false
-#
-# [*ssl_dhparam*]
-#   The Diffie-Hellman parameter file (a path on the local FS).
 #   Default: false
 #
 # [*port*]
@@ -194,39 +194,44 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 define nginxpack::vhost::basic (
-  $domains            = [ 'localhost' ],
-  $enable             = true,
-  $ipv6               = false,
-  $ipv4               = false,
-  $ipv6only           = false,
-  $ipv4only           = false,
-  $https              = false,
-  $ssl_cert_source    = false,
-  $ssl_key_source     = false,
-  $ssl_cert_content   = false,
-  $ssl_key_content    = false,
-  $ssl_ocsp_dns1      = false,
-  $ssl_ocsp_dns2      = false,
-  $ssl_dhparam        = false,
-  $port               = -1,
-  $upload_max_size    = '100M',
-  $injectionsafe      = false,
-  $use_php            = false,
-  $php_AcceptPathInfo = false,
-  $add_config_source  = false,
-  $add_config_content = false,
-  $htpasswd           = false,
-  $htpasswd_msg       = "Restricted",
-  $forbidden          = false,
-  $files_dir          = "/var/www/${name}/",
-  $try_files          = '=404',
-  $listing            = false
+  $domains             = [ 'localhost' ],
+  $enable              = true,
+  $ipv6                = false,
+  $ipv4                = false,
+  $ipv6only            = false,
+  $ipv4only            = false,
+  $https               = false,
+  $ssl_cert_source     = false,
+  $ssl_key_source      = false,
+  $ssl_dhparam_source  = false,
+  $ssl_cert_content    = false,
+  $ssl_key_content     = false,
+  $ssl_dhparam_content = false,
+  $ssl_ocsp_dns1       = false,
+  $ssl_ocsp_dns2       = false,
+  $port                = -1,
+  $upload_max_size     = '100M',
+  $injectionsafe       = false,
+  $use_php             = false,
+  $php_AcceptPathInfo  = false,
+  $add_config_source   = false,
+  $add_config_content  = false,
+  $htpasswd            = false,
+  $htpasswd_msg        = "Restricted",
+  $forbidden           = false,
+  $files_dir           = "/var/www/${name}/",
+  $try_files           = '=404',
+  $listing             = false
 ) {
 
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
     or $ssl_key_content) and !$https {
 
-    fail('Use a certificate without enable https does not make sense.')
+    fail('Using a certificate without enabling https does not make sense.')
+  }
+
+  if ($ssl_dhparam_source or $ssl_dhparam_content) and !$https {
+    fail('Using a dhparam file without enabling https does not make sense.')
   }
 
   if $https and ((!$ssl_cert_source and !$ssl_cert_content)
@@ -236,7 +241,7 @@ define nginxpack::vhost::basic (
   }
 
   if ($ssl_ocsp_dns1 or $ssl_ocsp_dns2) and !$https {
-    fail('Use OCSP DNS resolvers without enable https does not make sense.')
+    fail('Using OCSP DNS resolvers without enabling https does not make sense.')
   }
 
   if $ipv6only and $ipv4only {
@@ -252,11 +257,11 @@ define nginxpack::vhost::basic (
   }
 
   if $php_AcceptPathInfo and !$use_php {
-    warning('AcceptPathInfo activated has no sens if PHP is not used.')
+    warning('AcceptPathInfo activated has no sens when PHP is not used.')
   }
 
   if $add_config_source and $add_config_content {
-    fail('Use source/content method to define add_config but not the both.')
+    fail('Please, use source/content method to define add_config, but not both.')
   }
 
   if $htpasswd_msg != 'Restricted' and !$htpasswd {
@@ -264,8 +269,8 @@ define nginxpack::vhost::basic (
   }
 
   if $use_php {
-    notice('Use PHP in at least 1 vhost implies to use enable_php in init.')
-    notice('Add if it is not already, otherwise ignore this notice.')
+    notice('Using PHP in at least 1 vhost implies to use init with enable_php set.')
+    notice('Fix this if necessary, or ignore this notice.')
   }
 
   if $port == -1 {
@@ -276,10 +281,12 @@ define nginxpack::vhost::basic (
 
   if $https {
     nginxpack::ssl::certificate { $name:
-      ssl_cert_source  => $ssl_cert_source,
-      ssl_key_source   => $ssl_key_source,
-      ssl_cert_content => $ssl_cert_content,
-      ssl_key_content  => $ssl_key_content,
+      ssl_cert_source     => $ssl_cert_source,
+      ssl_key_source      => $ssl_key_source,
+      ssl_dhparam_source  => $ssl_dhparam_source,
+      ssl_cert_content    => $ssl_cert_content,
+      ssl_key_content     => $ssl_key_content,
+      ssl_dhparam_content => $ssl_dhparam_content,
     }
   }
 

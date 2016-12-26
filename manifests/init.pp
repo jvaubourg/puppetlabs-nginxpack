@@ -35,6 +35,14 @@
 #   See the parameter definition with ssl::default/ssl_key_content
 #   Default: Nginxpack default key
 #
+# [*ssl_default_dhparam_source*]
+#   See the parameter definition with ssl::default/ssl_dhparam_source
+#   Default: false
+#
+# [*ssl_default_dhparam_content*]
+#   See the parameter definition with ssl::default/ssl_dhparam_content
+#   Default: false
+#
 # [*default_https_blackhole*]
 #   False if you don't want a default https blackhole (useful if you
 #   have no https vhosts on port 443 and you don't want Nginx listening
@@ -78,8 +86,9 @@
 #   }
 #
 #   class { 'nginxpack':
-#     ssl_default_cert_content => hiera('default-cert'),
-#     ssl_default_key_content  => hiera('default-key'),
+#     ssl_default_cert_content    => hiera('default-cert'),
+#     ssl_default_key_content     => hiera('default-key'),
+#     ssl_default_dhparam_content => 'puppet:///certificates/dhparam.pem',
 #   }
 #
 # More examples: https://forge.puppetlabs.com/jvaubourg/nginxpack
@@ -108,28 +117,30 @@
 #
 
 class nginxpack (
-  $logrotate                = true,
-  $logrotate_frequency      = 'weekly',
-  $logrotate_rotate         = 52,
-  $ssl_default_cert_source  = false,
-  $ssl_default_key_source   = false,
-  $ssl_default_cert_content = false,
-  $ssl_default_key_content  = false,
-  $default_https_blackhole  = true,
-  $default_http_blackhole  = true,
-  $enable_php               = false,
-  $php_fpm                  = true,
-  $php_mysql                = false,
-  $php_timezone             = 'Europe/Paris',
-  $php_upload_max_filesize  = '10M',
-  $php_upload_max_files     = 10
+  $logrotate                   = true,
+  $logrotate_frequency         = 'weekly',
+  $logrotate_rotate            = 52,
+  $ssl_default_cert_source     = false,
+  $ssl_default_key_source      = false,
+  $ssl_default_dhparam_source  = false,
+  $ssl_default_cert_content    = false,
+  $ssl_default_key_content     = false,
+  $ssl_default_dhparam_content = false,
+  $default_https_blackhole     = true,
+  $default_http_blackhole      = true,
+  $enable_php                  = false,
+  $php_fpm                     = true,
+  $php_mysql                   = false,
+  $php_timezone                = 'Europe/Paris',
+  $php_upload_max_filesize     = '10M',
+  $php_upload_max_files        = 10
 ) {
 
   if ($ssl_default_cert_source or $ssl_default_key_source
     or $ssl_default_cert_content or $ssl_default_key_content)
     and !$default_https_blackhole {
 
-    fail('Use a default certificate without enable default_https_blackhole')
+    fail('Using a default certificate without enabling default_https_blackhole')
     fail('does not make sense.')
   }
 
@@ -194,10 +205,12 @@ class nginxpack (
 
   if $default_https_blackhole {
     class { 'nginxpack::ssl::default':
-      ssl_cert_source  => $ssl_default_cert_source,
-      ssl_key_source   => $ssl_default_key_source,
-      ssl_cert_content => $ssl_default_cert_content,
-      ssl_key_content  => $ssl_default_key_content,
+      ssl_cert_source     => $ssl_default_cert_source,
+      ssl_key_source      => $ssl_default_key_source,
+      ssl_dhparam_source  => $ssl_default_dhparam_source,
+      ssl_cert_content    => $ssl_default_cert_content,
+      ssl_key_content     => $ssl_default_key_content,
+      ssl_dhparam_content => $ssl_default_dhparam_content,
     }
   } else {
     file { [ '/etc/nginx/sites-available/default_https',

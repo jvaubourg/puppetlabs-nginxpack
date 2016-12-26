@@ -60,14 +60,14 @@ server {
   resolver_timeout 5s;
   ssl_certificate /etc/nginx/ssl/<%= @name %>.pem;
   ssl_certificate_key /etc/nginx/ssl/<%= @name %>.key;
-  <% if (@ssl_dhparam && !@ssl_dhparam.empty?) %>
-  ssl_dhparam <%= @ssl_dhparam %>;
+  <% if @ssl_dhparam_source || @ssl_dhparam_content then -%>
+    ssl_dhparam /etc/nginx/ssl/<%= @name %>_dhparam.pem;
   <% end -%>
   <% end -%>
 
   <% if @forbidden then -%>
     <% rules = ""
-      forbidden.each { |url| rules += "location ~ #{url} { return 403; }\n" }
+      @forbidden.each { |url| rules += "location ~ #{url} { return 403; }\n" }
     -%>
     <%= rules -%>
   <% end -%>

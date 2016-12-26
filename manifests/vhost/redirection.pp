@@ -109,7 +109,7 @@ define nginxpack::vhost::redirection (
 ) {
 
   if $add_config_source and $add_config_content {
-    fail('Use source/content method to define add_config but not the both.')
+    fail('Please, use source/content method to define add_config, but not both.')
   }
 
   if $ipv6only and $ipv4only {

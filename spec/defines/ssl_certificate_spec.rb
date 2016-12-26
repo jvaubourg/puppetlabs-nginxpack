@@ -7,8 +7,9 @@ describe 'nginxpack::ssl::certificate' do
 
   context 'with contents' do
     let(:params) {{
-      :ssl_key_content  => 'foo',
-      :ssl_cert_content => 'bar',
+      :ssl_key_content     => 'foo',
+      :ssl_cert_content    => 'bar',
+      :ssl_dhparam_content => '1337',
     }}
 
     it do
@@ -20,12 +21,18 @@ describe 'nginxpack::ssl::certificate' do
       should contain_file('/etc/nginx/ssl/foobar.key') \
         .with_content('foo')
     end
+
+    it do
+      should contain_file('/etc/nginx/ssl/foobar_dhparam.pem') \
+        .with_content('1337')
+    end
   end
 
   context 'with sources' do
     let(:params) {{
-      :ssl_key_source  => 'foo',
-      :ssl_cert_source => 'bar',
+      :ssl_key_source     => 'foo',
+      :ssl_cert_source    => 'bar',
+      :ssl_dhparam_source => '1337',
     }}
 
     it do
@@ -34,6 +41,10 @@ describe 'nginxpack::ssl::certificate' do
 
     it do
       should contain_file('/etc/nginx/ssl/foobar.key')
+    end
+
+    it do
+      should contain_file('/etc/nginx/ssl/foobar_dhparam.pem')
     end
   end
 
@@ -45,7 +56,7 @@ describe 'nginxpack::ssl::certificate' do
       :ssl_cert_content => 'bar',
     }}
 
-    it_raises 'a Puppet::Error', /certificate but not the both/
+    it_raises 'a Puppet::Error', /certificate, but not both/
   end
 
   context 'with key source and content' do
@@ -54,7 +65,7 @@ describe 'nginxpack::ssl::certificate' do
       :ssl_key_content => 'bar',
     }}
 
-    it_raises 'a Puppet::Error', /certificate but not the both/
+    it_raises 'a Puppet::Error', /certificate, but not both/
   end
 
   context 'with only cert' do
@@ -62,7 +73,7 @@ describe 'nginxpack::ssl::certificate' do
       :ssl_cert_content => 'bar',
     }}
 
-    it_raises 'a Puppet::Error', /Please define a cert_pem/
+    it_raises 'a Puppet::Error', /Please, define a cert_pem/
   end
 
   context 'with only key' do
@@ -70,6 +81,6 @@ describe 'nginxpack::ssl::certificate' do
       :ssl_key_content => 'bar',
     }}
 
-    it_raises 'a Puppet::Error', /Please define a cert_pem/
+    it_raises 'a Puppet::Error', /Please, define a cert_pem/
   end
 end

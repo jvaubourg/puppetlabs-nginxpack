@@ -1,9 +1,9 @@
 # == Class: nginxpack::ssl::default
 #
-# Default vhost listening on the 443 port with a default (and probably wildcard)
+# Default vhost listening on 443 port with a default (and probably wildcard)
 # SSL certificat. If you want to use https on two vhosts with the same IP and
 # the same port, Nginx will use this default vhost. Thus, this vhost has to be
-# able to propose a valid SSL certificate for the both domains.
+# able to propose a valid SSL certificate for the two domains.
 # See:
 #  https://github.com/jvaubourg/puppetlabs-nginxpack#well-known-problem-with-ssl
 #
@@ -14,25 +14,35 @@
 #
 # === Parameters
 #
-# [*ssl_default_cert_content_source*]
+# [*ssl_cert_content_source*]
 #   Location of the SSL certificate file (pem or crt) to use with the default
 #   vhost listening on port 443. If not false then the next parameter must
 #   be false.
 #   Default: false
 #
-# [*ssl_default_cert_content_content*]
+# [*ssl_cert_content_content*]
 #   SSL certificate directly from a string (or through hiera). If not false then
 #   the previous parameter must be false.
 #   Default: false
 #
-# [*ssl_default_key_content_source*]
+# [*ssl_key_content_source*]
 #   Location of the SSL key certificate to use with the default vhost listening
 #   on port 443. If not false then the next parameter must be false.
 #   Default: false
 #
-# [*ssl_default_key_content_content*]
+# [*ssl_key_content_content*]
 #   SSL key certificate directly from a string (or through hiera). If not false
 #   then the previous parameter must be false.
+#   Default: false
+#
+# [*ssl_dhparam_source*]
+#   Location of a dhparam file to use with the default vhost listening on port
+#   443. If not false then the next parameter must be false.
+#   Default: false
+#
+# [*ssl_dhparam_content*]
+#   dhparam file directly from a string (or through hiera). If not false then
+#   the previous parameter must be false.
 #   Default: false
 #
 # === Examples
@@ -43,8 +53,9 @@
 #   }
 #
 #   class { 'nginxpack::ssl::default':
-#     ssl_cert_content => hiera('default-cert'),
-#     ssl_key_content  => hiera('default-key'),
+#     ssl_cert_content   => hiera('default-cert'),
+#     ssl_key_content    => hiera('default-key'),
+#     ssl_dhparam_source => 'puppet:///certificates/dhparam.pem',
 #   }
 #
 # More examples: https://forge.puppetlabs.com/jvaubourg/nginxpack
@@ -72,10 +83,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 class nginxpack::ssl::default (
-  $ssl_cert_source  = false,
-  $ssl_key_source   = false,
-  $ssl_cert_content = false,
-  $ssl_key_content  = false
+  $ssl_cert_source     = false,
+  $ssl_key_source      = false,
+  $ssl_dhparam_source  = false,
+  $ssl_cert_content    = false,
+  $ssl_key_content     = false,
+  $ssl_dhparam_content = false
 ) {
 
   if ($ssl_cert_content and $ssl_key_content)
@@ -115,10 +128,12 @@ Wd9kn84eQtVblhU=
   }
 
   nginxpack::ssl::certificate { 'default':
-    ssl_cert_source  => $ssl_cert_source,
-    ssl_key_source   => $ssl_key_source,
-    ssl_cert_content => $default_cert_content,
-    ssl_key_content  => $default_key_content,
+    ssl_cert_source     => $ssl_cert_source,
+    ssl_key_source      => $ssl_key_source,
+    ssl_dhparam_source  => $ssl_dhparam_source,
+    ssl_cert_content    => $default_cert_content,
+    ssl_key_content     => $default_key_content,
+    ssl_dhparam_content => $ssl_dhparam_content,
   }
 
   file { '/etc/nginx/sites-available/default_https':

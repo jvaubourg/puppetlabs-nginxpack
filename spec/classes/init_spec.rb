@@ -28,34 +28,40 @@ describe 'nginxpack' do
 
   # SSL_*_* TESTS
 
-  context 'with default cert and key from source' do
+  context 'with default cert, key and dhparam from source' do
     let(:params) {{
-      :ssl_default_cert_source => 'foo',
-      :ssl_default_key_source  => 'bar',
+      :ssl_default_cert_source    => 'foo',
+      :ssl_default_key_source     => 'bar',
+      :ssl_default_dhparam_source => '1337',
     }}
 
     it do
       should contain_class('nginxpack::ssl::default').with(
-        'ssl_cert_source'  => 'foo',
-        'ssl_key_source'   => 'bar',
-        'ssl_cert_content' => false,
-        'ssl_key_content'  => false
+        'ssl_cert_source'     => 'foo',
+        'ssl_key_source'      => 'bar',
+        'ssl_dhparam_source'  => '1337',
+        'ssl_cert_content'    => false,
+        'ssl_key_content'     => false,
+        'ssl_dhparam_content' => false
       )
     end
   end
 
-  context 'with default cert and key from content' do
+  context 'with default cert, key and dhparam from content' do
     let(:params) {{
-      :ssl_default_cert_content => 'foo',
-      :ssl_default_key_content  => 'bar',
+      :ssl_default_cert_content    => 'foo',
+      :ssl_default_key_content     => 'bar',
+      :ssl_default_dhparam_content => '1337',
     }}
 
     it do
       should contain_class('nginxpack::ssl::default').with(
-        'ssl_cert_source'  => false,
-        'ssl_key_source'   => false,
-        'ssl_cert_content' => 'foo',
-        'ssl_key_content'  => 'bar'
+        'ssl_cert_source'     => false,
+        'ssl_key_source'      => false,
+        'ssl_dhparam_source'  => false,
+        'ssl_cert_content'    => 'foo',
+        'ssl_key_content'     => 'bar',
+        'ssl_dhparam_content' => '1337'
       )
     end
   end
@@ -108,7 +114,7 @@ describe 'nginxpack' do
       :ssl_default_key_content  => 'bar',
     }}
 
-    it_raises 'a Puppet::Error', /Use a default certificate without/
+    it_raises 'a Puppet::Error', /Using a default certificate without/
   end
 
   context 'with default cert/key from source and no default https blackhole' do
@@ -118,7 +124,7 @@ describe 'nginxpack' do
       :ssl_default_key_source  => 'bar',
     }}
 
-    it_raises 'a Puppet::Error', /Use a default certificate without/
+    it_raises 'a Puppet::Error', /Using a default certificate without/
   end
 
   context 'with no default http blackhole' do
