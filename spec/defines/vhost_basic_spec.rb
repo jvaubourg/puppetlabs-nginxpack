@@ -177,10 +177,10 @@ describe 'nginxpack::vhost::basic' do
 
   # PHP_ACCEPTPATHINFO TESTS
 
-  context 'with php_AcceptPathInfo and use_php' do
+  context 'with php_acceptpathinfo and use_php' do
     let(:params) {{
       :use_php            => true,
-      :php_AcceptPathInfo => true,
+      :php_acceptpathinfo => true,
     }}
 
     it do
@@ -190,10 +190,10 @@ describe 'nginxpack::vhost::basic' do
     end
   end
 
-  context 'with php_AcceptPathInfo but no use_php' do
+  context 'with php_acceptpathinfo but no use_php' do
     let(:params) {{
       :use_php            => false,
-      :php_AcceptPathInfo => true,
+      :php_acceptpathinfo => true,
     }}
 
     it do
