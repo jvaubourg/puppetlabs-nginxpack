@@ -178,6 +178,30 @@ describe 'nginxpack' do
     end
   end
 
+  # ENABLE_LEGACYCGI TESTS
+
+  context 'with enable_legacycgi' do
+    let(:params) {{
+      :enable_legacycgi => true,
+    }}
+
+    it do
+      should contain_class('nginxpack::legacycgi') \
+        .with_enable(true)
+    end
+  end
+
+  context 'with no enable_legacycgi' do
+    let(:params) {{
+      :enable_legacycgi => false
+    }}
+
+    it do
+      should contain_class('nginxpack::legacycgi') \
+        .with_enable(false)
+    end
+  end
+
   # GENERAL TESTS
 
   context 'with defaults' do

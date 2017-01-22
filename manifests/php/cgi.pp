@@ -10,7 +10,7 @@
 # === Parameters
 #
 # [*enable*]
-#   False to be sure that PHP CGI is uninstalled.
+#   False to be sure that PHP-FPM is uninstalled.
 #   Default: true
 #
 # [*mysql*]
@@ -134,10 +134,10 @@ class nginxpack::php::cgi (
 
   } else {
 
-      package { [ 'php5-fpm', 'php5-mysql' ]:
-        ensure => absent,
-      }
+    package { [ 'php5-fpm', 'php5-mysql' ]:
+      ensure => absent,
+    }
 
-      Package['php5-mysql'] -> Package['php5-fpm']
+    Package['php5-mysql'] -> Package['php5-fpm']
   }
 }

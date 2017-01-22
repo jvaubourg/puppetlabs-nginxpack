@@ -202,6 +202,41 @@ describe 'nginxpack::vhost::basic' do
     end
   end
 
+  # USE_LEGACYCGI TESTS
+
+  context 'with use_legacycgi' do
+    let(:params) {{
+      :use_legacycgi => true,
+      :legacycgi_path => '/barfoo',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/fastcgi_pass/)
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*location\s+\/barfoo\s+{/)
+    end
+  end
+
+  context 'with no use_legacycgi' do
+    let(:params) {{
+      :use_legacycgi => false,
+    }}
+
+    it do
+      should_not contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/fastcgi_pass/)
+    end
+
+    it do
+      should_not contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*location\s+\/barfoo\s+{/)
+    end
+  end
+
   # UPLOAD_MAX_SIZE TESTS
 
   context 'with upload_max_size' do

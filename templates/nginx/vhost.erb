@@ -103,6 +103,24 @@ server {
     auth_basic_user_file /etc/nginx/htpasswd/<%= @name %>;
     <% end -%>
   }
+
+  <% elsif @use_legacycgi then -%>
+
+  location <%= @legacycgi_path %> {
+    include /etc/nginx/fastcgi_params;
+
+    # https://www.nginx.com/blog/mitigating-the-httpoxy-vulnerability-with-nginx/
+    fastcgi_param HTTP_PROXY "";
+
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass unix:/var/run/fcgiwrap.socket;
+
+    <% if @htpasswd then -%>
+    auth_basic "<%= @htpasswd_msg.gsub('"', "''") %>";
+    auth_basic_user_file /etc/nginx/htpasswd/<%= @name %>;
+    <% end -%>
+  }
+
   <% end -%>
 
   location ~ / {

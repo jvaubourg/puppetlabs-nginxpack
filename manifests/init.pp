@@ -57,6 +57,10 @@
 #   See the parameter definition with php::cgi/enable
 #   Default: false
 #
+# [*enable_legacycgi*]
+#   See the parameter definition with legacycgi/enable
+#   Default: false
+#
 # [*php_mysql*]
 #   See the parameter definition with php::cgi/mysql
 #   Default: false
@@ -128,7 +132,8 @@ class nginxpack (
   $php_mysql                   = false,
   $php_timezone                = 'Europe/Paris',
   $php_upload_max_filesize     = '10M',
-  $php_upload_max_files        = 10
+  $php_upload_max_files        = 10,
+  $enable_legacycgi            = false
 ) {
 
   if ($ssl_default_cert_source or $ssl_default_key_source
@@ -151,6 +156,10 @@ class nginxpack (
     timezone            => $php_timezone,
     upload_max_filesize => $php_upload_max_filesize,
     upload_max_files    => $php_upload_max_files,
+  }
+
+  class { 'nginxpack::legacycgi':
+    enable => $enable_legacycgi,
   }
 
   package { 'nginx':

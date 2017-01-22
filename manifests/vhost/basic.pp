@@ -94,14 +94,25 @@
 #   Default: false
 #
 # [*use_php*]
-#   True if you to want use php-cgi with this vhost. nginxphp must be called
-#   previously with enable_php=true.
+#   True if you to want use php-fpm (FastCGI) with this vhost. nginxphp must be
+#   called previously with enable_php=true. Legacy CGI (below) cannot be
+#   enabled at the same time.
 #   Default: false
 #
 # [*php_acceptpathinfo*]
 #   True if you to want activate AcceptPathInfo with PHP.
 #   See: https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo
 #   Default: false
+#
+# [*use_legacycgi*]
+#   True if you to want use legacy CGI (thanks to a FastCGI wrapping) with this
+#   vhost. nginxphp must be called previously with enable_legacycgi=true. PHP
+#   (above) cannot be enabled at the same time.
+#   Default: false
+#
+# [*legacycgi_path*]
+#   Absolute web path of the cgi-bin directory (e.g. /mailman).
+#   Default: /cgi-bin
 #
 # [*add_config_source*]
 #   Config files are generated from Puppet but you could need to add specific
@@ -214,6 +225,8 @@ define nginxpack::vhost::basic (
   $injectionsafe       = false,
   $use_php             = false,
   $php_acceptpathinfo  = false,
+  $use_legacycgi       = false,
+  $legacycgi_path      = '/cgi-bin',
   $add_config_source   = false,
   $add_config_content  = false,
   $htpasswd            = false,
@@ -257,7 +270,7 @@ define nginxpack::vhost::basic (
   }
 
   if $php_acceptpathinfo and !$use_php {
-    warning('AcceptPathInfo activated has no sens when PHP is not used.')
+    warning('AcceptPathInfo activated makes no sense when PHP is not used.')
   }
 
   if $add_config_source and $add_config_content {
@@ -268,8 +281,21 @@ define nginxpack::vhost::basic (
     fail('You need to use htpasswd with htpasswd_msg.')
   }
 
+  if $legacycgi_path and !$use_legacycgi {
+    warning('Legacy CGI Path set makes no sense when legacy CGI is not used.')
+  }
+
+  if $use_php and $use_legacycgi {
+    fail('PHP and legacy CGI cannot be enabled at the same time.')
+  }
+
   if $use_php {
     notice('Using PHP in at least 1 vhost implies to use init with enable_php set.')
+    notice('Fix this if necessary, or ignore this notice.')
+  }
+
+  if $use_legacycgi {
+    notice('Using legacy CGI in at least 1 vhost implies to use init with enable_legacycgi set.')
     notice('Fix this if necessary, or ignore this notice.')
   }
 
