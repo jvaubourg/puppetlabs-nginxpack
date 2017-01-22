@@ -57,10 +57,6 @@
 #   See the parameter definition with php::cgi/enable
 #   Default: false
 #
-# [*php_fpm*]
-#   See the parameter definition with php::cgi/fpm
-#   Default: true
-#
 # [*php_mysql*]
 #   See the parameter definition with php::cgi/mysql
 #   Default: false
@@ -129,7 +125,6 @@ class nginxpack (
   $default_https_blackhole     = true,
   $default_http_blackhole      = true,
   $enable_php                  = false,
-  $php_fpm                     = true,
   $php_mysql                   = false,
   $php_timezone                = 'Europe/Paris',
   $php_upload_max_filesize     = '10M',
@@ -152,7 +147,6 @@ class nginxpack (
 
   class { 'nginxpack::php::cgi':
     enable              => $enable_php,
-    fpm                 => $php_fpm,
     mysql               => $php_mysql,
     timezone            => $php_timezone,
     upload_max_filesize => $php_upload_max_filesize,

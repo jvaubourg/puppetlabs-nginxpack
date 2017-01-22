@@ -45,7 +45,7 @@ This module installs and configures Nginx (lightweight and robust webserver). It
 Features available:
 
 * Install and configure Nginx
-* Optionally: install and configure PHP5-FPM or PHP5-FastCGI/Spawn-FCGI
+* Optionally: install and configure PHP5-FPM (FastCGI)
 * Optionally: install PHP-MySQL connector and/or others PHP5 modules
 * Basic vhosts
 * Proxy vhosts
@@ -66,20 +66,18 @@ Recipes validated with [+230 rspec tests](https://travis-ci.org/jvaubourg/puppet
 Installed packages:
 
 * *nginx*
-* With `enable_php` and `php_fpm`: *php5-fpm* (default PHP configuration)
-* With `enable_php` and no `php_fpm`: *php5-cgi*, *spawn-fcgi*
+* With `enable_php`: *php5-fpm*
 * With `php_mysql`: *php5-mysql*
 * With `logrotate`: *logrotate*, *psmisc* (if not already present)
 
-*logrotate* is used with a configuration file in */etc/logrotate.d/nginx* allowing it to daily rotate vhost logs. The configuration uses *killall* from *psmisc* in order to force nginx to update his inodes (this is the classic way). With `enable_php` but no `php_fpm`, *killall* is also used in `nginxpack::php::cgi` to ensure that PHP is not still running when disabled.
+*logrotate* is used with a configuration file in */etc/logrotate.d/nginx* allowing it to daily rotate vhost logs. The configuration uses *killall* from *psmisc* in order to force nginx to update his inodes (this is the classic way).
 
 Use `nginxpack::php::mod { 'foo': }` involves installing *php5-foo* (e.g. `nginxpack::php::mod { [ 'mcrypt', 'gd' ]: }`).
 
 Added services:
 
 * Use `/etc/init.d/nginx`
-* With `enable_php` and no `php_fpm`: add `/etc/init.d/php-fastcgi` (and associated script `/usr/bin/php-fastcgi.sh`)
-* With `enable_php` and `php_fpm`: use `/etc/init.d/php5-fpm`
+* With `enable_php`: use `/etc/init.d/php5-fpm`
 
 Added files:
 
@@ -104,13 +102,6 @@ And with PHP:
 
     class { 'nginxpack':
       enable_php => true,
-    }
-
-If you want a classical PHP5-FastCGI/Spawn-FCGI instead of [PHP5-FPM](http://php-fpm.org), you can add:
-
-    class { 'nginxpack':
-      enable_php => true,
-      php_fpm    => false,
     }
 
 With PHP-MySQL connector:
