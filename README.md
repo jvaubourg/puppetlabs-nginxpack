@@ -159,6 +159,16 @@ With PHP:
 
 Since you use `use_php` for at least one vhost, you have to use `enable_php` with the webserver. For activating [AcceptPathInfo](https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo), add `php_AcceptPathInfo => true` to the vhost (e.g. */foo/index.php/bar/* with *PATH_INFO=/bar/*).
 
+With legacy CGI (binaries are executed individually for each request):
+
+    nginxpack::vhost::basic { 'foobar':
+      domains        => [ 'foobar.example.com' ],
+      use_legacycgi  => true,
+      legacycgi_path => '/mailman',
+    }
+
+Since you use `use_legacycgi` for at least one vhost, you have to use `enable_legacycgi` with the webserver. `legacycgi_path` must be the URL path of the *cgi-bin* directory (*/cgi-bin* by default).
+
 Listen on a specific IPv6 and all IPv4 available:
 
     nginxpack::vhost::basic { 'foobar':
