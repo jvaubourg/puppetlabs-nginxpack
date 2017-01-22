@@ -17,21 +17,8 @@ describe 'nginxpack::php::cgi' do
 
   # TIMEZONE TESTS
 
-  context 'with timezone but no fpm' do
+  context 'with timezone' do
     let(:params) {{
-      :fpm      => false,
-      :timezone => 'Foo/Bar',
-    }}
-
-    it do
-      should contain_file('/etc/php5/cgi/conf.d/timezone.ini') \
-        .with_content("date.timezone = 'Foo/Bar'")
-    end
-  end
-
-  context 'with timezone and fpm' do
-    let(:params) {{
-      :fpm      => true,
       :timezone => 'Foo/Bar',
     }}
 
@@ -91,11 +78,6 @@ describe 'nginxpack::php::cgi' do
     it do
       should contain_package('php5-fpm') \
         .with_ensure('present')
-    end
-
-    it do
-      should contain_file('/var/local/run/php.sock') \
-        .with_ensure('link')
     end
   end
 

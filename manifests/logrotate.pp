@@ -43,12 +43,13 @@
 #
 # === Authors
 #
+# Sebastien Badia
 # Julien Vaubourg
 # http://julien.vaubourg.com
 #
 # === Copyright
 #
-# Copyright (C) 2013 Julien Vaubourg
+# Copyright (C) 2013 Sebastien Badia, Julien Vaubourg
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -72,7 +73,8 @@ class nginxpack::logrotate (
   if $enable {
 
     validate_re($frequency, '^(hourly|daily|weekly|monthly|yearly)$',
-      "${frequency} is not supported for frequency. Allowed values are 'hourly', 'daily', 'weekly', 'monthly' or 'yearly'.")
+      "${frequency} is not supported for frequency: choose 'hourly', 'daily', 'weekly', 'monthly' or 'yearly'.")
+
     validate_integer($rotate)
 
     ensure_packages([ 'logrotate', 'psmisc' ])
