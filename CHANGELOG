@@ -1,6 +1,7 @@
 2017-01-22 - 0.2.0 (jvaubourg)
   * Add legacy CGI scripts support
   * Add possibility to specify a dhparam file
+  * Add possibility to change default index files
   * Improve SSL default configurations
   * Fix HTTPoxy vulnerability with CGIs
   * Remove support for obsolete PHP5-FastCGI

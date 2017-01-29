@@ -33,6 +33,19 @@ describe 'nginxpack::vhost::basic' do
     end
   end
 
+  # HTML_INDEX TESTS
+
+  context 'with html_index' do
+    let(:params) {{
+      :html_index => 'foobar.html',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*index\s+foobar\.html\s+/)
+    end
+  end
+
   # HTPASSWD TESTS
 
   context 'with htpasswd' do
@@ -172,6 +185,25 @@ describe 'nginxpack::vhost::basic' do
     it do
       should_not contain_file('/etc/nginx/sites-available/foobar') \
         .with_content(/^\s*index.*index.php/)
+    end
+  end
+
+  # PHP_INDEX TESTS
+
+  context 'with php_index' do
+    let(:params) {{
+      :use_php => true,
+      :php_index => 'foobar.php',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*fastcgi_index\s+foobar\.php/)
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*index.+\s+foobar\.php/)
     end
   end
 

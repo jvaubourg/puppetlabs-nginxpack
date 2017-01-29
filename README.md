@@ -157,7 +157,7 @@ With PHP:
       use_php => true,
     }
 
-Since you use `use_php` for at least one vhost, you have to use `enable_php` with the webserver. For activating [AcceptPathInfo](https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo), add `php_AcceptPathInfo => true` to the vhost (e.g. */foo/index.php/bar/* with *PATH_INFO=/bar/*).
+Since you use `use_php` for at least one vhost, you have to use `enable_php` with the webserver. For activating [AcceptPathInfo](https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo), add `php_acceptpathinfo => true` to the vhost (e.g. */foo/index.php/bar/* with *PATH_INFO=/bar/*). You can also replace the default PHP index *index.php* thanks to `php_index`.
 
 With legacy CGI (binaries are executed individually for each request):
 
@@ -217,6 +217,7 @@ Other options:
       enable             => false,
       files_dir          => '/srv/websites/foobar/',
       injectionsafe      => true,
+      html_index         => 'foobar.html',
       upload_max_size    => '5G',
       htpasswd           => 'user1:$apr1$EUoQVU1i$kcGRxeBAJaMuWYud6fxZL/',
       htpasswd_msg       => "Restricted Foobar's access",

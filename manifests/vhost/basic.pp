@@ -93,11 +93,19 @@
 #      -file-injections-spam-user-agents-etc
 #   Default: false
 #
+# [*html_index*]
+#   HTML file to use as default index.
+#   Default: index.html
+#
 # [*use_php*]
 #   True if you to want use php-fpm (FastCGI) with this vhost. nginxphp must be
 #   called previously with enable_php=true. Legacy CGI (below) cannot be
 #   enabled at the same time.
 #   Default: false
+#
+# [*php_index*]
+#   PHP file to use as default index.
+#   Default: index.php
 #
 # [*php_acceptpathinfo*]
 #   True if you to want activate AcceptPathInfo with PHP.
@@ -223,7 +231,9 @@ define nginxpack::vhost::basic (
   $port                = -1,
   $upload_max_size     = '100M',
   $injectionsafe       = false,
+  $html_index          = 'index.html',
   $use_php             = false,
+  $php_index           = 'index.php',
   $php_acceptpathinfo  = false,
   $use_legacycgi       = false,
   $legacycgi_path      = '/cgi-bin',
@@ -271,6 +281,10 @@ define nginxpack::vhost::basic (
 
   if $php_acceptpathinfo and !$use_php {
     warning('AcceptPathInfo activated makes no sense when PHP is not used.')
+  }
+
+  if $php_index != 'index.php' and !$use_php {
+    warning('Using a PHP index makes no sense when PHP is not used.')
   }
 
   if $add_config_source and $add_config_content {
