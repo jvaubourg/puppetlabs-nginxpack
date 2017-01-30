@@ -336,7 +336,7 @@ define nginxpack::vhost::basic (
     content => template('nginxpack/nginx/vhost.erb'),
     require => [
       Package['nginx'],
-      Exec["mkdir_${files_dir}"],
+      Exec["${name}_mkdir_${files_dir}"],
       File["/var/log/nginx/${name}/"],
     ],
     notify  => [
@@ -345,7 +345,7 @@ define nginxpack::vhost::basic (
     ],
   }
 
-  exec { "mkdir_${files_dir}":
+  exec { "${name}_mkdir_${files_dir}":
     command => "/bin/mkdir -p ${files_dir}",
     unless  => "/usr/bin/test -d ${files_dir}",
   }
