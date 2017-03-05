@@ -236,8 +236,8 @@ define nginxpack::vhost::proxy (
     $vhost_require = [
       Package['nginx'],
       File["/var/log/nginx/${name}_proxy/"],
-      File["/etc/nginx/ssl/${name}.pem"],
-      File["/etc/nginx/ssl/${name}.key"],
+      File["/etc/nginx/ssl/${name}_proxy.pem"],
+      File["/etc/nginx/ssl/${name}_proxy.key"],
     ]
   } else {
     $vhost_require = [
