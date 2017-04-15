@@ -119,17 +119,19 @@ server {
 
   <% end -%>
 
-  location ~ / {
-    index <%= @html_index %> <%= @use_php ? @php_index : '' %>;
-    try_files $uri $uri/ <%= @try_files %>;
+  <% if @handlelocation then -%>
+    location ~ / {
+      index <%= @html_index %> <%= @use_php ? @php_index : '' %>;
+      try_files $uri $uri/ <%= @try_files %>;
 
-    <% if @listing then -%>
-    autoindex on;
-    <% end -%>
+      <% if @listing then -%>
+      autoindex on;
+      <% end -%>
 
-    <% if @htpasswd then -%>
-    auth_basic "<%= @htpasswd_msg.gsub('"', "''") %>";
-    auth_basic_user_file /etc/nginx/htpasswd/<%= @name %>;
-    <% end -%>
-  }
+      <% if @htpasswd then -%>
+      auth_basic "<%= @htpasswd_msg.gsub('"', "''") %>";
+      auth_basic_user_file /etc/nginx/htpasswd/<%= @name %>;
+      <% end -%>
+    }
+  <% end -%>
 }

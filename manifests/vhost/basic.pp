@@ -244,8 +244,14 @@ define nginxpack::vhost::basic (
   $forbidden           = false,
   $files_dir           = "/var/www/${name}/",
   $try_files           = '=404',
-  $listing             = false
+  $listing             = false,
+  $handlelocation      = true
 ) {
+  if ($html_index != 'index.html' or $try_files != '=404' or $listing)
+    and !$handlelocation {
+
+    fail('Using html_index/try_files/listing with handlelocation disabled has no effect.')
+  }
 
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
     or $ssl_key_content) and !$https {
