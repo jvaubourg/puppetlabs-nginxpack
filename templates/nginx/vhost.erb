@@ -109,10 +109,6 @@ server {
   location <%= @legacycgi_path %> {
     include /etc/nginx/fastcgi_params;
 
-    # https://www.nginx.com/blog/mitigating-the-httpoxy-vulnerability-with-nginx/
-    fastcgi_param HTTP_PROXY "";
-
-    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     fastcgi_pass unix:/var/run/fcgiwrap.socket;
 
     <% if @htpasswd then -%>
