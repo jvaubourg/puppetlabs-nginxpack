@@ -31,7 +31,7 @@ describe 'nginxpack::logrotate' do
   context 'with custom params' do
     let(:params) {{
       :enable    => true,
-      :rotate    => '365',
+      :rotate    => 365,
       :frequency => 'daily',
     }}
 
@@ -52,7 +52,7 @@ describe 'nginxpack::logrotate' do
       :rotate => 'foo',
     }}
 
-    it_raises 'a Puppet::Error', /rotate is not a valid number/
+    it_raises 'a Puppet::Error'
   end
 
   context 'with a martian value for frequency' do

@@ -40,23 +40,27 @@
 #   Default: false
 #
 # [*ssl_cert_source*]
-#   Location of the SSL certificate file (pem or crt). If not false then the
-#   https parameter must be true and the next one must be false.
+#   See the parameter definition with ssl::certificate/ssl_cert_source.
 #   Default: false
 #
 # [*ssl_cert_content*]
-#   SSL certificate directly from a string (or through hiera). If not false then
-#   the https parameter must be true and the previous one must be false.
+#   See the parameter definition with ssl::certificate/ssl_cert_content.
 #   Default: false
 #
 # [*ssl_key_source*]
-#   Location of the SSL key certificate file. If not false then the https
-#   parameter must be true and the next one must be false.
+#   See the parameter definition with ssl::certificate/ssl_key_source.
 #   Default: false
 #
 # [*ssl_key_content*]
-#   SSL key certificate directly from a string (or through hiera). If not false
-#   then the https parameter must be true and the previous one must be false.
+#   See the parameter definition with ssl::certificate/ssl_key_content.
+#   Default: false
+#
+# [*ssl_dhparam_source*]
+#   See the parameter definition with ssl::certificate/ssl_dhparam_source.
+#   Default: false
+#
+# [*ssl_dhparam_content*]
+#   See the parameter definition with ssl::certificate/ssl_dhparam_content.
 #   Default: false
 #
 # [*ssl_ocsp_dns1*]
@@ -69,10 +73,6 @@
 #
 # [*ssl_ocsp_dns2*]
 #   See the parameter definition with ssl_ocsp_dns1.
-#   Default: false
-#
-# [*ssl_dhparam*]
-#   The Diffie-Hellman parameter file (a path on the local FS).
 #   Default: false
 #
 # [*port*]
@@ -93,15 +93,34 @@
 #      -file-injections-spam-user-agents-etc
 #   Default: false
 #
+# [*html_index*]
+#   HTML file to use as default index.
+#   Default: index.html
+#
 # [*use_php*]
-#   True if you to want use php-cgi with this vhost. nginxphp must be called
-#   previously with enable_php=true.
+#   True if you to want use php-fpm (FastCGI) with this vhost. nginxphp must be
+#   called previously with enable_php=true. Legacy CGI (below) cannot be
+#   enabled at the same time.
 #   Default: false
 #
-# [*php_AcceptPathInfo*]
+# [*php_index*]
+#   PHP file to use as default index.
+#   Default: index.php
+#
+# [*php_acceptpathinfo*]
 #   True if you to want activate AcceptPathInfo with PHP.
 #   See: https://httpd.apache.org/docs/2.2/mod/core.html#AcceptPathInfo
 #   Default: false
+#
+# [*use_legacycgi*]
+#   True if you to want use legacy CGI (thanks to a FastCGI wrapping) with this
+#   vhost. nginxphp must be called previously with enable_legacycgi=true. PHP
+#   (above) cannot be enabled at the same time.
+#   Default: false
+#
+# [*legacycgi_path*]
+#   Absolute web path of the cgi-bin directory (e.g. /mailman).
+#   Default: /cgi-bin
 #
 # [*add_config_source*]
 #   Config files are generated from Puppet but you could need to add specific
@@ -194,39 +213,54 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 define nginxpack::vhost::basic (
-  $domains            = [ 'localhost' ],
-  $enable             = true,
-  $ipv6               = false,
-  $ipv4               = false,
-  $ipv6only           = false,
-  $ipv4only           = false,
-  $https              = false,
-  $ssl_cert_source    = false,
-  $ssl_key_source     = false,
-  $ssl_cert_content   = false,
-  $ssl_key_content    = false,
-  $ssl_ocsp_dns1      = false,
-  $ssl_ocsp_dns2      = false,
-  $ssl_dhparam        = false,
-  $port               = -1,
-  $upload_max_size    = '100M',
-  $injectionsafe      = false,
-  $use_php            = false,
-  $php_AcceptPathInfo = false,
-  $add_config_source  = false,
-  $add_config_content = false,
-  $htpasswd           = false,
-  $htpasswd_msg       = "Restricted",
-  $forbidden          = false,
-  $files_dir          = "/var/www/${name}/",
-  $try_files          = '=404',
-  $listing            = false
+  $domains             = [ 'localhost' ],
+  $enable              = true,
+  $ipv6                = false,
+  $ipv4                = false,
+  $ipv6only            = false,
+  $ipv4only            = false,
+  $https               = false,
+  $ssl_cert_source     = false,
+  $ssl_key_source      = false,
+  $ssl_dhparam_source  = false,
+  $ssl_cert_content    = false,
+  $ssl_key_content     = false,
+  $ssl_dhparam_content = false,
+  $ssl_ocsp_dns1       = false,
+  $ssl_ocsp_dns2       = false,
+  $port                = -1,
+  $upload_max_size     = '100M',
+  $injectionsafe       = false,
+  $html_index          = 'index.html',
+  $use_php             = false,
+  $php_index           = 'index.php',
+  $php_acceptpathinfo  = false,
+  $use_legacycgi       = false,
+  $legacycgi_path      = '/cgi-bin',
+  $add_config_source   = false,
+  $add_config_content  = false,
+  $htpasswd            = false,
+  $htpasswd_msg        = 'Restricted',
+  $forbidden           = false,
+  $files_dir           = "/var/www/${name}/",
+  $try_files           = '=404',
+  $listing             = false,
+  $handlelocation      = true
 ) {
+  if ($html_index != 'index.html' or $try_files != '=404' or $listing)
+    and !$handlelocation {
+
+    fail('Using html_index/try_files/listing with handlelocation disabled has no effect.')
+  }
 
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
     or $ssl_key_content) and !$https {
 
-    fail('Use a certificate without enable https does not make sense.')
+    fail('Using a certificate without enabling https does not make sense.')
+  }
+
+  if ($ssl_dhparam_source or $ssl_dhparam_content) and !$https {
+    fail('Using a dhparam file without enabling https does not make sense.')
   }
 
   if $https and ((!$ssl_cert_source and !$ssl_cert_content)
@@ -236,7 +270,7 @@ define nginxpack::vhost::basic (
   }
 
   if ($ssl_ocsp_dns1 or $ssl_ocsp_dns2) and !$https {
-    fail('Use OCSP DNS resolvers without enable https does not make sense.')
+    fail('Using OCSP DNS resolvers without enabling https does not make sense.')
   }
 
   if $ipv6only and $ipv4only {
@@ -251,21 +285,38 @@ define nginxpack::vhost::basic (
     fail('Defining an IPv6 with ipv4only true is not consistent.')
   }
 
-  if $php_AcceptPathInfo and !$use_php {
-    warning('AcceptPathInfo activated has no sens if PHP is not used.')
+  if $php_acceptpathinfo and !$use_php {
+    warning('AcceptPathInfo activated makes no sense when PHP is not used.')
+  }
+
+  if $php_index != 'index.php' and !$use_php {
+    warning('Using a PHP index makes no sense when PHP is not used.')
   }
 
   if $add_config_source and $add_config_content {
-    fail('Use source/content method to define add_config but not the both.')
+    fail('Please, use source/content method to define add_config, but not both.')
   }
 
   if $htpasswd_msg != 'Restricted' and !$htpasswd {
     fail('You need to use htpasswd with htpasswd_msg.')
   }
 
+  if $legacycgi_path and !$use_legacycgi {
+    warning('Legacy CGI Path set makes no sense when legacy CGI is not used.')
+  }
+
+  if $use_php and $use_legacycgi {
+    fail('PHP and legacy CGI cannot be enabled at the same time.')
+  }
+
   if $use_php {
-    notice('Use PHP in at least 1 vhost implies to use enable_php in init.')
-    notice('Add if it is not already, otherwise ignore this notice.')
+    notice('Using PHP in at least 1 vhost implies to use init with enable_php set.')
+    notice('Fix this if necessary, or ignore this notice.')
+  }
+
+  if $use_legacycgi {
+    notice('Using legacy CGI in at least 1 vhost implies to use init with enable_legacycgi set.')
+    notice('Fix this if necessary, or ignore this notice.')
   }
 
   if $port == -1 {
@@ -276,10 +327,12 @@ define nginxpack::vhost::basic (
 
   if $https {
     nginxpack::ssl::certificate { $name:
-      ssl_cert_source  => $ssl_cert_source,
-      ssl_key_source   => $ssl_key_source,
-      ssl_cert_content => $ssl_cert_content,
-      ssl_key_content  => $ssl_key_content,
+      ssl_cert_source     => $ssl_cert_source,
+      ssl_key_source      => $ssl_key_source,
+      ssl_dhparam_source  => $ssl_dhparam_source,
+      ssl_cert_content    => $ssl_cert_content,
+      ssl_key_content     => $ssl_key_content,
+      ssl_dhparam_content => $ssl_dhparam_content,
     }
   }
 
@@ -289,7 +342,7 @@ define nginxpack::vhost::basic (
     content => template('nginxpack/nginx/vhost.erb'),
     require => [
       Package['nginx'],
-      Exec["mkdir_${files_dir}"],
+      Exec["${name}_mkdir_${files_dir}"],
       File["/var/log/nginx/${name}/"],
     ],
     notify  => [
@@ -298,7 +351,7 @@ define nginxpack::vhost::basic (
     ],
   }
 
-  exec { "mkdir_${files_dir}":
+  exec { "${name}_mkdir_${files_dir}":
     command => "/bin/mkdir -p ${files_dir}",
     unless  => "/usr/bin/test -d ${files_dir}",
   }
@@ -344,6 +397,7 @@ define nginxpack::vhost::basic (
       ensure => file,
       mode   => '0644',
       source => $add_config_source,
+      notify => Service['nginx'],
     }
   }
 
@@ -352,6 +406,7 @@ define nginxpack::vhost::basic (
       ensure  => file,
       mode    => '0644',
       content => $add_config_content,
+      notify  => Service['nginx'],
     }
   }
 }

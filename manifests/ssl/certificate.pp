@@ -29,6 +29,16 @@
 #   then the previous parameter must be false.
 #   Default: false
 #
+# [*ssl_dhparam_source*]
+#   Location of a dhparam file. If not false then the next parameter must be 
+#   false.
+#   Default: false
+#
+# [*ssl_dhparam_content*]
+#   dhparam file directly from a string (or through hiera). If not false then
+#   the previous parameter must be false.
+#   Default: false
+#
 # === Examples
 #
 #   nginxpack::ssl::certificate { 'mycert':
@@ -37,8 +47,9 @@
 #   }
 #
 #   nginxpack::ssl::certificate { 'mycert':
-#     ssl_cert_content => hiera('mycert-cert'),
-#     ssl_key_content  => hiera('mycert-key'),
+#     ssl_cert_content   => hiera('mycert-cert'),
+#     ssl_key_content    => hiera('mycert-key'),
+#     ssl_dhparam_source => 'puppet:///certificates/dhparam.pem',
 #   }
 #
 # More examples: https://forge.puppetlabs.com/jvaubourg/nginxpack
@@ -66,22 +77,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 define nginxpack::ssl::certificate (
-  $ssl_cert_source  = false,
-  $ssl_key_source   = false,
-  $ssl_cert_content = false,
-  $ssl_key_content  = false
+  $ssl_cert_source     = false,
+  $ssl_key_source      = false,
+  $ssl_dhparam_source  = false,
+  $ssl_cert_content    = false,
+  $ssl_key_content     = false,
+  $ssl_dhparam_content = false
 ) {
 
   if ($ssl_cert_source and $ssl_cert_content) or
     ($ssl_key_source and $ssl_key_content) {
 
-    fail('Use source/content method to define a certificate but not the both.')
+    fail('Please, use source/content method to define a certificate, but not both.')
   }
 
   if (!$ssl_cert_source and !$ssl_cert_content)
     or (!$ssl_key_source and !$ssl_key_content) {
 
-    fail('Please define a cert_pem AND a cert_key.')
+    fail('Please, define a cert_pem AND a cert_key.')
+  }
+
+  if $ssl_dhparam_source and $ssl_dhparam_content {
+    fail('Please, use source/content method to define a dhparam file, but not both.')
   }
 
   File { notify => Service['nginx'] }
@@ -111,6 +128,22 @@ define nginxpack::ssl::certificate (
       ensure  => file,
       mode    => '0644',
       content => $ssl_key_content,
+    }
+  }
+
+  if $ssl_dhparam_source {
+    file { "/etc/nginx/ssl/${name}_dhparam.pem":
+      ensure => file,
+      mode   => '0644',
+      source => $ssl_dhparam_source,
+    }
+  }
+
+  if $ssl_dhparam_content {
+    file { "/etc/nginx/ssl/${name}_dhparam.pem":
+      ensure  => file,
+      mode    => '0644',
+      content => $ssl_dhparam_content,
     }
   }
 }

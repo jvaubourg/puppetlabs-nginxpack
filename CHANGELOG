@@ -1,3 +1,13 @@
+2017-01-22 - 0.2.0 (jvaubourg)
+  * Add legacy CGI scripts support
+  * Add possibility to specify a dhparam file
+  * Add possibility to change default index files
+  * Improve SSL default configurations
+  * Fix HTTPoxy vulnerability with CGIs
+  * Remove support for obsolete PHP5-FastCGI
+  ** [WARNING] If you upgrade Nginxpack, all vhosts will now run PHP scripts
+     with PHP-FPM.
+
 2014-10-21 - 0.1.1 (jvaubourg)
   * Add LogRotate frequency and rotate options (sbadia)
   * Remove SSLv3 with HTTPS

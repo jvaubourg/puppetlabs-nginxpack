@@ -1,13 +1,21 @@
-# == Define: nginxpack::php::mod
+# == Class: nginxpack::php::cgi
 #
-# Dummy type installing a php5 module package.
+# Install a FastCGI wrapper (fcgiwrap) to run legacy CGI scripts.
+#
+# Should be used through the main nginxpack class.
 #
 # More explanations: https://forge.puppetlabs.com/jvaubourg/nginxpack
 # Sources: https://github.com/jvaubourg/puppetlabs-nginxpack
 #
+# === Parameters
+#
+# [*enable*]
+#   False to be sure that fcgiwrap is uninstalled.
+#   Default: true
+#
 # === Examples
 #
-#   nginxpack::php::mod { 'gd' }
+#   class { 'nginxpack::legacycgi': }
 #
 # More examples: https://forge.puppetlabs.com/jvaubourg/nginxpack
 #
@@ -18,7 +26,7 @@
 #
 # === Copyright
 #
-# Copyright (C) 2013 Julien Vaubourg
+# Copyright (C) 2017 Julien Vaubourg
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -33,10 +41,27 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-define nginxpack::php::mod {
-  package { "php5-${name}":
-    ensure  => present,
-    notify  => Service['php5-fpm'],
-    require => Package['php5-fpm'],
+class nginxpack::legacycgi (
+  $enable = true
+) {
+
+  if $enable {
+
+    package { 'fcgiwrap':
+      ensure => present,
+    }
+
+    service { 'fcgiwrap':
+      ensure     => running,
+      enable     => true,
+      hasrestart => true,
+      hasstatus  => true,
+    }
+
+  } else {
+
+    package { 'fcgiwrap':
+      ensure => absent,
+    }
   }
 }

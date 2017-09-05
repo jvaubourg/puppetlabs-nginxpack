@@ -17,21 +17,8 @@ describe 'nginxpack::php::cgi' do
 
   # TIMEZONE TESTS
 
-  context 'with timezone but no fpm' do
+  context 'with timezone' do
     let(:params) {{
-      :fpm      => false,
-      :timezone => 'Foo/Bar',
-    }}
-
-    it do
-      should contain_file('/etc/php5/cgi/conf.d/timezone.ini') \
-        .with_content("date.timezone = 'Foo/Bar'")
-    end
-  end
-
-  context 'with timezone and fpm' do
-    let(:params) {{
-      :fpm      => true,
       :timezone => 'Foo/Bar',
     }}
 
@@ -83,101 +70,20 @@ describe 'nginxpack::php::cgi' do
 
   # ENABLE TESTS
 
-  context 'with enable but not fpm' do
+  context 'with enable' do
     let(:params) {{
       :enable => true,
-      :fpm    => false,
-    }}
-
-    it do
-      should contain_package('php5-cgi') \
-        .with_ensure('present')
-    end
-
-    it do
-      should contain_package('spawn-fcgi') \
-        .with_ensure('present')
-    end
-
-    it do
-      should contain_service('php-fastcgi') \
-        .with_ensure('running') \
-        .with_enable(true)
-    end
-
-    it do
-      should contain_file('/usr/bin/php-fastcgi.sh') \
-        .with_ensure('file')
-    end
-
-    it do
-      should contain_file('/usr/bin/php-fastcgi.sh') \
-        .with_ensure('file')
-    end
-
-    it do
-      should contain_file('/var/run/php.sock') \
-        .with_ensure('link')
-    end
-  end
-
-  context 'with enable and fpm' do
-    let(:params) {{
-      :enable => true,
-      :fpm    => true,
     }}
 
     it do
       should contain_package('php5-fpm') \
         .with_ensure('present')
     end
-
-    it do
-      should contain_file('/var/run/php.sock') \
-        .with_ensure('link')
-    end
   end
 
-  context 'with no enable and no fpm' do
+  context 'with no enable' do
     let(:params) {{
       :enable => false,
-      :fpm    => false,
-    }}
-
-    it do
-      should contain_package('php5-cgi') \
-        .with_ensure('absent')
-    end
-
-    it do
-      should contain_package('php5-mysql') \
-        .with_ensure('absent')
-    end
-
-    it do
-      should contain_package('spawn-fcgi') \
-        .with_ensure('absent')
-    end
-
-    it do
-      should_not contain_service('php-fastcgi')
-    end
-
-    it do
-      should contain_file('/usr/bin/php-fastcgi.sh') \
-        .with_ensure('absent')
-    end
-
-    it do
-      should contain_file('/etc/init.d/php-fastcgi') \
-        .with_ensure('absent')
-    end
-  end
-
-  context 'with no enable but fpm' do
-    let(:params) {{
-      :enable => false,
-      :fpm    => true,
     }}
 
     it do

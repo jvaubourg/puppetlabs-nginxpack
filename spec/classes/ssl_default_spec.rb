@@ -4,34 +4,40 @@ describe 'nginxpack::ssl::default' do
 
   # SSL_*_* TESTS
 
-  context 'with cert and key from source' do
+  context 'with cert, key and dhparam from source' do
     let(:params) {{
-      :ssl_cert_source => 'foo',
-      :ssl_key_source  => 'bar',
+      :ssl_cert_source    => 'foo',
+      :ssl_key_source     => 'bar',
+      :ssl_dhparam_source => '1337',
     }}
 
     it do
       should contain_nginxpack__ssl__certificate('default').with(
-        'ssl_cert_source'  => 'foo',
-        'ssl_key_source'   => 'bar',
-        'ssl_cert_content' => false,
-        'ssl_key_content'  => false
+        'ssl_cert_source'     => 'foo',
+        'ssl_key_source'      => 'bar',
+        'ssl_dhparam_source'  => '1337',
+        'ssl_cert_content'    => false,
+        'ssl_key_content'     => false,
+        'ssl_dhparam_content' => false
       )
     end
   end
 
-  context 'with cert and key from content' do
+  context 'with cert, key and dhparam from content' do
     let(:params) {{
-      :ssl_cert_content => 'foo',
-      :ssl_key_content  => 'bar',
+      :ssl_cert_content    => 'foo',
+      :ssl_key_content     => 'bar',
+      :ssl_dhparam_content => '1337',
     }}
 
     it do
       should contain_nginxpack__ssl__certificate('default').with(
-        'ssl_cert_source'  => false,
-        'ssl_key_source'   => false,
-        'ssl_cert_content' => 'foo',
-        'ssl_key_content'  => 'bar'
+        'ssl_cert_source'     => false,
+        'ssl_key_source'      => false,
+        'ssl_dhparam_source'  => false,
+        'ssl_cert_content'    => 'foo',
+        'ssl_key_content'     => 'bar',
+        'ssl_dhparam_content' => '1337'
       )
     end
   end

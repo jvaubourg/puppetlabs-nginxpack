@@ -344,7 +344,7 @@ def vhost_common_tests(suffix = '')
       :add_config_source  => 'bar',
     }}
 
-    it_raises 'a Puppet::Error', /add_config but not the both/
+    it_raises 'a Puppet::Error', /add_config, but not both/
   end
 
   context 'with ipv6only and ipv4only' do

@@ -53,11 +53,27 @@
 #   Default: false
 #
 # [*ssl_cert_source*]
-#   See the parameter definition with vhost::basic/ssl_cert_source.
+#   See the parameter definition with ssl::certificate/ssl_cert_source.
 #   Default: false
 #
 # [*ssl_cert_content*]
-#   See the parameter definition with vhost::basic/ssl_cert_content.
+#   See the parameter definition with ssl::certificate/ssl_cert_content.
+#   Default: false
+#
+# [*ssl_key_source*]
+#   See the parameter definition with ssl::certificate/ssl_key_source.
+#   Default: false
+#
+# [*ssl_key_content*]
+#   See the parameter definition with ssl::certificate/ssl_key_content.
+#   Default: false
+#
+# [*ssl_dhparam_source*]
+#   See the parameter definition with ssl::certificate/ssl_dhparam_source.
+#   Default: false
+#
+# [*ssl_dhparam_content*]
+#   See the parameter definition with ssl::certificate/ssl_dhparam_content.
 #   Default: false
 #
 # [*ssl_ocsp_dns1*]
@@ -68,26 +84,14 @@
 #   See the parameter definition with vhost::basic/ssl_ocsp_dns1.
 #   Default: false
 #
-# [*ssl_dhparam*]
-#   The Diffie-Hellman parameter file (a path on the local FS).
-#   Default: false
-#
-# [*ssl_key_source*]
-#   See the parameter definition with vhost::basic/ssl_key_source.
-#   Default: false
-#
-# [*ssl_key_content*]
-#   See the parameter definition with vhost::basic/ssl_key_content.
-#   Default: false
-#
-# [*upload_max_size*]
-#   See the parameter definition with vhost::basic/upload_max_size.
-#   Default: 100M
-#
 # [*port*]
 #   See the parameter definition with vhost::basic/port.
 #   Default (https = false): 80
 #   Default (https = true): 443
+#
+# [*upload_max_size*]
+#   See the parameter definition with vhost::basic/upload_max_size.
+#   Default: 100M
 #
 # [*add_config_source*]
 #   See the parameter definition with vhost::basic/add_config_source.
@@ -135,33 +139,38 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 define nginxpack::vhost::proxy (
-  $domains            = [ 'localhost' ],
-  $https              = false,
-  $ssl_cert_source    = false,
-  $ssl_key_source     = false,
-  $ssl_cert_content   = false,
-  $ssl_key_content    = false,
-  $ssl_ocsp_dns1      = false,
-  $ssl_ocsp_dns2      = false,
-  $ssl_dhparam        = false,
-  $to_domain          = -1,
-  $to_https           = false,
-  $to_port            = -1,
-  $enable             = true,
-  $ipv6               = false,
-  $ipv4               = false,
-  $ipv6only           = false,
-  $ipv4only           = false,
-  $port               = -1,
-  $upload_max_size    = '10M',
-  $add_config_source  = false,
-  $add_config_content = false
+  $domains             = [ 'localhost' ],
+  $https               = false,
+  $ssl_cert_source     = false,
+  $ssl_key_source      = false,
+  $ssl_dhparam_source  = false,
+  $ssl_cert_content    = false,
+  $ssl_key_content     = false,
+  $ssl_dhparam_content = false,
+  $ssl_ocsp_dns1       = false,
+  $ssl_ocsp_dns2       = false,
+  $to_domain           = -1,
+  $to_https            = false,
+  $to_port             = -1,
+  $enable              = true,
+  $ipv6                = false,
+  $ipv4                = false,
+  $ipv6only            = false,
+  $ipv4only            = false,
+  $port                = -1,
+  $upload_max_size     = '10M',
+  $add_config_source   = false,
+  $add_config_content  = false
 ) {
 
   if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
     or $ssl_key_content) and !$https {
 
-    fail('Use a certificate without enable https does not make sense.')
+    fail('Using a certificate without enabling https does not make sense.')
+  }
+
+  if ($ssl_dhparam_source or $ssl_dhparam_content) and !$https {
+    fail('Using a dhparam file without enabling https does not make sense.')
   }
 
   if $https and ((!$ssl_cert_source and !$ssl_cert_content)
@@ -171,7 +180,7 @@ define nginxpack::vhost::proxy (
   }
 
   if ($ssl_ocsp_dns1 or $ssl_ocsp_dns2) and !$https {
-    fail('Use OCSP DNS resolvers without enable https does not make sense.')
+    fail('Using OCSP DNS resolvers without enabling https does not make sense.')
   }
 
   if $ipv6only and $ipv4only {
@@ -187,7 +196,7 @@ define nginxpack::vhost::proxy (
   }
 
   if $add_config_source and $add_config_content {
-    fail('Use source/content method to define add_config but not the both.')
+    fail('Please, use source/content method to define add_config, but not both.')
   }
 
   if $to_port == -1 {
@@ -216,17 +225,19 @@ define nginxpack::vhost::proxy (
 
   if $https {
     nginxpack::ssl::certificate { "${name}_proxy":
-      ssl_cert_source  => $ssl_cert_source,
-      ssl_key_source   => $ssl_key_source,
-      ssl_cert_content => $ssl_cert_content,
-      ssl_key_content  => $ssl_key_content,
+      ssl_cert_source     => $ssl_cert_source,
+      ssl_key_source      => $ssl_key_source,
+      ssl_dhparam_source  => $ssl_dhparam_source,
+      ssl_cert_content    => $ssl_cert_content,
+      ssl_key_content     => $ssl_key_content,
+      ssl_dhparam_content => $ssl_dhparam_content,
     }
 
     $vhost_require = [
       Package['nginx'],
       File["/var/log/nginx/${name}_proxy/"],
-      File["/etc/nginx/ssl/${name}.pem"],
-      File["/etc/nginx/ssl/${name}.key"],
+      File["/etc/nginx/ssl/${name}_proxy.pem"],
+      File["/etc/nginx/ssl/${name}_proxy.key"],
     ]
   } else {
     $vhost_require = [
@@ -266,6 +277,7 @@ define nginxpack::vhost::proxy (
       ensure => file,
       mode   => '0644',
       source => $add_config_source,
+      notify => Service['nginx'],
     }
   }
 
@@ -274,6 +286,7 @@ define nginxpack::vhost::proxy (
       ensure  => file,
       mode    => '0644',
       content => $add_config_content,
+      notify  => Service['nginx'],
     }
   }
 }

@@ -33,6 +33,19 @@ describe 'nginxpack::vhost::basic' do
     end
   end
 
+  # HTML_INDEX TESTS
+
+  context 'with html_index' do
+    let(:params) {{
+      :html_index => 'foobar.html',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*index\s+foobar\.html\s+/)
+    end
+  end
+
   # HTPASSWD TESTS
 
   context 'with htpasswd' do
@@ -175,12 +188,31 @@ describe 'nginxpack::vhost::basic' do
     end
   end
 
+  # PHP_INDEX TESTS
+
+  context 'with php_index' do
+    let(:params) {{
+      :use_php => true,
+      :php_index => 'foobar.php',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*fastcgi_index\s+foobar\.php/)
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*index.+\s+foobar\.php/)
+    end
+  end
+
   # PHP_ACCEPTPATHINFO TESTS
 
-  context 'with php_AcceptPathInfo and use_php' do
+  context 'with php_acceptpathinfo and use_php' do
     let(:params) {{
       :use_php            => true,
-      :php_AcceptPathInfo => true,
+      :php_acceptpathinfo => true,
     }}
 
     it do
@@ -190,15 +222,50 @@ describe 'nginxpack::vhost::basic' do
     end
   end
 
-  context 'with php_AcceptPathInfo but no use_php' do
+  context 'with php_acceptpathinfo but no use_php' do
     let(:params) {{
       :use_php            => false,
-      :php_AcceptPathInfo => true,
+      :php_acceptpathinfo => true,
     }}
 
     it do
       should_not contain_file('/etc/nginx/sites-available/foobar')
         .with_content(/fastcgi_split_path_info/)
+    end
+  end
+
+  # USE_LEGACYCGI TESTS
+
+  context 'with use_legacycgi' do
+    let(:params) {{
+      :use_legacycgi => true,
+      :legacycgi_path => '/barfoo',
+    }}
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/fastcgi_pass/)
+    end
+
+    it do
+      should contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*location\s+\/barfoo\s+{/)
+    end
+  end
+
+  context 'with no use_legacycgi' do
+    let(:params) {{
+      :use_legacycgi => false,
+    }}
+
+    it do
+      should_not contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/fastcgi_pass/)
+    end
+
+    it do
+      should_not contain_file('/etc/nginx/sites-available/foobar') \
+        .with_content(/^\s*location\s+\/barfoo\s+{/)
     end
   end
 

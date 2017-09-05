@@ -17,36 +17,56 @@ def vhost_https_tests(suffix = '')
     end
   end
 
-  context 'with https (certificate from content)' do
+  context 'with https (vhost with dhparam)' do
     let(:params) {{
-      :https            => true,
-      :ssl_cert_content => 'foo',
-      :ssl_key_content  => 'bar',
+      :https                => true,
+      :ssl_cert_content     => 'foo',
+      :ssl_key_content      => 'bar',
+      :ssl_dhparam_content  => '1337',
+    }}
+
+    it do
+      should contain_file("/etc/nginx/sites-available/foobar#{suffix}") \
+        .with_content(/^\s*ssl_dhparam\s+\/etc\/nginx\/ssl\/foobar#{suffix}_dhparam\.pem;$/)
+    end
+  end
+
+  context 'with https (certificates from content)' do
+    let(:params) {{
+      :https               => true,
+      :ssl_cert_content    => 'foo',
+      :ssl_key_content     => 'bar',
+      :ssl_dhparam_content => '1337',
     }}
 
     it do
       should contain_nginxpack__ssl__certificate("foobar#{suffix}").with(
-        'ssl_cert_content' => 'foo',
-        'ssl_key_content'  => 'bar',
-        'ssl_cert_source'  => false,
-        'ssl_key_source'   => false
+        'ssl_cert_content'    => 'foo',
+        'ssl_key_content'     => 'bar',
+        'ssl_dhparam_content' => '1337',
+        'ssl_cert_source'     => false,
+        'ssl_key_source'      => false,
+        'ssl_dhparam_source'  => false
       )
     end
   end
 
   context 'with https (certificate from source)' do
     let(:params) {{
-      :https           => true,
-      :ssl_cert_source => 'foo',
-      :ssl_key_source  => 'bar',
+      :https              => true,
+      :ssl_cert_source    => 'foo',
+      :ssl_key_source     => 'bar',
+      :ssl_dhparam_source => '1337',
     }}
 
     it do
       should contain_nginxpack__ssl__certificate("foobar#{suffix}").with(
-        'ssl_cert_content' => false,
-        'ssl_key_content'  => false,
-        'ssl_cert_source'  => 'foo',
-        'ssl_key_source'   => 'bar'
+        'ssl_cert_content'    => false,
+        'ssl_key_content'     => false,
+        'ssl_dhparam_content' => false,
+        'ssl_cert_source'     => 'foo',
+        'ssl_key_source'      => 'bar',
+        'ssl_dhparam_source'  => '1337'
       )
     end
   end
@@ -110,7 +130,7 @@ def vhost_https_tests(suffix = '')
       :ssl_key_content => 'foo',
     }}
 
-    it_raises 'a Puppet::Error', /without enable https does not make sense/
+    it_raises 'a Puppet::Error', /without enabling https does not make sense/
   end
 
   context 'with no https and just cert' do
@@ -118,7 +138,17 @@ def vhost_https_tests(suffix = '')
       :ssl_cert_source => 'foo',
     }}
 
-    it_raises 'a Puppet::Error', /without enable https does not make sense/
+    it_raises 'a Puppet::Error', /without enabling https does not make sense/
+  end
+
+  context 'with no https but dhparam' do
+    let(:params) {{
+      :ssl_cert_source    => 'foo',
+      :ssl_key_source     => 'bar',
+      :ssl_dhparam_source => '1337',
+    }}
+
+    it_raises 'a Puppet::Error', /without enabling https does not make sense/
   end
 
   context 'with ocsp dns1 and dns2 but no https' do
@@ -127,7 +157,7 @@ def vhost_https_tests(suffix = '')
       :ssl_ocsp_dns2 => 'bar',
     }}
 
-    it_raises 'a Puppet::Error', /Use OCSP DNS resolvers without/
+    it_raises 'a Puppet::Error', /Using OCSP DNS resolvers without/
   end
 
   context 'with only ocsp dns1 but no https' do
@@ -135,7 +165,7 @@ def vhost_https_tests(suffix = '')
       :ssl_ocsp_dns1 => 'foo',
     }}
 
-    it_raises 'a Puppet::Error', /Use OCSP DNS resolvers without/
+    it_raises 'a Puppet::Error', /Using OCSP DNS resolvers without/
   end
 
   context 'with only ocsp dns2 but no https' do
@@ -143,6 +173,6 @@ def vhost_https_tests(suffix = '')
       :ssl_ocsp_dns2 => 'bar',
     }}
 
-    it_raises 'a Puppet::Error', /Use OCSP DNS resolvers without/
+    it_raises 'a Puppet::Error', /Using OCSP DNS resolvers without/
   end
 end

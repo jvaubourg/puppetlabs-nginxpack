@@ -60,14 +60,14 @@ server {
   resolver_timeout 5s;
   ssl_certificate /etc/nginx/ssl/<%= @name %>.pem;
   ssl_certificate_key /etc/nginx/ssl/<%= @name %>.key;
-  <% if (@ssl_dhparam && !@ssl_dhparam.empty?) %>
-  ssl_dhparam <%= @ssl_dhparam %>;
+  <% if @ssl_dhparam_source || @ssl_dhparam_content then -%>
+    ssl_dhparam /etc/nginx/ssl/<%= @name %>_dhparam.pem;
   <% end -%>
   <% end -%>
 
   <% if @forbidden then -%>
     <% rules = ""
-      forbidden.each { |url| rules += "location ~ #{url} { return 403; }\n" }
+      @forbidden.each { |url| rules += "location ~ #{url} { return 403; }\n" }
     -%>
     <%= rules -%>
   <% end -%>
@@ -78,7 +78,7 @@ server {
 
   <% if @use_php then -%>
 
-  <% if @php_AcceptPathInfo then -%>
+  <% if @php_acceptpathinfo then -%>
   location ~ \.php {
   <% else -%>
   location ~ \.php$ {
@@ -86,37 +86,52 @@ server {
 
     include /etc/nginx/fastcgi_params;
 
-    # httpoxy mitigation
     # https://www.nginx.com/blog/mitigating-the-httpoxy-vulnerability-with-nginx/
     fastcgi_param HTTP_PROXY "";
 
-    <% if @php_AcceptPathInfo then -%>
+    <% if @php_acceptpathinfo then -%>
     fastcgi_split_path_info ^((?U).+\.php)(/?.+)$;
     fastcgi_param PATH_INFO $fastcgi_path_info;
     <% end -%>
 
-    fastcgi_index index.php;
+    fastcgi_index <%= @php_index %>;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    fastcgi_pass unix:/var/run/php.sock;
+    fastcgi_pass unix:/var/run/php5-fpm.sock;
 
     <% if @htpasswd then -%>
-    auth_basic              "<%= @htpasswd_msg.gsub('"', "''") %>";
-    auth_basic_user_file    /etc/nginx/htpasswd/<%= @name %>;
+    auth_basic "<%= @htpasswd_msg.gsub('"', "''") %>";
+    auth_basic_user_file /etc/nginx/htpasswd/<%= @name %>;
     <% end -%>
   }
+
+  <% elsif @use_legacycgi then -%>
+
+  location <%= @legacycgi_path %> {
+    include /etc/nginx/fastcgi_params;
+
+    fastcgi_pass unix:/var/run/fcgiwrap.socket;
+
+    <% if @htpasswd then -%>
+    auth_basic "<%= @htpasswd_msg.gsub('"', "''") %>";
+    auth_basic_user_file /etc/nginx/htpasswd/<%= @name %>;
+    <% end -%>
+  }
+
   <% end -%>
 
-  location ~ / {
-    index index.html<%= @use_php ? ' index.php' : '' %>;
-    try_files $uri $uri/ <%= @try_files %>;
+  <% if @handlelocation then -%>
+    location ~ / {
+      index <%= @html_index %> <%= @use_php ? @php_index : '' %>;
+      try_files $uri $uri/ <%= @try_files %>;
 
-    <% if @listing then -%>
-    autoindex on;
-    <% end -%>
+      <% if @listing then -%>
+      autoindex on;
+      <% end -%>
 
-    <% if @htpasswd then -%>
-    auth_basic              "<%= @htpasswd_msg.gsub('"', "''") %>";
-    auth_basic_user_file    /etc/nginx/htpasswd/<%= @name %>;
-    <% end -%>
-  }
+      <% if @htpasswd then -%>
+      auth_basic "<%= @htpasswd_msg.gsub('"', "''") %>";
+      auth_basic_user_file /etc/nginx/htpasswd/<%= @name %>;
+      <% end -%>
+    }
+  <% end -%>
 }
