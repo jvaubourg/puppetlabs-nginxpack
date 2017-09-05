@@ -10,8 +10,8 @@
 # === Parameters
 #
 # [*ssl_cert_source*]
-#   Location of the SSL certificate file (pem or crt). If not false then the
-#   next parameter must be false.
+#   Location of the SSL certificate file (pem or crt). Its content will be
+#   copied in another file.If not false then the next parameter must be false.
 #   Default: false
 #
 # [*ssl_cert_content*]
@@ -20,8 +20,8 @@
 #   Default: false
 #
 # [*ssl_key_source*]
-#   Location of the SSL key certificate file. If not false then the next
-#   parameter must be false.
+#   Location of the SSL key certificate file. Its content will be copied in
+#   another file. If not false then the next parameter must be false.
 #   Default: false
 #
 # [*ssl_key_content*]
@@ -30,8 +30,8 @@
 #   Default: false
 #
 # [*ssl_dhparam_source*]
-#   Location of a dhparam file. If not false then the next parameter must be 
-#   false.
+#   Location of a dhparam file. Its content will be copied in another file. If
+#   not false then the next parameter must be false.
 #   Default: false
 #
 # [*ssl_dhparam_content*]
@@ -85,22 +85,6 @@ define nginxpack::ssl::certificate (
   $ssl_dhparam_content = false
 ) {
 
-  if ($ssl_cert_source and $ssl_cert_content) or
-    ($ssl_key_source and $ssl_key_content) {
-
-    fail('Please, use source/content method to define a certificate, but not both.')
-  }
-
-  if (!$ssl_cert_source and !$ssl_cert_content)
-    or (!$ssl_key_source and !$ssl_key_content) {
-
-    fail('Please, define a cert_pem AND a cert_key.')
-  }
-
-  if $ssl_dhparam_source and $ssl_dhparam_content {
-    fail('Please, use source/content method to define a dhparam file, but not both.')
-  }
-
   File { notify => Service['nginx'] }
 
   if $ssl_cert_source {
@@ -109,7 +93,7 @@ define nginxpack::ssl::certificate (
       mode   => '0644',
       source => $ssl_cert_source,
     }
-  } else {
+  } elsif $ssl_cert_content {
     file { "/etc/nginx/ssl/${name}.pem":
       ensure  => file,
       mode    => '0644',
@@ -123,7 +107,7 @@ define nginxpack::ssl::certificate (
       mode   => '0644',
       source => $ssl_key_source,
     }
-  } else {
+  } elsif $ssl_key_content {
     file { "/etc/nginx/ssl/${name}.key":
       ensure  => file,
       mode    => '0644',
@@ -137,9 +121,7 @@ define nginxpack::ssl::certificate (
       mode   => '0644',
       source => $ssl_dhparam_source,
     }
-  }
-
-  if $ssl_dhparam_content {
+  } elsif $ssl_dhparam_content {
     file { "/etc/nginx/ssl/${name}_dhparam.pem":
       ensure  => file,
       mode    => '0644',

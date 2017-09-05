@@ -23,6 +23,10 @@
 #   See the parameter definition with ssl::default/ssl_cert_source
 #   Default: false
 #
+# [*ssl_default_cert_path*]
+#   See the parameter definition with ssl::default/ssl_cert_path
+#   Default: false
+#
 # [*ssl_default_cert_content*]
 #   See the parameter definition with ssl::default/ssl_cert_content
 #   Default: Nginxpack default cert
@@ -31,12 +35,20 @@
 #   See the parameter definition with ssl::default/ssl_key_source
 #   Default: false
 #
+# [*ssl_default_key_path*]
+#   See the parameter definition with ssl::default/ssl_key_path
+#   Default: false
+#
 # [*ssl_default_key_content*]
 #   See the parameter definition with ssl::default/ssl_key_content
 #   Default: Nginxpack default key
 #
 # [*ssl_default_dhparam_source*]
 #   See the parameter definition with ssl::default/ssl_dhparam_source
+#   Default: false
+#
+# [*ssl_default_dhparam_path*]
+#   See the parameter definition with ssl::default/ssl_dhparam_path
 #   Default: false
 #
 # [*ssl_default_dhparam_content*]
@@ -123,6 +135,9 @@ class nginxpack (
   $ssl_default_cert_source     = false,
   $ssl_default_key_source      = false,
   $ssl_default_dhparam_source  = false,
+  $ssl_default_cert_path       = false,
+  $ssl_default_key_path        = false,
+  $ssl_default_dhparam_path    = false,
   $ssl_default_cert_content    = false,
   $ssl_default_key_content     = false,
   $ssl_default_dhparam_content = false,
@@ -137,6 +152,7 @@ class nginxpack (
 ) {
 
   if ($ssl_default_cert_source or $ssl_default_key_source
+    or $ssl_default_cert_path or $ssl_default_key_path
     or $ssl_default_cert_content or $ssl_default_key_content)
     and !$default_https_blackhole {
 
@@ -211,6 +227,9 @@ class nginxpack (
       ssl_cert_source     => $ssl_default_cert_source,
       ssl_key_source      => $ssl_default_key_source,
       ssl_dhparam_source  => $ssl_default_dhparam_source,
+      ssl_cert_path       => $ssl_default_cert_path,
+      ssl_key_path        => $ssl_default_key_path,
+      ssl_dhparam_path    => $ssl_default_dhparam_path,
       ssl_cert_content    => $ssl_default_cert_content,
       ssl_key_content     => $ssl_default_key_content,
       ssl_dhparam_content => $ssl_default_dhparam_content,

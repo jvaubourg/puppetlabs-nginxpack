@@ -14,35 +14,57 @@
 #
 # === Parameters
 #
-# [*ssl_cert_content_source*]
+# [*ssl_cert_source*]
 #   Location of the SSL certificate file (pem or crt) to use with the default
-#   vhost listening on port 443. If not false then the next parameter must
-#   be false.
+#   vhost listening on port 443. Its content will be copied in another file.
+#   Only one ssl_cert_* parameter can be used at the same time.
 #   Default: false
 #
-# [*ssl_cert_content_content*]
-#   SSL certificate directly from a string (or through hiera). If not false then
-#   the previous parameter must be false.
+# [*ssl_cert_path*]
+#   Location of the SSL certificate file (pem or crt) to use with the default
+#   vhost listening on port 443. This location path will be directly used without
+#   copying the content of the file. Only one ssl_cert_* parameter can be used at
+#   the same time.
 #   Default: false
 #
-# [*ssl_key_content_source*]
+# [*ssl_cert_content*]
+#   SSL certificate directly from a string (or through hiera). Only one
+#   ssl_cert_* parameter can be used at the same time.
+#   Default: false
+#
+# [*ssl_key_source*]
 #   Location of the SSL key certificate to use with the default vhost listening
-#   on port 443. If not false then the next parameter must be false.
+#   on port 443. Its content will be copied in another file. Only one ssl_key_*
+#   parameter can be used at the same time.
 #   Default: false
 #
-# [*ssl_key_content_content*]
-#   SSL key certificate directly from a string (or through hiera). If not false
-#   then the previous parameter must be false.
+# [*ssl_key_path*]
+#   Location of the SSL key certificate to use with the default vhost listening
+#   on port 443. This location path will be directly used without copying the
+#   content of the file. Only one ssl_key_* parameter can be used at the same
+#   time.
+#   Default: false
+#
+# [*ssl_key_content*]
+#   SSL key certificate directly from a string (or through hiera). Only one
+#   ssl_key_* parameter can be used at the same time.
 #   Default: false
 #
 # [*ssl_dhparam_source*]
 #   Location of a dhparam file to use with the default vhost listening on port
-#   443. If not false then the next parameter must be false.
+#   443. Its content will be copied in another file. Only one ssl_dhparam_*
+#   parameter can be used at the same time.
+#   Default: false
+#
+# [*ssl_dhparam_path*]
+#   Location of a dhparam file to use with the default vhost listening on port
+#   443. This location path will be directly used without copying the content of
+#   the file. Only one ssl_dhparam_* parameter can be used at the same time.
 #   Default: false
 #
 # [*ssl_dhparam_content*]
-#   dhparam file directly from a string (or through hiera). If not false then
-#   the previous parameter must be false.
+#   dhparam file directly from a string (or through hiera). Only one
+#   ssl_dhparam_* parameter can be used at the same time.
 #   Default: false
 #
 # === Examples
@@ -86,13 +108,17 @@ class nginxpack::ssl::default (
   $ssl_cert_source     = false,
   $ssl_key_source      = false,
   $ssl_dhparam_source  = false,
+  $ssl_cert_path       = false,
+  $ssl_key_path        = false,
+  $ssl_dhparam_path    = false,
   $ssl_cert_content    = false,
   $ssl_key_content     = false,
   $ssl_dhparam_content = false
 ) {
 
   if ($ssl_cert_content and $ssl_key_content)
-    or ($ssl_cert_source and $ssl_key_source) {
+    or ($ssl_cert_source and $ssl_key_source)
+    or ($ssl_cert_path and $ssl_key_path) {
 
     $default_cert_content = $ssl_cert_content
     $default_key_content  = $ssl_key_content
@@ -151,6 +177,7 @@ KVtiB+dGPgzm7377J8pQh9Lh0nxJsccg4whRFeSLwZr3v6CM5tkBFeKJww/dabTW
 ROAeXfDHJjs3l/6EJa/gSqn0FEMUmFd0m+ZC9DS/Iv0sus5baYwHAFaolyNWNN4H
 SEY9sF1BhizZtEpteZ1c6cPbgdcdEA==
 -----END PRIVATE KEY-----'
+
     $default_cert_content = '-----BEGIN CERTIFICATE-----
 MIIFnDCCA4SgAwIBAgIJAIytPSWWG8P6MA0GCSqGSIb3DQEBCwUAMGMxCzAJBgNV
 BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX
