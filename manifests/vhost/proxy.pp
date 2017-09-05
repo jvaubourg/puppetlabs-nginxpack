@@ -56,6 +56,10 @@
 #   See the parameter definition with ssl::certificate/ssl_cert_source.
 #   Default: false
 #
+# [*ssl_cert_path*]
+#   See the parameter definition with vhost::basic/ssl_cert_path.
+#   Default: false
+#
 # [*ssl_cert_content*]
 #   See the parameter definition with ssl::certificate/ssl_cert_content.
 #   Default: false
@@ -64,12 +68,20 @@
 #   See the parameter definition with ssl::certificate/ssl_key_source.
 #   Default: false
 #
+# [*ssl_key_path*]
+#   See the parameter definition with vhost::basic/ssl_key_path.
+#   Default: false
+#
 # [*ssl_key_content*]
 #   See the parameter definition with ssl::certificate/ssl_key_content.
 #   Default: false
 #
 # [*ssl_dhparam_source*]
 #   See the parameter definition with ssl::certificate/ssl_dhparam_source.
+#   Default: false
+#
+# [*ssl_dhparam_path*]
+#   See the parameter definition with vhost::basic/ssl_dhparam_path.
 #   Default: false
 #
 # [*ssl_dhparam_content*]
@@ -144,6 +156,9 @@ define nginxpack::vhost::proxy (
   $ssl_cert_source     = false,
   $ssl_key_source      = false,
   $ssl_dhparam_source  = false,
+  $ssl_cert_path       = false,
+  $ssl_key_path        = false,
+  $ssl_dhparam_path    = false,
   $ssl_cert_content    = false,
   $ssl_key_content     = false,
   $ssl_dhparam_content = false,
@@ -163,18 +178,18 @@ define nginxpack::vhost::proxy (
   $add_config_content  = false
 ) {
 
-  if ($ssl_cert_source or $ssl_key_source or $ssl_cert_content
-    or $ssl_key_content) and !$https {
+  if ($ssl_cert_source or $ssl_key_source or $ssl_cert_path or $ssl_key_path
+    or $ssl_cert_content or $ssl_key_content) and !$https {
 
     fail('Using a certificate without enabling https does not make sense.')
   }
 
-  if ($ssl_dhparam_source or $ssl_dhparam_content) and !$https {
+  if ($ssl_dhparam_source or $ssl_dhparam_path or $ssl_dhparam_content) and !$https {
     fail('Using a dhparam file without enabling https does not make sense.')
   }
 
-  if $https and ((!$ssl_cert_source and !$ssl_cert_content)
-    or (!$ssl_key_source and !$ssl_key_content)) {
+  if $https and ((!$ssl_cert_source and !$ssl_cert_path and !$ssl_cert_content)
+    or (!$ssl_key_source and !$ssl_key_path and !$ssl_key_content)) {
 
     fail('To have a https connection, please define a cert_pem AND a cert_key.')
   }
@@ -193,10 +208,6 @@ define nginxpack::vhost::proxy (
 
   if $ipv6 and $ipv6 != '' and $ipv4only {
     fail('Defining an IPv6 with ipv4only true is not consistent.')
-  }
-
-  if $add_config_source and $add_config_content {
-    fail('Please, use source/content method to define add_config, but not both.')
   }
 
   if $to_port == -1 {

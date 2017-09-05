@@ -198,11 +198,11 @@ Generate *pem* (*crt*) and *key* files (put your full qualified domain name in *
 
     $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout foobar.key -out foobar.pem
 
-You also could use `ssl_cert_content` and `ssl_key_content` to define the certificate from a string (useful if you use hiera to store your certificates: `ssl_cert_content => hiera('foobar-cert')`).
+You also could use `ssl_cert_content` and `ssl_key_content` to define the certificate from a string (useful if you use hiera to store your certificates: `ssl_cert_content => hiera('foobar-cert')`). Or use `ssl_cert_path` and `ssl_key_path` to directly use a file already existing on the system (without copying its content).
 
 Additional parameters `ssl_ocsp_dns1` and `ssl_ocsp_dns2` can be set in order to set the DNS resolvers used for obtaining the IP address of the [OCSP responder](https://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol) (certificates revocation status). OCSP DNS can be IP addresses (IPv6 starting from Nginx 1.2.2) or names (resolving into IPv6 starting from Nginx 1.5.8). You can set optional ports with *IP:port* or *name:port* with Nginx version equal or greater than 1.2.2 (default 53).
 
-Additionnal parameter `ssl_dhparam_source` or `ssl_dhparam_content` can be set in order to set a strong *dhparam* file to use for Diffie-Hellman challenges.
+Additionnal parameter `ssl_dhparam_source`, `ssl_dhparam_path` or `ssl_dhparam_content` can be set in order to set a strong *dhparam* file to use for Diffie-Hellman challenges.
 
 Generate *dhparam* file:
 
