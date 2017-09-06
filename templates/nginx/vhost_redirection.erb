@@ -36,7 +36,6 @@ server {
   <% end -%>
 
   location / {
-    rewrite ^/(.*)$ http<%= @to_https ? 's' : '' %>://<%= @to_domainval %>:<%= @to_portval %>/$1 permanent;
-    return 301;
+    return 301 http<%= @to_https ? 's' : '' %>://<%= @to_domainval %>:<%= @to_portval %>$request_uri;
   }
 }
