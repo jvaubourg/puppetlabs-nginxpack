@@ -10,7 +10,7 @@ describe 'nginxpack::php::cgi' do
     }}
 
     it do
-      should contain_package('php5-mysql') \
+      should contain_package('php7.0-mysql') \
         .with_ensure('present')
     end
   end
@@ -23,7 +23,7 @@ describe 'nginxpack::php::cgi' do
     }}
 
     it do
-      should contain_file('/etc/php5/fpm/conf.d/timezone.ini') \
+      should contain_file('/etc/php/7.0/fpm/conf.d/05-timezone.ini') \
         .with_content("date.timezone = 'Foo/Bar'")
     end
   end
@@ -76,7 +76,7 @@ describe 'nginxpack::php::cgi' do
     }}
 
     it do
-      should contain_package('php5-fpm') \
+      should contain_package('php7.0-fpm') \
         .with_ensure('present')
     end
   end
@@ -87,12 +87,12 @@ describe 'nginxpack::php::cgi' do
     }}
 
     it do
-      should contain_package('php5-mysql') \
+      should contain_package('php7.0-mysql') \
         .with_ensure('absent')
     end
 
     it do
-      should contain_package('php5-fpm') \
+      should contain_package('php7.0-fpm') \
         .with_ensure('absent')
     end
   end
