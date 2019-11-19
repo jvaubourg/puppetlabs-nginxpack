@@ -7,7 +7,7 @@ describe 'nginxpack::php::mod' do
 
   context 'with defaults' do
     it do
-      should contain_package('php7.0-foobar')
+      should contain_package('php7.3-foobar')
     end
   end
 end

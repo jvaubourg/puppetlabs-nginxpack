@@ -76,11 +76,11 @@ class nginxpack::php::cgi (
 
   if $enable {
 
-    package { [ 'php7.0-fpm' ]:
+    package { [ 'php7.3-fpm' ]:
       ensure  => present,
     }
 
-    service { 'php7.0-fpm':
+    service { 'php7.3-fpm':
       ensure     => running,
       enable     => true,
       hasrestart => true,
@@ -91,16 +91,16 @@ class nginxpack::php::cgi (
       path    => '/etc/php/7.0/fpm/php.ini',
       match   => 'upload_max_filesize',
       line    => "upload_max_filesize = ${upload_max_filesize}",
-      require => Package['php7.0-fpm'],
-      notify  => Service['php7.0-fpm'],
+      require => Package['php7.3-fpm'],
+      notify  => Service['php7.3-fpm'],
     }
 
     file_line { 'php.ini-max_file_uploads':
       path    => '/etc/php/7.0/fpm/php.ini',
       match   => 'max_file_uploads',
       line    => "max_file_uploads = ${upload_max_files}",
-      require => Package['php7.0-fpm'],
-      notify  => Service['php7.0-fpm'],
+      require => Package['php7.3-fpm'],
+      notify  => Service['php7.3-fpm'],
     }
 
     file_line { 'php.ini-post_max_size':
@@ -109,35 +109,35 @@ class nginxpack::php::cgi (
       line    => inline_template('post_max_size = <%= \
         (@upload_max_files.to_i * @upload_max_filesize.to_i).to_s\
         + @upload_max_filesize[-1].to_s %>'),
-      require => Package['php7.0-fpm'],
-      notify  => Service['php7.0-fpm'],
+      require => Package['php7.3-fpm'],
+      notify  => Service['php7.3-fpm'],
     }
 
     file { '/etc/php/7.0/fpm/conf.d/05-timezone.ini':
       ensure  => file,
       mode    => '0644',
       content => "date.timezone = '${timezone}'",
-      require => Package['php7.0-fpm'],
-      notify  => Service['php7.0-fpm'],
+      require => Package['php7.3-fpm'],
+      notify  => Service['php7.3-fpm'],
     }
 
     if $mysql {
-      package { 'php7.0-mysql':
+      package { 'php7.3-mysql':
         ensure  => present,
-        require => Package['php7.0-fpm'],
+        require => Package['php7.3-fpm'],
       }
     } else {
-      package { 'php7.0-mysql':
+      package { 'php7.3-mysql':
         ensure => absent,
       }
     }
 
   } else {
 
-    package { [ 'php7.0-fpm', 'php7.0-mysql' ]:
+    package { [ 'php7.3-fpm', 'php7.3-mysql' ]:
       ensure => absent,
     }
 
-    Package['php7.0-mysql'] -> Package['php7.0-fpm']
+    Package['php7.3-mysql'] -> Package['php7.3-fpm']
   }
 }

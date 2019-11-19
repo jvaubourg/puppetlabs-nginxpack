@@ -1,6 +1,6 @@
 # == Class: nginxpack
 #
-# Install and configure Nginx, and - optionally - PHP7.0-FastCGI.
+# Install and configure Nginx, and - optionally - php7.3-FastCGI.
 #
 # More explanations: https://forge.puppetlabs.com/jvaubourg/nginxpack
 # Sources: https://github.com/jvaubourg/puppetlabs-nginxpack

@@ -1,6 +1,6 @@
 # == Define: nginxpack::php::mod
 #
-# Dummy type installing a php7.0 module package.
+# Dummy type installing a php7.3 module package.
 #
 # More explanations: https://forge.puppetlabs.com/jvaubourg/nginxpack
 # Sources: https://github.com/jvaubourg/puppetlabs-nginxpack
@@ -34,9 +34,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 define nginxpack::php::mod {
-  package { "php7.0-${name}":
+  package { "php7.3-${name}":
     ensure  => present,
-    notify  => Service['php7.0-fpm'],
-    require => Package['php7.0-fpm'],
+    notify  => Service['php7.3-fpm'],
+    require => Package['php7.3-fpm'],
   }
 }

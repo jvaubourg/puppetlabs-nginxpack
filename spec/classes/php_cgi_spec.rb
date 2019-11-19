@@ -10,7 +10,7 @@ describe 'nginxpack::php::cgi' do
     }}
 
     it do
-      should contain_package('php7.0-mysql') \
+      should contain_package('php7.3-mysql') \
         .with_ensure('present')
     end
   end
@@ -76,7 +76,7 @@ describe 'nginxpack::php::cgi' do
     }}
 
     it do
-      should contain_package('php7.0-fpm') \
+      should contain_package('php7.3-fpm') \
         .with_ensure('present')
     end
   end
@@ -87,12 +87,12 @@ describe 'nginxpack::php::cgi' do
     }}
 
     it do
-      should contain_package('php7.0-mysql') \
+      should contain_package('php7.3-mysql') \
         .with_ensure('absent')
     end
 
     it do
-      should contain_package('php7.0-fpm') \
+      should contain_package('php7.3-fpm') \
         .with_ensure('absent')
     end
   end
