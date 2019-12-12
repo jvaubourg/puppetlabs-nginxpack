@@ -1,10 +1,10 @@
-#Nginxpack
+# Nginxpack
 
 [![Build Status](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack.png)](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack)
 [![Puppet Forge](http://img.shields.io/puppetforge/v/jvaubourg/nginxpack.svg)](https://forge.puppetlabs.com/jvaubourg/nginxpack)
 [![License](http://img.shields.io/:license-agpl3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 
-####Table of Contents
+#### Table of Contents
 
 1. [Overview](#overview)
 2. [Module Description](#module-description)
@@ -33,14 +33,14 @@
 5. [Limitations (only Debian-likes)](#limitations)
 6. [Development](#development)
 
-##Overview
+## Overview
 
 This module installs and configures Nginx (lightweight and robust webserver). It's a pack because you can **optionally** install and configure PHP7 at the same time. There are three types of vhost available (basic, proxy and redirection) and some smart options for Nginx and PHP. This module is full IPv6 compliant because we are in the 21st century.
 
 * [PuppetLabs Forge](https://forge.puppetlabs.com/jvaubourg/nginxpack)
 * [GitHub Repository](https://github.com/jvaubourg/puppetlabs-nginxpack/)
 
-##Module Description
+## Module Description
 
 Features available:
 
@@ -61,7 +61,7 @@ default SSL certificate, htpasswd, listing, XSS injection protection, etc.)
 
 Recipes validated with [+230 rspec tests](https://travis-ci.org/jvaubourg/puppetlabs-nginxpack).
 
-##What nginxpack affects
+## What nginxpack affects
 
 Installed packages:
 
@@ -88,11 +88,11 @@ Added files:
 
 Use `php_timezone`, `php_upload_max_filesize` and/or `php_upload_max_files` affects */etc/php5/cgi/php.ini* (but not overrides it).
 
-##Usage
+## Usage
 
-###Beginning with nginxpack
+### Beginning with nginxpack
 
-####Webserver
+#### Webserver
 
 If you just want a webserver installing with the default options and without PHP you can run:
 
@@ -134,7 +134,7 @@ LogRotate values given in this example are the default ones. `logrotate_rotate` 
 
 You can also configure default https configuration here. See the [first common use case](#reverse-proxy-with-ipv4).
 
-####Basic Vhost
+#### Basic Vhost
 
 Standard vhost.
 
@@ -241,7 +241,7 @@ Other options:
 
 If you want to use a specific configuration for a specific vhost, you can use `add_config_source` or `add_config_content` to inject custom Nginx instructions directly in `server { }`.
 
-####Proxy Vhost
+#### Proxy Vhost
 
 Reverse-proxy vhost allowing you to seamlessly redirect the traffic to a remote webserver.
 
@@ -267,7 +267,7 @@ SSL (https://) is usable in the same manner as [basic vhosts](#basic-vhost).
 
 Options `ipv6`, `ipv4`, `ipv6only`, `ipv4only`, `port`, `enable`, `add_config_source`, `add_config_content` and `upload_max_size` are also available in the same way as [basic vhosts](#basic-vhost).
 
-####Redirection Vhost
+#### Redirection Vhost
 
 General redirection (using 301 http code) allowing you to officially redirect any requests to a remote domain. In short: _http://foobar.example.com/(.*) => http://foobar.com/$1_.
 
@@ -282,15 +282,15 @@ Options `to_https` and `to_port` are available in the same way as [proxy vhosts]
 
 Options `ipv6`, `ipv4`, `ipv6only`, `ipv4only`, `port`, `enable`, `add_config_source` and `add_config_content` are available in the same way as [basic vhosts](#basic-vhost).
 
-###Documentation
+### Documentation
 
 The [previous section](#beginning-with-nginxpack) should be clear enough to understand the possibilities of nginxpack.
 
 If you want a detailed documentation of types and options, there is a full documentation in the headers of the [Puppet files](https://github.com/jvaubourg/puppetlabs-nginxpack/tree/master/manifests).
 
-###Default Vhosts
+### Default Vhosts
 
-####Automatic Blackholes
+#### Automatic Blackholes
 
 Have a determinist way to access to the vhosts is a good practice in web security. If you say that a vhost can be reached via *my.example.com*, any request using another domain should not success. If you do not have a *default vhost* with a listen line for each port used on the webserver, Nginx will use a doubful algorithm to determine which vhost is usable in the case of an unknown domain.
 
@@ -298,7 +298,7 @@ Good news! Nginxpack creates this default vhost for you and redirects any reques
 
 You can disable the https blackhole with `default_https_blackhole => false` (useful if you have no https vhosts and you don't want Nginx listening on 443).
 
-####Well-known problem with SSL
+#### Well-known problem with SSL
 
 The full circle is easy to understand:
 
@@ -324,11 +324,11 @@ Nginxpack creates this default vhost for you, with a default certificate. To rep
 
 The [first common use case](#reverse-proxy-with-ipv4) in the next section provides an example with this solution.
 
-##Common Use Cases
+## Common Use Cases
 
-###Reverse-proxy with IPv4
+### Reverse-proxy with IPv4
 
-####Multiple servers and a single IPv4
+#### Multiple servers and a single IPv4
 
 You are in charge of servers in the wrong decade: there is almost no more IPv4 but you still can't use only IPv6. Thus, your provider has provided you as many IPv6 addresses as there are grains of sand on earth, but only one poor IPv4.
 
@@ -336,7 +336,7 @@ If you have various webservers (on remote machines or in containers beside) behi
 
 The first example considers that your ISP provides you IPv6 addresses and that you are able to use it. Second example considers that you have a crappy ISP and so no IPv6 addresses available. In both examples, we want a blog (http), a wiki (https) and a members panel (https). For the sake of cleanliness and security reasons, each website must have its own webserver on its own machine/container.
 
-####With usable IPv6 addresses
+#### With usable IPv6 addresses
 
 Goals:
 
@@ -417,7 +417,7 @@ Webserver hosting *members.example.com*:
       use_php         => true,
     }
 
-####Without IPv6 addresses
+#### Without IPv6 addresses
 
 Goals:
 
@@ -481,7 +481,7 @@ Webserver hosting *members.example.com*:
       use_php => true,
     }
 
-###Usage of *www.*
+### Usage of *www.*
 
 Using *www.example.com* is so 2005 and you want automatically redirect all requests from _http://www.example.com/.*_ to *http://example.com/$1*.
 
@@ -495,11 +495,11 @@ Using *www.example.com* is so 2005 and you want automatically redirect all reque
       to_domain => 'example.com',
     }
 
-###Port Redirection
+### Port Redirection
 
 Proxy and redirection vhosts use the first value of `domains` when `to_domain` is absent.
 
-####Seamlessly
+#### Seamlessly
 
 Your out-of-the-box webapp listens on port 8080 but you want use it on port 80 without modifying its configuration:
 
@@ -508,7 +508,7 @@ Your out-of-the-box webapp listens on port 8080 but you want use it on port 80 w
       to_port => 8080,
     }
 
-####Not Seamlessly
+#### Not Seamlessly
 
 Visible location switching (the client will see his URL transformation: _http://example.com/.*_ => *http://example.com:8080/$1*) means redirection:
 
@@ -517,7 +517,7 @@ Visible location switching (the client will see his URL transformation: _http://
       to_port => 8080,
     }
 
-####HTTPS Redirection
+#### HTTPS Redirection
 
 Spontaneous switching from *http* to *https*:
 
@@ -533,7 +533,7 @@ Spontaneous switching from *http* to *https*:
       to_https => true,
     }
 
-####IPv6/IPv4 Proxy
+#### IPv6/IPv4 Proxy
 
 You own a website not available in IPv6 and you cannot have an IPv6 address on its machine. A way to solving this problem is to create a proxy on a dual-stack machine (listening on IPv6 to accept incoming requests and listening on IPv4 to contact the remote webserver):
 
@@ -553,21 +553,21 @@ DNS configuration:
 
 This trick could also be used in the opposite case.
 
-##Dependencies
+## Dependencies
 
 * [puppetlabs/stdlib](http://forge.puppetlabs.com/puppetlabs/stdlib) &gt;= 3.x (`file_line` is used to edit *php.ini*, `validate_re` to check some parameters and `ensure_packages` to install *logrotate* and *psmisc*)
 
-##Limitations
+## Limitations
 
 This module is **only available for Debian-likes**.
 
-##Development
+## Development
 
 I developed this module for my own needs but I think it's generic enough to be useful for someone else.
 
 [Feel free to contribute](https://github.com/jvaubourg/puppetlabs-nginxpack/). I'm not a big fan of centralized services like GitHub but I used it to permit easy pull-requests, so show me that's a good idea!
 
-##Thanks
+## Thanks
 
 * [Lorraine Data Network](http://ldn-fai.net) for testing the module
 * [Sébastien Badia](https://github.com/sbadia) for adding LogRotate options with comprehensive documention
