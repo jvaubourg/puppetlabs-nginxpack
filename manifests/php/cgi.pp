@@ -1,6 +1,6 @@
 # == Class: nginxpack::php::cgi
 #
-# Install PHP5-FPM (FastCGI).
+# Install PHP7-FPM (FastCGI).
 #
 # Should be used through the main nginxpack class.
 #
@@ -76,11 +76,11 @@ class nginxpack::php::cgi (
 
   if $enable {
 
-    package { [ 'php5-fpm' ]:
+    package { [ 'php7.3-fpm' ]:
       ensure  => present,
     }
 
-    service { 'php5-fpm':
+    service { 'php7.3-fpm':
       ensure     => running,
       enable     => true,
       hasrestart => true,
@@ -88,56 +88,56 @@ class nginxpack::php::cgi (
     }
 
     file_line { 'php.ini-upload_max_filesize':
-      path    => '/etc/php5/fpm/php.ini',
+      path    => '/etc/php/7.0/fpm/php.ini',
       match   => 'upload_max_filesize',
       line    => "upload_max_filesize = ${upload_max_filesize}",
-      require => Package['php5-fpm'],
-      notify  => Service['php5-fpm'],
+      require => Package['php7.3-fpm'],
+      notify  => Service['php7.3-fpm'],
     }
 
     file_line { 'php.ini-max_file_uploads':
-      path    => '/etc/php5/fpm/php.ini',
+      path    => '/etc/php/7.0/fpm/php.ini',
       match   => 'max_file_uploads',
       line    => "max_file_uploads = ${upload_max_files}",
-      require => Package['php5-fpm'],
-      notify  => Service['php5-fpm'],
+      require => Package['php7.3-fpm'],
+      notify  => Service['php7.3-fpm'],
     }
 
     file_line { 'php.ini-post_max_size':
-      path    => '/etc/php5/fpm/php.ini',
+      path    => '/etc/php/7.0/fpm/php.ini',
       match   => 'post_max_size',
       line    => inline_template('post_max_size = <%= \
         (@upload_max_files.to_i * @upload_max_filesize.to_i).to_s\
         + @upload_max_filesize[-1].to_s %>'),
-      require => Package['php5-fpm'],
-      notify  => Service['php5-fpm'],
+      require => Package['php7.3-fpm'],
+      notify  => Service['php7.3-fpm'],
     }
 
-    file { '/etc/php5/fpm/conf.d/timezone.ini':
+    file { '/etc/php/7.0/fpm/conf.d/05-timezone.ini':
       ensure  => file,
       mode    => '0644',
       content => "date.timezone = '${timezone}'",
-      require => Package['php5-fpm'],
-      notify  => Service['php5-fpm'],
+      require => Package['php7.3-fpm'],
+      notify  => Service['php7.3-fpm'],
     }
 
     if $mysql {
-      package { 'php5-mysql':
+      package { 'php7.3-mysql':
         ensure  => present,
-        require => Package['php5-fpm'],
+        require => Package['php7.3-fpm'],
       }
     } else {
-      package { 'php5-mysql':
+      package { 'php7.3-mysql':
         ensure => absent,
       }
     }
 
   } else {
 
-    package { [ 'php5-fpm', 'php5-mysql' ]:
+    package { [ 'php7.3-fpm', 'php7.3-mysql' ]:
       ensure => absent,
     }
 
-    Package['php5-mysql'] -> Package['php5-fpm']
+    Package['php7.3-mysql'] -> Package['php7.3-fpm']
   }
 }

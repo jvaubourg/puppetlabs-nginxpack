@@ -1,3 +1,6 @@
+2018-12-08 - 0.3.0 (sbadia)
+  * Add PHP7-FPM support
+
 2017-01-22 - 0.2.0 (jvaubourg)
   * Add legacy CGI scripts support
   * Add possibility to specify a dhparam file
@@ -19,7 +22,7 @@
 2014-08-06 - 0.0.4 (jvaubourg)
   * Add SNI support
   * Add PHP5-FPM support
-  ** [WARNING] If you upgrade Nginxpack, you can use "php_fpm => false" 
+  ** [WARNING] If you upgrade Nginxpack, you can use "php_fpm => false"
      if you don't want to switch from classical PHP5-FastCGI to PHP5-FPM.
      Otherwise, think cleaning useless php5-cgi/spawn-fcgi packages and
      process (just for cleanness).
